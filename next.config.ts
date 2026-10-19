@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 import { securityHeaders } from "./lib/security-headers";
 
+const DOC_FILES = ["./README.md", "./HANDOFF.md", "./docs/**/*.md", "./design_handoff_toquilla_trace/README.md"];
+
 // Cache Components is left off on purpose: pages that read the session use
 // `export const dynamic = "force-dynamic"` (see docs/FOUNDATION.md).
 const nextConfig: NextConfig = {
@@ -11,6 +13,12 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  // /docs renders repo markdown. The pages are static (read at build time); these includes keep
+  // the files in the server trace in case a docs page ever renders at request time.
+  outputFileTracingIncludes: {
+    "/docs": DOC_FILES,
+    "/docs/*": DOC_FILES,
   },
   async headers() {
     return [

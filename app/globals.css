@@ -241,3 +241,43 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   /docs: rendered repo markdown (components/docs/Markdown.tsx)
+   --------------------------------------------------------------------------- */
+.doc-prose {
+  max-width: 760px;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.doc-prose > * + * { margin-top: 1em; }
+.doc-prose h1 { font-family: var(--font-serif); font-size: 36px; line-height: 1.15; font-weight: 500; letter-spacing: -0.015em; }
+.doc-prose h2 { font-family: var(--font-serif); font-size: 27px; line-height: 1.2; font-weight: 500; margin-top: 1.8em; padding-top: 0.6em; border-top: 1px solid var(--line); }
+.doc-prose h3 { font-size: 19px; font-weight: 650; margin-top: 1.5em; }
+.doc-prose h4, .doc-prose h5, .doc-prose h6 { font-size: 16px; font-weight: 650; margin-top: 1.3em; }
+.doc-heading { position: relative; scroll-margin-top: 16px; }
+.doc-anchor { position: absolute; left: -0.9em; padding-right: 0.2em; color: var(--muted); opacity: 0; text-decoration: none; }
+.doc-heading:hover .doc-anchor { opacity: 1; }
+.doc-prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.doc-prose a:hover { color: var(--accent-strong); }
+.doc-prose ul { list-style: disc; padding-left: 1.4em; }
+.doc-prose ol { list-style: decimal; padding-left: 1.4em; }
+.doc-prose li + li { margin-top: 0.3em; }
+.doc-prose li > ul, .doc-prose li > ol { margin-top: 0.3em; }
+.doc-prose blockquote { border-left: 3px solid var(--straw); padding: 0.2em 0 0.2em 1em; color: var(--muted); }
+.doc-prose hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+.doc-prose strong { font-weight: 650; }
+.doc-prose :not(pre) > code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface2); border: 1px solid var(--line); border-radius: 6px; padding: 0.1em 0.35em; }
+.doc-pre { background: var(--code); color: var(--code-text); border-radius: 12px; padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.55; }
+.doc-pre code { background: none; border: 0; padding: 0; font-size: inherit; white-space: pre; }
+.doc-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+.doc-prose table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+.doc-prose th { text-align: left; font-weight: 650; background: var(--surface2); }
+.doc-prose th, .doc-prose td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.doc-prose tr:last-child td { border-bottom: 0; }
+.doc-prose input[type="checkbox"] { margin-right: 0.4em; }
+.doc-mermaid { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+.doc-mermaid svg { max-width: 100%; height: auto; margin: 0 auto; display: block; }
+.doc-image-link { display: inline-block; font-size: 14px; }
