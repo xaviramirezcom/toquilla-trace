@@ -16,3 +16,14 @@ jobs:
       - run: npm run --if-present typecheck
       - run: npm run --if-present test
       - run: npm run --if-present build
+  deno:
+    # Edge Functions are Deno code: type check and lint them with the Deno version used locally.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2.0.5
+        with:
+          deno-version: v2.5.4
+      - run: deno check --no-config supabase/functions/*/index.ts
+      # npm: specifiers inline are the Supabase Edge Functions convention, so no-import-prefix is off.
+      - run: deno lint --rules-exclude=no-import-prefix supabase/functions
