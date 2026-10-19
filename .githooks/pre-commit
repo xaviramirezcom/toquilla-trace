@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Light pre-commit gate. Enable with: git config core.hooksPath .githooks
+set -e
+files="$(git diff --cached --name-only --diff-filter=ACM)"
+[ -z "$files" ] && exit 0
+
+# 1. Never commit env files or private keys.
+if echo "$files" | grep -Eq '(^|/)\.env($|\.)|\.pem$|\.key$' && ! echo "$files" | grep -Eq '\.env\.example$'; then
+  bad="$(echo "$files" | grep -E '(^|/)\.env($|\.)|\.pem$|\.key$' | grep -v '\.env\.example$' || true)"
+  if [ -n "$bad" ]; then echo "pre-commit: refusing to commit secret-looking files:"; echo "$bad"; exit 1; fi
+fi
+
+# 2. No focused or skipped tests.
+if git diff --cached -U0 | grep -E '^\+' | grep -Eq '\b(it|test|describe)\.(only|skip)\b'; then
+  echo "pre-commit: focused or skipped tests found (.only / .skip)"; exit 1
+fi
+
+# 3. Type check and lint when the scripts exist.
+if [ -f package.json ]; then
+  npm run --if-present typecheck
+  npm run --if-present lint
+fi

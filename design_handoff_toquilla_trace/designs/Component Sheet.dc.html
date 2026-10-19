@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{--bg:oklch(0.965 0.014 85);--surface:oklch(0.988 0.008 85);--surface2:oklch(0.94 0.018 82);--line:oklch(0.87 0.022 80);--ink:oklch(0.24 0.012 60);--muted:oklch(0.47 0.015 60);--accent:oklch(0.42 0.085 162);--accent-strong:oklch(0.35 0.08 162);--accent-tint:oklch(0.945 0.025 162);--on-accent:oklch(0.99 0.005 85);--ok:oklch(0.46 0.11 150);--ok-tint:oklch(0.95 0.035 150);--warn:oklch(0.5 0.11 65);--warn-tint:oklch(0.95 0.045 85);--err:oklch(0.52 0.17 28);--err-tint:oklch(0.955 0.03 28);--info:oklch(0.48 0.11 250);--info-tint:oklch(0.95 0.025 250);--straw:oklch(0.85 0.055 85);--cream:oklch(0.975 0.022 88);--shadow:0 1px 2px rgb(40 30 10 / .06),0 10px 30px rgb(40 30 10 / .10)}
+[data-theme="dark"]{--bg:oklch(0.2 0.01 70);--surface:oklch(0.24 0.012 70);--surface2:oklch(0.28 0.014 70);--line:oklch(0.36 0.015 70);--ink:oklch(0.94 0.012 85);--muted:oklch(0.74 0.015 80);--accent:oklch(0.74 0.11 162);--accent-strong:oklch(0.8 0.1 162);--accent-tint:oklch(0.3 0.04 162);--on-accent:oklch(0.18 0.02 162);--ok:oklch(0.76 0.13 150);--ok-tint:oklch(0.29 0.05 150);--warn:oklch(0.82 0.12 80);--warn-tint:oklch(0.31 0.05 75);--err:oklch(0.74 0.15 28);--err-tint:oklch(0.3 0.06 28);--info:oklch(0.76 0.1 245);--info-tint:oklch(0.29 0.04 245);--straw:oklch(0.42 0.04 85);--cream:oklch(0.26 0.02 85);--shadow:0 1px 2px rgb(0 0 0 / .3),0 10px 30px rgb(0 0 0 / .35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{color:var(--accent-strong)}
+button,input{font:inherit;color:inherit}
+@keyframes tt-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes tt-spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;padding:40px 32px 80px">
+<div style="max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+  <header style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div><div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted)">Toquilla Trace</div><h1 style="margin:4px 0 0;font-family:Newsreader,serif;font-weight:500;font-size:44px;line-height:1">Component sheet &amp; flows</h1><p style="margin:8px 0 0;color:var(--muted);max-width:640px">Inline-styled building blocks shared by every screen. Each maps to a Tailwind component: tokens are CSS variables, so <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">bg-[var(--accent)]</span> or a theme extension.</p></div>
+    <div role="radiogroup" aria-label="Theme" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--surface)"><sc-for list="{{themeOpts}}" as="t"><button role="radio" aria-checked="{{t.on}}" onClick="{{t.onClick}}" style="height:36px;padding:0 14px;border:0;border-radius:7px;background:{{t.bg}};font-weight:600;cursor:pointer">{{t.label}}</button></sc-for></div>
+  </header>
+
+  <nav style="display:flex;gap:8px;flex-wrap:wrap">
+    <sc-for list="{{toc}}" as="l"><a href="{{l.href}}" style="height:32px;padding:0 12px;display:flex;align-items:center;border:1px solid var(--line);border-radius:16px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink);text-decoration:none">{{l.label}}</a></sc-for>
+  </nav>
+
+  <section id="flows" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:22px">
+    <h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:28px">Main journeys</h2>
+    <sc-for list="{{flows}}" as="f" hint-placeholder-count="3">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--accent)">{{f.key}}</span><strong style="font-size:16px">{{f.title}}</strong><span style="color:var(--muted);font-size:13px">{{f.who}}</span></div>
+        <ol style="list-style:none;margin:0;padding:0;display:flex;gap:6px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{f.steps}}" as="s">
+            <li style="display:flex;align-items:center;gap:6px">
+              <a href="{{s.href}}" style="display:flex;flex-direction:column;gap:4px;width:180px;min-height:96px;padding:12px;border-radius:12px;border:1.5px {{s.style}} {{s.border}};background:{{s.bg}};color:var(--ink);text-decoration:none">
+                <span style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:{{s.border}}">{{s.icon}}</span><span style="font-size:11px;font-weight:700;color:var(--muted)">{{s.n}} · {{s.screen}}</span></span>
+                <span style="font-weight:600;font-size:13.5px;line-height:1.3">{{s.label}}</span>
+              </a>
+              <sc-if value="{{s.arrow}}"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:var(--muted)">arrow_forward</span></sc-if>
+            </li>
+          </sc-for>
+        </ol>
+      </div>
+    </sc-for>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)"><span style="display:flex;gap:6px;align-items:center"><span style="width:18px;height:12px;border:1.5px dashed var(--accent);border-radius:3px;background:var(--accent-tint)"></span>AI step</span><span style="display:flex;gap:6px;align-items:center"><span style="width:18px;height:12px;border:1.5px solid var(--ok);border-radius:3px;background:var(--ok-tint)"></span>Human approval</span><span style="display:flex;gap:6px;align-items:center"><span style="width:18px;height:12px;border:1.5px solid var(--line);border-radius:3px;background:var(--bg)"></span>Screen / action</span><span style="display:flex;gap:6px;align-items:center"><span style="width:18px;height:12px;border:1.5px solid var(--err);border-radius:3px;background:var(--err-tint)"></span>Error</span></div>
+  </section>
+
+  <section id="buttons" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px;overflow-x:auto">
+    <h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:28px">Buttons</h2>
+    <div style="display:grid;grid-template-columns:110px repeat(6,minmax(130px,1fr));gap:12px;align-items:center;min-width:960px">
+      <span></span><sc-for list="{{btnStates}}" as="s"><span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">{{s}}</span></sc-for>
+      <sc-for list="{{buttons}}" as="row">
+        <span style="font-size:13px;font-weight:600">{{row.name}}</span>
+        <sc-for list="{{row.cells}}" as="c"><span><button disabled="{{c.disabled}}" style="height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:118px;border:{{c.border}};border-radius:10px;background:{{c.bg}};color:{{c.color}};font-weight:600;opacity:{{c.opacity}};outline:{{c.outline}};outline-offset:2px;transform:{{c.tx}};cursor:default"><sc-if value="{{c.loading}}">{{spinner}}</sc-if>{{c.label}}</button></span></sc-for>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:6px;border-top:1px solid var(--line)"><span style="font-size:13px;font-weight:600;width:110px">Icon only</span><sc-for list="{{iconBtns}}" as="b"><button aria-label="{{b.label}}" style="width:44px;height:44px;border:{{b.border}};border-radius:10px;background:{{b.bg}};color:{{b.color}};font-family:'Material Symbols Rounded';font-size:20px;outline:{{b.outline}};outline-offset:2px">{{b.icon}}</button></sc-for><span style="font-size:12px;color:var(--muted)">Always 44 × 44 with an aria-label.</span></div>
+  </section>
+
+  <section id="inputs" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:16px">
+    <h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:28px">Inputs &amp; controls</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+      <sc-for list="{{inputs}}" as="i">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">{{i.state}}
+          <span style="position:relative;display:flex;align-items:center"><input value="{{i.value}}" placeholder="you@workshop.com" readOnly="{{true}}" disabled="{{i.disabled}}" style="width:100%;height:44px;border:1px {{i.borderStyle}} {{i.border}};border-radius:10px;padding:0 36px 0 12px;background:{{i.bg}};font-weight:400;box-shadow:{{i.shadow}};outline:none;color:{{i.color}}"><sc-if value="{{i.err}}"><span style="position:absolute;right:10px;font-family:'Material Symbols Rounded';font-size:19px;color:var(--err)">error</span></sc-if></span>
+          <sc-if value="{{i.hasMsg}}"><span style="font-weight:500;color:{{i.msgColor}};font-size:12.5px">{{i.msg}}</span></sc-if>
+        </label>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;padding-top:12px;border-top:1px solid var(--line)">
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Segmented<div style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);height:44px;width:300px"><span style="flex:1;display:grid;place-items:center;color:var(--muted)">Standard</span><span style="flex:1;display:grid;place-items:center;background:var(--surface);border-radius:7px;box-shadow:0 1px 2px rgb(0 0 0 / .12)">Fino</span><span style="flex:1;display:grid;place-items:center;color:var(--muted)">Superfino</span></div></div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Multi-select<div style="width:240px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;font-weight:400"><div style="display:flex;justify-content:space-between;padding:2px 6px 6px"><strong>Stage</strong><span style="font-size:12px;color:var(--muted)">2 selected</span></div><sc-for list="{{msOpts}}" as="o"><span style="display:flex;align-items:center;gap:10px;height:38px;padding:0 6px"><span style="width:18px;height:18px;border-radius:4px;border:1.5px solid {{o.border}};background:{{o.bg}};color:var(--on-accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:14px">{{o.check}}</span>{{o.label}}</span></sc-for><div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:6px;margin-top:4px"><span style="color:var(--muted);font-weight:600;padding:6px">Clear</span><span style="background:var(--accent);color:var(--on-accent);font-weight:600;padding:6px 12px;border-radius:7px">Done</span></div></div></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;font-weight:600">Toggles &amp; chips
+        <span style="display:flex;align-items:center;gap:10px;font-weight:400"><span style="width:40px;height:24px;border-radius:12px;background:var(--accent);position:relative"><span style="position:absolute;right:3px;top:3px;width:18px;height:18px;border-radius:9px;background:var(--surface)"></span></span>On</span>
+        <span style="display:flex;align-items:center;gap:10px;font-weight:400"><span style="width:40px;height:24px;border-radius:12px;background:var(--line);position:relative"><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:9px;background:var(--surface)"></span></span>Off</span>
+        <span style="display:flex;gap:8px"><span style="height:36px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid var(--warn);border-radius:18px;background:var(--warn-tint)"><span style="font-family:'Material Symbols Rounded';font-size:16px;color:var(--warn)">flag</span>Flagged only</span><span style="height:36px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid var(--accent);border-radius:18px;background:var(--accent-tint)">Stage<span style="min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--on-accent);font-size:11px;display:grid;place-items:center">2</span></span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="badges" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px">
+    <h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:28px">Badges</h2>
+    <sc-for list="{{badgeRows}}" as="r">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="width:110px;font-size:13px;font-weight:600">{{r.name}}</span><sc-for list="{{r.items}}" as="b"><span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:{{b.radius}};font-size:12px;font-weight:700;background:{{b.bg}};color:{{b.color}};border:1px solid {{b.border}};font-family:{{b.font}}"><sc-if value="{{b.hasIcon}}"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">{{b.icon}}</span></sc-if>{{b.label}}</span></sc-for></div>
+    </sc-for>
+  </section>
+
+  <section id="proposals" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px">
+    <h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:28px">Proposal card · 8 states</h2>
+    <p style="margin:-6px 0 0;color:var(--muted)">Interactive version: <a href="Toquilla Trace.dc.html">Workshop dashboard</a>. Every state carries an icon and a text label, never color alone.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px">
+      <sc-for list="{{pstates}}" as="p" hint-placeholder-count="8">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:12px;font-weight:700;color:var(--muted)">{{p.n}}. {{p.name}}</span>
+          <article style="border:1.5px {{p.bstyle}} {{p.border}};background:{{p.bg}};border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;opacity:{{p.opacity}}">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <span style="display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:6px;background:var(--surface);border:1px solid var(--line);font-size:11.5px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:14px;color:{{p.typeColor}}">{{p.typeIcon}}</span>{{p.type}}</span>
+              <span style="display:inline-flex;align-items:center;gap:3px;font-size:11.5px;color:var(--muted)"><span style="font-family:'Material Symbols Rounded';font-size:14px;color:var(--accent)">auto_awesome</span>Proposed by AI</span>
+              <sc-if value="{{p.hasTag}}"><span style="margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:700;color:{{p.border}}"><span style="font-family:'Material Symbols Rounded';font-size:15px">{{p.tagIcon}}</span>{{p.tag}}</span></sc-if>
+            </div>
+            <div style="font-weight:600;text-decoration:{{p.strike}}">{{p.summary}}</div>
+            <sc-if value="{{p.hasNote}}"><div style="display:flex;gap:8px;align-items:center;padding:10px;border-radius:9px;background:var(--surface);border:1px solid {{p.border}};font-size:12.5px"><span style="font-family:'Material Symbols Rounded';font-size:17px;color:{{p.border}}">{{p.noteIcon}}</span><span style="flex:1">{{p.note}}</span></div></sc-if>
+            <sc-if value="{{p.hasForm}}"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;font-weight:600"><span>Quantity<span style="display:block;height:36px;margin-top:4px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-weight:400;padding:8px 10px">− 3 +</span></span><span>Rows per inch<span style="display:block;height:36px;margin-top:4px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-weight:400;padding:8px 10px">18</span></span><span style="grid-column:1/-1;color:var(--warn);font-weight:500">18 rows/inch usually means Fino.</span></div></sc-if>
+            <sc-if value="{{p.hasActions}}"><div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap"><sc-for list="{{p.actions}}" as="a"><span style="height:36px;padding:0 12px;display:inline-flex;align-items:center;gap:5px;border-radius:9px;font-weight:600;font-size:13px;border:{{a.border}};background:{{a.bg}};color:{{a.color}}"><sc-if value="{{a.spin}}">{{spinner}}</sc-if>{{a.label}}</span></sc-for></div></sc-if>
+          </article>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:20px">
+    <section id="steppers" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:16px">
+      <h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:28px">Stage stepper &amp; timeline</h2>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+        <span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--muted);font-weight:600">Mini · table cell</span><span style="display:flex;gap:4px"><span style="width:9px;height:9px;border-radius:5px;background:var(--ink)"></span><span style="width:9px;height:9px;border-radius:5px;background:var(--ink)"></span><span style="width:9px;height:9px;border-radius:5px;background:var(--accent)"></span><span style="width:9px;height:9px;border-radius:5px;border:1.5px solid var(--line)"></span><span style="width:9px;height:9px;border-radius:5px;border:1.5px solid var(--line)"></span></span><span style="font-size:12px;font-weight:600">Bleaching</span></span>
+        <span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--muted);font-weight:600">Mini · proposal</span><span style="display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:7px;border:1px solid var(--line);font-size:12px;font-weight:600">Weaving<span style="width:9px;height:9px;border-radius:5px;background:var(--ink)"></span>→<span style="width:9px;height:9px;border-radius:5px;border:1.5px solid var(--accent)"></span>Washing</span></span>
+      </div>
+      <ol style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+        <sc-for list="{{fullStepper}}" as="s"><li style="display:flex;flex-direction:column;gap:6px"><span style="display:flex;align-items:center"><span style="width:28px;height:28px;flex:none;border-radius:14px;border:{{s.ring}};background:{{s.bg}};color:var(--surface);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:16px">{{s.icon}}</span><sc-if value="{{s.notLast}}"><span style="flex:1;height:2px;background:{{s.line}}"></span></sc-if></span><strong style="font-size:12.5px;color:{{s.color}}">{{s.label}}</strong><span style="font-size:11px;color:var(--muted)">{{s.sub}}</span></li></sc-for>
+      </ol>
+      <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;color:var(--muted);font-weight:600">Ownership chain</span><div style="display:flex;align-items:center;gap:6px"><span style="height:30px;padding:0 12px;border-radius:15px;display:inline-flex;align-items:center;font-size:13px;font-weight:600;border:1.5px solid var(--line);background:var(--surface2)">Workshop</span>→<span style="height:30px;padding:0 12px;border-radius:15px;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;border:1.5px solid var(--accent);background:var(--accent-tint);color:var(--accent)"><span style="font-family:'Material Symbols Rounded';font-size:15px">person_pin</span>Seller</span>→<span style="height:30px;padding:0 12px;border-radius:15px;display:inline-flex;align-items:center;font-size:13px;font-weight:600;border:1.5px dashed var(--line);color:var(--muted)">Buyer</span></div></div>
+    </section>
+
+    <section id="toasts" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px">
+      <h2 style="margin:0 0 6px;font-family:Newsreader,serif;font-weight:500;font-size:28px">Toasts</h2>
+      <sc-for list="{{toasts}}" as="t">
+        <div style="position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;padding:12px 10px 12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);max-width:400px">
+          <span style="font-family:'Material Symbols Rounded';font-size:20px;color:{{t.color}}">{{t.icon}}</span><span style="flex:1;font-weight:500">{{t.title}}</span>
+          <sc-if value="{{t.hasAction}}"><span style="font-weight:700;text-decoration:underline;padding:0 8px">{{t.action}}</span></sc-if>
+          <span style="font-family:'Material Symbols Rounded';font-size:18px;opacity:.75;padding:0 4px">close</span>
+          <sc-if value="{{t.undo}}"><span style="position:absolute;left:0;bottom:0;height:3px;width:62%;background:var(--accent)"></span></sc-if>
+        </div>
+      </sc-for>
+      <span style="font-size:12px;color:var(--muted)">Bottom-right on desktop, top-center on mobile. 5 s (undo: 10 s), pause on hover, max 3.</span>
+    </section>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:20px">
+    <section id="chat" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0 0 4px;font-family:Newsreader,serif;font-weight:500;font-size:28px">Chat bubbles</h2>
+      <div style="align-self:flex-end;max-width:80%;padding:10px 12px;background:var(--accent);color:var(--on-accent);border-radius:14px 14px 4px 14px">Will it fit a 58 cm head?</div>
+      <div style="display:flex;gap:8px;max-width:92%"><span style="width:28px;height:28px;flex:none;border-radius:14px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:16px">auto_awesome</span><div style="display:flex;flex-direction:column;gap:6px"><div style="padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:4px 14px 14px 14px">It's recorded as 58 cm, so it should fit a 58 cm head well.</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:12px;font-size:11.5px;font-weight:600;background:var(--ok-tint);color:var(--ok)"><span style="font-family:'Material Symbols Rounded';font-size:14px">verified</span>From this hat's passport · Size</span><span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:12px;font-size:11.5px;font-weight:600;background:var(--surface2);color:var(--muted)"><span style="font-family:'Material Symbols Rounded';font-size:14px">lightbulb</span>General care advice</span></div></div></div>
+      <div style="display:flex;gap:8px;max-width:92%"><span style="width:28px;height:28px;flex:none;border-radius:14px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:16px">auto_awesome</span><div style="padding:10px 12px;background:var(--err-tint);border:1px solid var(--err);border-radius:4px 14px 14px 14px">I couldn't answer that. <strong style="color:var(--accent)">Try again</strong></div></div>
+    </section>
+    <section id="rows" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0 0 4px;font-family:Newsreader,serif;font-weight:500;font-size:28px">Rows, tiles, empty &amp; loading</h2>
+      <div style="font-size:12px;color:var(--muted);font-weight:600">Log row · error (36 px compact)</div>
+      <div style="display:grid;grid-template-columns:92px 64px 1fr 44px;gap:10px;align-items:center;height:36px;padding:0 10px;border-radius:8px;background:var(--err-tint);font-size:12.5px"><span style="font-family:'JetBrains Mono',monospace;color:var(--muted)">10:42:13.512</span><span style="display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 7px;border-radius:10px;font-size:11px;font-weight:700;background:var(--surface);color:var(--err)"><span style="font-family:'Material Symbols Rounded';font-size:13px">error</span>Error</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="font-family:'JetBrains Mono',monospace">hat.stage.advance</span> · Row was updated by another user</span><span style="font-family:'JetBrains Mono',monospace;text-align:right">120</span></div>
+      <div style="font-size:12px;color:var(--muted);font-weight:600">Table row · hat</div>
+      <div style="display:grid;grid-template-columns:20px 90px 80px 1fr 70px;gap:10px;align-items:center;min-height:52px;padding:0 10px;border:1px solid var(--line);border-radius:10px;font-size:13px"><span style="width:18px;height:18px;border-radius:4px;border:1.5px solid var(--line)"></span><span style="font-family:'JetBrains Mono',monospace">TQ-7F3K2</span><span style="display:inline-flex;height:22px;padding:0 8px;align-items:center;border-radius:6px;font-size:11.5px;font-weight:700;background:var(--warn-tint);width:max-content">Fino</span><span>Rosa Pillco<span style="display:block;font-size:11.5px;color:var(--muted)">Sígsig</span></span><span style="color:var(--muted)">5 min ago</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:140px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)"><div style="font-size:26px;font-weight:600">12</div><div style="font-size:12px;color:var(--muted);font-weight:500">Hats in progress</div></div>
+        <div style="flex:1;min-width:140px;padding:12px;border:1px solid var(--warn);border-radius:12px;background:var(--warn-tint)"><div style="font-size:26px;font-weight:600;color:var(--warn);display:flex;align-items:center;gap:6px">1<span style="font-family:'Material Symbols Rounded';font-size:18px">flag</span></div><div style="font-size:12px;color:var(--muted);font-weight:500">Flags to check</div></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px;border:1px dashed var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:repeating-linear-gradient(45deg,transparent 0 10px,var(--surface2) 10px 11px),repeating-linear-gradient(-45deg,transparent 0 10px,var(--surface2) 10px 11px)"><span style="width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;color:var(--muted)">inbox</span><span style="font-size:12.5px;background:var(--bg);padding:2px 6px;border-radius:5px">No proposals yet.</span></div>
+        <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:6px;justify-content:center"><sc-for list="{{skels}}" as="k"><span style="height:{{k}};border-radius:7px;background:var(--surface2);animation:tt-pulse 1.4s ease-in-out infinite"></span></sc-for></div>
+      </div>
+    </section>
+  </div>
+
+  <section id="dialogs" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px">
+    <h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:28px">Dialogs</h2>
+    <p style="margin:-6px 0 0;color:var(--muted)">Centered (max 520 px) on desktop, bottom sheet with drag handle on mobile. Secondary left, primary right. Destructive confirmations close only through their buttons.</p>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end">
+      <div style="width:420px;max-width:100%;background:var(--bg);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)"><div style="display:flex;padding:18px 18px 4px"><strong style="flex:1;font-size:17px">Archive TQ-2C5P0?</strong><span style="font-family:'Material Symbols Rounded';font-size:20px">close</span></div><p style="margin:0;padding:6px 18px 0;color:var(--muted)">It will be hidden from lists but its passport stays valid.</p><div style="display:flex;justify-content:space-between;padding:18px"><span style="height:40px;padding:0 14px;display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;font-weight:600">Cancel</span><span style="height:40px;padding:0 14px;display:flex;align-items:center;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600">Archive</span></div></div>
+      <div style="width:300px;background:var(--bg);border:1px solid var(--line);border-radius:18px 18px 0 0;box-shadow:var(--shadow)"><div style="display:flex;justify-content:center;padding-top:8px"><span style="width:40px;height:4px;border-radius:2px;background:var(--line)"></span></div><div style="display:flex;padding:14px 16px 4px"><strong style="flex:1">Move TQ-7F3K2 to Bleaching?</strong></div><p style="margin:0;padding:4px 16px 0;color:var(--muted);font-size:13px">This can't be undone. Stages only move forward.</p><div style="display:flex;gap:8px;padding:16px"><span style="height:44px;padding:0 12px;display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;font-weight:600">Cancel</span><span style="flex:1;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600">Move to Bleaching</span></div></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:13px"><span style="color:var(--muted)">All dialogs, live:</span><sc-for list="{{dialogLinks}}" as="d"><a href="{{d.href}}" style="font-weight:600">{{d.label}}</a></sc-for></div>
+  </section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const h = React.createElement;
+class Component extends DCLogic {
+  state = { theme: "light" };
+  componentDidMount() { try { const t = localStorage.getItem("tt-theme"); if (t === "dark") this.setState({ theme: "dark" }); } catch (e) {} }
+  renderVals() {
+    const st = this.state;
+    const spinner = h("span", { style: { width: 14, height: 14, borderRadius: "50%", border: "2px solid currentColor", borderRightColor: "transparent", display: "inline-block", animation: "tt-spin 700ms linear infinite" } });
+    const V = {
+      Primary: { bg: "var(--accent)", hover: "var(--accent-strong)", color: "var(--on-accent)", border: "0", label: "Approve", loading: "Approving..." },
+      Secondary: { bg: "var(--surface)", hover: "var(--surface2)", color: "var(--ink)", border: "1px solid var(--line)", label: "Edit", loading: "Saving..." },
+      Text: { bg: "transparent", hover: "var(--surface2)", color: "var(--muted)", border: "0", label: "Reject", loading: "Rejecting..." },
+      Destructive: { bg: "var(--err)", hover: "oklch(0.46 0.16 28)", color: "var(--surface)", border: "0", label: "Archive", loading: "Archiving..." }
+    };
+    const states = ["Default", "Hover", "Focus", "Pressed", "Disabled", "Loading"];
+    const flow = (key, title, who, steps) => ({ key, title, who, steps: steps.map(([screen, label, kind, href], i) => ({ n: i + 1, screen, label, href, arrow: i < steps.length - 1, icon: { ai: "auto_awesome", human: "how_to_reg", err: "error", ui: "web" }[kind], style: kind === "ai" ? "dashed" : "solid", border: { ai: "var(--accent)", human: "var(--ok)", err: "var(--err)", ui: "var(--line)" }[kind], bg: { ai: "var(--accent-tint)", human: "var(--ok-tint)", err: "var(--err-tint)", ui: "var(--bg)" }[kind] })) });
+    const badge = (label, bg, color, icon, o = {}) => Object.assign({ label, bg, color, icon: icon || "", hasIcon: !!icon, radius: "6px", border: "transparent", font: "inherit" }, o);
+    const P = (n, name, o) => Object.assign({ n, name, type: "Advance stage", typeIcon: "trending_flat", typeColor: "var(--info)", summary: "Advance TQ-7F3K2 to Bleaching", bstyle: "dashed", border: "var(--accent)", bg: "var(--accent-tint)", opacity: 1, strike: "none", hasTag: false, hasNote: false, hasForm: false, hasActions: true, actions: [{ label: "Reject" }, { label: "Edit", sec: true }, { label: "Approve", pri: true }] }, o);
+    const act = list => list.map(a => ({ label: a.label, spin: !!a.spin, border: a.sec ? "1px solid var(--line)" : "0", bg: a.pri ? "var(--accent)" : a.sec ? "var(--surface)" : "transparent", color: a.pri ? "var(--on-accent)" : a.sec ? "var(--ink)" : "var(--muted)" }));
+    const pstates = [
+      P(1, "Pending", {}),
+      P(2, "Editing", { type: "Create hat", typeIcon: "add_circle", typeColor: "var(--accent)", summary: "Create 3 hats · Fino · 18 rows/inch", bg: "var(--surface)", hasForm: true, hasTag: true, tag: "Editing", tagIcon: "edit", actions: [{ label: "Cancel", sec: true }, { label: "Save changes", pri: true }] }),
+      P(3, "Approving", { actions: [{ label: "Reject" }, { label: "Edit", sec: true }, { label: "Approving...", pri: true, spin: true }] }),
+      P(4, "Approved", { bstyle: "solid", border: "var(--ok)", bg: "var(--ok-tint)", hasTag: true, tag: "Approved", tagIcon: "check_circle", hasNote: true, noteIcon: "verified_user", note: "Approved by you · just now · Undo", hasActions: false }),
+      P(5, "Rejected", { bstyle: "solid", border: "var(--line)", bg: "transparent", opacity: .75, strike: "line-through", hasNote: true, noteIcon: "block", note: "Rejected · Restore", hasActions: false }),
+      P(6, "Blocked by rules", { summary: "Move TQ-2C5P0 to Finished", bstyle: "solid", border: "var(--err)", bg: "var(--err-tint)", hasTag: true, tag: "Blocked by rules", tagIcon: "lock", hasNote: true, noteIcon: "lock", note: "Can't move TQ-2C5P0 from Weaving to Finished. Next allowed stage: Washing.", actions: [{ label: "Dismiss" }, { label: "Change to Washing", sec: true }] }),
+      P(7, "Needs your answer", { type: "Create hat", typeIcon: "add_circle", typeColor: "var(--accent)", summary: "Create 3 hats · Fino · 18 rows/inch · Weaver: ?", bstyle: "solid", border: "var(--warn)", bg: "var(--warn-tint)", hasTag: true, tag: "Needs your answer", tagIcon: "help", hasNote: true, noteIcon: "help", note: "I found 2 weavers named Rosa. Which one?", actions: [{ label: "Rosa Pillco (Sígsig)", sec: true }, { label: "Rosa Guamán (Cuenca)", sec: true }, { label: "Someone else...", sec: true }] }),
+      P(8, "Approval failed", { bstyle: "solid", border: "var(--err)", bg: "var(--surface)", hasTag: true, tag: "Not saved", tagIcon: "error", hasNote: true, noteIcon: "sync_problem", note: "Couldn't save this change. Someone may have updated this hat.", actions: [{ label: "View log" }, { label: "Refresh and retry", pri: true }] })
+    ].map(p => Object.assign(p, { actions: act(p.actions) }));
+    return {
+      theme: st.theme, spinner,
+      themeOpts: [["light", "Light"], ["dark", "Dark"]].map(([v, label]) => ({ label, on: st.theme === v, bg: st.theme === v ? "var(--accent-tint)" : "transparent", onClick: () => this.setState({ theme: v }) })),
+      toc: [["Flows", "#flows"], ["Buttons", "#buttons"], ["Inputs", "#inputs"], ["Badges", "#badges"], ["Proposal card", "#proposals"], ["Stepper & timeline", "#steppers"], ["Toasts", "#toasts"], ["Chat", "#chat"], ["Rows & tiles", "#rows"], ["Dialogs", "#dialogs"]].map(([label, href]) => ({ label, href })),
+      flows: [
+        flow("A", "Note → proposals → approve", "Workshop member · mobile", [["Workshop", "Holds the mic and talks (typing is the backup)", "ui", "Toquilla Trace.dc.html"], ["Review transcript", "Fixes amber “not sure” words, sends", "human", "Toquilla Trace.dc.html"], ["Agent", "Reads note, looks up weavers, checks rules", "ai", "Builder.dc.html#run"], ["Proposals", "4 cards: pending, question, blocked", "ai", "Toquilla Trace.dc.html"], ["Review", "Answers “which Rosa?”, fixes the blocked stage", "human", "Toquilla Trace.dc.html"], ["Approve", "Approve all valid · undo for 10 s", "human", "Toquilla Trace.dc.html"], ["Hats", "Records updated, activity logged", "ui", "Hats.dc.html"]]),
+        flow("B", "Passport → concierge → claim", "Buyer · scans QR on mobile", [["Passport", "Verified seal, weaver, story", "ui", "Toquilla Trace.dc.html#passport"], ["Concierge", "“Will it fit a 58 cm head?”", "ai", "Toquilla Trace.dc.html#passport"], ["Answer", "Cited from the record (source pills)", "ai", "Toquilla Trace.dc.html#passport"], ["Claim", "Logs in if needed, confirms claim", "human", "Toquilla Trace.dc.html#passport"], ["Registered", "Stamp animation, owner updates", "ui", "Toquilla Trace.dc.html#passport"]]),
+        flow("C", "Error in Logs → trace → AI prompt", "Developer · desktop", [["Logs", "Red row: hat.stage.advance", "err", "Builder.dc.html#logs"], ["Row detail", "Payload, stack, request ID", "ui", "Builder.dc.html#logs"], ["Run trace", "Steps, tool JSON, rule checks", "ui", "Builder.dc.html#run"], ["Copy as prompt", "Error + payload summary on clipboard", "ui", "Builder.dc.html#logs"], ["AI assistant", "Pasted into Claude to fix", "ai", "Builder.dc.html#logs"]])
+      ],
+      btnStates: states,
+      buttons: Object.keys(V).map(name => { const v = V[name]; return { name, cells: states.map(s => ({ label: s === "Loading" ? v.loading : v.label, loading: s === "Loading", disabled: s === "Disabled" || s === "Loading", bg: s === "Hover" || s === "Pressed" ? v.hover : v.bg, color: v.color, border: v.border, opacity: s === "Disabled" ? .45 : s === "Loading" ? .85 : 1, outline: s === "Focus" ? "2px solid var(--accent)" : "none", tx: s === "Pressed" ? "translateY(1px)" : "none" })) }; }),
+      iconBtns: [["Copy", "content_copy"], ["More", "more_horiz"], ["Close", "close"], ["Send", "send", true], ["Focused", "edit", false, true]].map(([label, icon, pri, foc]) => ({ label, icon, bg: pri ? "var(--accent)" : "var(--surface)", color: pri ? "var(--on-accent)" : "var(--ink)", border: pri ? "0" : "1px solid var(--line)", outline: foc ? "2px solid var(--accent)" : "none" })),
+      inputs: [["Default", "", "var(--line)", "var(--bg)"], ["Focus", "xavier@", "var(--accent)", "var(--bg)", "0 0 0 3px var(--accent-tint)"], ["Filled", "xavier@tallerpillco.com", "var(--line)", "var(--bg)"], ["Error", "xavier@", "var(--err)", "var(--bg)", "none", "That doesn't look like an email.", true], ["Disabled", "xavier@tallerpillco.com", "var(--line)", "var(--surface2)", "none", "", false, true], ["Read-only", "xavier@tallerpillco.com", "var(--line)", "var(--surface2)", "none", "Contact support to change", false, false, true]].map(([state, value, border, bg, shadow, msg, err, disabled, ro]) => ({ state, value, border, bg, shadow: shadow || "none", msg: msg || "", hasMsg: !!msg, msgColor: err ? "var(--err)" : "var(--muted)", err: !!err, disabled: !!disabled, borderStyle: ro ? "dashed" : "solid", color: disabled || ro ? "var(--muted)" : "var(--ink)" })),
+      msOpts: [["Weaving", true], ["Washing", true], ["Bleaching"], ["Blocking"], ["Finished"]].map(([label, on]) => ({ label, check: on ? "check" : "", bg: on ? "var(--accent)" : "transparent", border: on ? "var(--accent)" : "var(--line)" })),
+      badgeRows: [
+        { name: "Stage", items: ["Weaving", "Washing", "Bleaching", "Blocking"].map(s => badge(s, "var(--info-tint)", "var(--info)", "timelapse")).concat([badge("Finished", "var(--ok-tint)", "var(--ok)", "check")]) },
+        { name: "Grade", items: [badge("Standard", "var(--surface2)", "var(--ink)"), badge("Fino", "var(--warn-tint)", "var(--ink)"), badge("Superfino", "var(--accent-tint)", "var(--accent)")] },
+        { name: "Verified", items: [badge("Verified", "var(--ok-tint)", "var(--ok)", "verified"), badge("Not verified", "var(--err-tint)", "var(--err)", "gpp_bad"), badge("Archived", "var(--surface2)", "var(--muted)", "inventory_2")] },
+        { name: "Log level", items: [badge("Debug", "var(--surface2)", "var(--muted)", "bug_report", { radius: "10px" }), badge("Info", "var(--info-tint)", "var(--info)", "info", { radius: "10px" }), badge("Warn", "var(--warn-tint)", "var(--warn)", "warning", { radius: "10px" }), badge("Error", "var(--err-tint)", "var(--err)", "error", { radius: "10px" })] },
+        { name: "Action type", items: [badge("Create hat", "var(--surface)", "var(--ink)", "add_circle", { border: "var(--line)" }), badge("Advance stage", "var(--surface)", "var(--ink)", "trending_flat", { border: "var(--line)" }), badge("Flag issue", "var(--surface)", "var(--ink)", "flag", { border: "var(--line)" }), badge("Transfer", "var(--surface)", "var(--ink)", "swap_horiz", { border: "var(--line)" })] },
+        { name: "Confidence", items: [badge("High confidence", "var(--ok-tint)", "var(--ok)", "check", { radius: "11px" }), badge("Check this", "var(--warn-tint)", "var(--warn)", "priority_high", { radius: "11px" })] },
+        { name: "Tool type", items: [badge("Read", "var(--info-tint)", "var(--info)"), badge("Write: proposed only", "var(--warn-tint)", "var(--warn)")] },
+        { name: "AI marker", items: [badge("Proposed by AI", "var(--accent-tint)", "var(--accent)", "auto_awesome", { border: "var(--accent)" }), badge("Assistant", "var(--accent-tint)", "var(--accent)", "auto_awesome"), badge("Edited by you", "var(--surface2)", "var(--ink)", "edit")] }
+      ],
+      pstates,
+      fullStepper: [["Weaving", "Sep 22 · AI", "done"], ["Washing", "Oct 3 · Manual", "done"], ["Bleaching", "Since Oct 14 (4 days)", "cur"], ["Blocking", "Upcoming"], ["Finished", "Upcoming"]].map(([label, sub, s], i) => ({ label, sub, notLast: i < 4, icon: s === "done" ? "check" : "", bg: s === "done" ? "var(--ok)" : s === "cur" ? "var(--accent-tint)" : "transparent", ring: s === "cur" ? "3px solid var(--accent)" : s === "done" ? "0" : "1.5px solid var(--line)", line: s === "done" ? "var(--ok)" : "var(--line)", color: s ? "var(--ink)" : "var(--muted)" })),
+      toasts: [["success", "check_circle", "var(--ok)", "3 changes saved."], ["info", "info", "var(--info)", "Stopped. Nothing was saved."], ["warning", "warning", "var(--warn)", "You're offline. Changes will fail."], ["error", "error", "var(--err)", "Couldn't save this change.", "Retry"], ["undo", "undo", "var(--accent)", "Approved: TQ-7F3K2 → Washing", "Undo", true]].map(([k, icon, color, title, action, undo]) => ({ icon, color, title, action: action || "", hasAction: !!action, undo: !!undo })),
+      skels: ["14px", "14px", "60%", "14px"].map(w => "12px"),
+      dialogLinks: [["Help · logout · manual create · discard · claim", "Toquilla Trace.dc.html"], ["Advance · share · transfer · archive · unsaved · weaver", "Hats.dc.html#detail/TQ-7F3K2"], ["Change password · delete account", "Builder.dc.html#settings"], ["Session expired", "Auth.dc.html#session"]].map(([label, href]) => ({ label, href }))
+    };
+  }
+}
+</script>
+</body>
+</html>

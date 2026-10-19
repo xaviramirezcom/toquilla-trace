@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{--bg:oklch(0.965 0.014 85);--surface:oklch(0.988 0.008 85);--surface2:oklch(0.94 0.018 82);--line:oklch(0.87 0.022 80);--ink:oklch(0.24 0.012 60);--muted:oklch(0.47 0.015 60);--accent:oklch(0.42 0.085 162);--accent-strong:oklch(0.35 0.08 162);--accent-tint:oklch(0.945 0.025 162);--on-accent:oklch(0.99 0.005 85);--ok:oklch(0.46 0.11 150);--ok-tint:oklch(0.95 0.035 150);--warn:oklch(0.5 0.11 65);--warn-tint:oklch(0.95 0.045 85);--err:oklch(0.52 0.17 28);--err-tint:oklch(0.955 0.03 28);--info:oklch(0.48 0.11 250);--info-tint:oklch(0.95 0.025 250);--straw:oklch(0.85 0.055 85);--cream:oklch(0.975 0.022 88);--scrim:rgb(30 24 12 / 0.38);--shadow:0 1px 2px rgb(40 30 10 / .06),0 10px 30px rgb(40 30 10 / .10)}
+[data-theme="dark"]{--bg:oklch(0.2 0.01 70);--surface:oklch(0.24 0.012 70);--surface2:oklch(0.28 0.014 70);--line:oklch(0.36 0.015 70);--ink:oklch(0.94 0.012 85);--muted:oklch(0.74 0.015 80);--accent:oklch(0.74 0.11 162);--accent-strong:oklch(0.8 0.1 162);--accent-tint:oklch(0.3 0.04 162);--on-accent:oklch(0.18 0.02 162);--ok:oklch(0.76 0.13 150);--ok-tint:oklch(0.29 0.05 150);--warn:oklch(0.82 0.12 80);--warn-tint:oklch(0.31 0.05 75);--err:oklch(0.74 0.15 28);--err-tint:oklch(0.3 0.06 28);--info:oklch(0.76 0.1 245);--info-tint:oklch(0.29 0.04 245);--straw:oklch(0.42 0.04 85);--cream:oklch(0.26 0.02 85);--scrim:rgb(0 0 0 / 0.55);--shadow:0 1px 2px rgb(0 0 0 / .3),0 10px 30px rgb(0 0 0 / .35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{color:var(--accent-strong)}
+button,input,textarea,select{font:inherit;color:inherit}
+button:disabled{opacity:.45;cursor:not-allowed!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::placeholder{color:var(--muted);opacity:.8}
+@keyframes tt-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes tt-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:15px;line-height:1.5;display:flex;flex-direction:column">
+  <header style="position:sticky;top:0;z-index:20;height:64px;display:flex;align-items:center;gap:8px;padding:0 {{padX}};background:var(--bg);border-bottom:1px solid var(--line)">
+    <button onClick="{{goLanding}}" aria-label="Toquilla Trace home" style="display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:0;cursor:pointer;margin-right:auto">
+      <span style="width:28px;height:28px;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span>
+      <span style="font-family:Newsreader,serif;font-size:20px;font-weight:600">Toquilla Trace</span>
+    </button>
+    <sc-if value="{{isLanding}}" hint-placeholder-val="{{true}}"><sc-if value="{{desktop}}" hint-placeholder-val="{{true}}"><button onClick="{{scrollVerify}}" style="height:44px;padding:0 12px;border:0;background:transparent;font-weight:600;cursor:pointer;border-radius:10px" style-hover="background:var(--surface2)">Verify a hat</button></sc-if></sc-if>
+    <sc-if value="{{showLoginBtn}}" hint-placeholder-val="{{true}}"><button onClick="{{goLogin}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)">Log in</button></sc-if>
+  </header>
+
+  <main style="flex:1;display:flex;flex-direction:column">
+<!-- LANDING -->
+<sc-if value="{{isLanding}}" hint-placeholder-val="{{true}}">
+  <section style="position:relative;padding:{{heroPad}};display:flex;flex-direction:column;gap:22px;max-width:1120px;width:100%;margin:0 auto">
+    <h1 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:{{h1Size}};line-height:1.04;letter-spacing:-.025em;max-width:880px;text-wrap:balance">Every real Panama hat has a story. <em style="color:var(--accent)">Now it has a passport.</em></h1>
+    <p style="margin:0;font-size:{{subSize}};max-width:620px;color:var(--muted);text-wrap:pretty">No forms, no typing. Just tell it what happened in the workshop, and the AI does the paperwork while you approve every change.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button onClick="{{goSignup}}" style="height:52px;padding:0 24px;flex:{{heroBtnFlex}};border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer" style-hover="background:var(--accent-strong)">Get started</button>
+      <a href="Toquilla Trace.dc.html#passport" style="height:52px;padding:0 22px;flex:{{heroBtnFlex}};display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600;font-size:16px;color:var(--ink);text-decoration:none"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">verified</span>See a sample passport</a>
+    </div>
+  </section>
+  <section aria-label="Before and now" style="padding:0 {{padX}} {{stripBottom}};max-width:1120px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:{{stripGap}}">
+    <div style="border:1px solid var(--line);border-radius:16px;padding:{{stripPad}};background:var(--surface);display:flex;flex-direction:column;gap:8px;opacity:.85">
+      <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--err)"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">edit_document</span>Before</span>
+      <span style="font-size:{{stripText}};font-weight:500;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--err);text-wrap:pretty">Open app, fill 8 fields, about 5 min</span>
+    </div>
+    <div style="border:1.5px solid var(--accent);border-radius:16px;padding:{{stripPad}};background:var(--accent-tint);display:flex;flex-direction:column;gap:8px">
+      <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)"><span style="width:24px;height:24px;border-radius:12px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:15px">mic</span>Now</span>
+      <span style="font-size:{{stripText}};font-weight:600;text-wrap:pretty">Hold the mic, talk, about 10 s</span>
+    </div>
+  </section>
+  <div aria-hidden="true" style="height:14px;background:repeating-linear-gradient(45deg,transparent 0 4px,var(--straw) 4px 6px),repeating-linear-gradient(-45deg,transparent 0 4px,var(--straw) 4px 6px),var(--cream);border-top:1px solid var(--straw);border-bottom:1px solid var(--straw)"></div>
+
+  <section ref="{{verifyRef}}" id="verify" style="padding:{{sectionPad}};max-width:1120px;width:100%;margin:0 auto;display:flex;gap:32px;flex-wrap:wrap;align-items:center">
+    <div style="flex:1 1 320px"><h2 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:34px;line-height:1.1">Bought a hat? Check it here.</h2><p style="margin:10px 0 0;color:var(--muted);max-width:440px">The code is printed on the tag inside the crown. Scanning the QR opens the passport directly.</p></div>
+    <div style="flex:1 1 360px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:8px">
+      <label for="tt-verify" style="font-weight:600;font-size:14px">Have a hat code?</label>
+      <div style="display:flex;gap:8px">
+        <input id="tt-verify" ref="{{codeRef}}" value="{{code}}" onChange="{{onCode}}" onKeyDown="{{onCodeKey}}" maxLength="8" placeholder="TQ-XXXXX" autoComplete="off" aria-invalid="{{codeErr}}" aria-describedby="tt-verify-err" style="flex:1;min-width:0;height:52px;border:1px solid {{codeBorder}};border-radius:12px;padding:0 16px;background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:.08em;outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)">
+        <button onClick="{{verify}}" disabled="{{codeInvalid}}" style="height:52px;padding:0 22px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer">Verify</button>
+      </div>
+      <sc-if value="{{codeErr}}"><span id="tt-verify-err" style="display:flex;align-items:center;gap:4px;color:var(--err);font-size:14px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">error</span>Codes look like TQ-7F3K2.</span></sc-if>
+      <span style="font-size:13px;color:var(--muted)">Try <button onClick="{{fillSample}}" style="border:0;background:transparent;padding:0;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:2px">TQ-9A1M8</button> or <button onClick="{{fillBad}}" style="border:0;background:transparent;padding:0;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:2px">TQ-ZZZZZ</button></span>
+    </div>
+  </section>
+
+  <section style="padding:0 {{padX}} {{featBottom}};max-width:1120px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+    <sc-for list="{{features}}" as="f" hint-placeholder-count="3">
+      <article style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:44px;height:44px;border-radius:12px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px">{{f.icon}}</span>
+        <h3 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:24px;line-height:1.15">{{f.title}}</h3>
+        <p style="margin:0;color:var(--muted);text-wrap:pretty">{{f.body}}</p>
+      </article>
+    </sc-for>
+  </section>
+</sc-if>
+
+<!-- AUTH CARDS -->
+<sc-if value="{{isCard}}">
+  <div style="flex:1;display:flex;justify-content:center;align-items:{{cardAlign}};padding:{{cardOuterPad}}">
+    <section style="width:100%;max-width:440px;background:{{cardBg}};border:{{cardBorder}};border-radius:20px;padding:{{cardPad}};display:flex;flex-direction:column;gap:16px;animation:tt-in 200ms ease both">
+
+      <sc-if value="{{isLogin}}" hint-placeholder-val="{{true}}">
+        <h1 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:34px;line-height:1.1">Welcome back</h1>
+        <sc-if value="{{hasBanner}}"><div role="alert" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--err-tint);border:1px solid var(--err);font-size:14px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--err)">{{bannerIcon}}</span><span style="flex:1;min-width:180px;font-weight:500">{{banner}}</span><sc-if value="{{bannerRetry}}"><button onClick="{{submitLogin}}" style="height:36px;padding:0 12px;border:1px solid var(--err);border-radius:9px;background:var(--surface);font-weight:600;cursor:pointer">Retry</button></sc-if></div></sc-if>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Email
+          <span style="position:relative;display:flex;align-items:center"><input type="email" value="{{email}}" onChange="{{onEmail}}" placeholder="you@workshop.com" autoComplete="email" aria-invalid="{{emailErr}}" style="width:100%;height:50px;border:1px solid {{emailBorder}};border-radius:12px;padding:0 40px 0 14px;background:var(--bg);font-weight:400;font-size:16px;outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)"><sc-if value="{{emailErr}}"><span style="position:absolute;right:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--err)">error</span></sc-if></span>
+          <sc-if value="{{emailErr}}"><span style="color:var(--err);font-weight:500;font-size:13px">{{emailMsg}}</span></sc-if>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Password
+          <span style="position:relative;display:flex;align-items:center"><input type="{{pwType}}" value="{{pw}}" onChange="{{onPw}}" autoComplete="current-password" aria-invalid="{{pwErr}}" style="width:100%;height:50px;border:1px solid {{pwBorder}};border-radius:12px;padding:0 52px 0 14px;background:var(--bg);font-weight:400;font-size:16px;outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)"><button onClick="{{togglePw}}" type="button" aria-label="{{pwToggleLabel}}" title="{{pwToggleLabel}}" style="position:absolute;right:3px;width:44px;height:44px;border:0;border-radius:10px;background:transparent;cursor:pointer;color:var(--muted);font-family:'Material Symbols Rounded';font-size:21px">{{pwIcon}}</button></span>
+          <sc-if value="{{pwErr}}"><span style="color:var(--err);font-weight:500;font-size:13px">Enter your password.</span></sc-if>
+        </label>
+        <button onClick="{{goForgot}}" style="align-self:flex-start;margin-top:-6px;border:0;background:transparent;padding:6px 0;color:var(--accent);font-weight:600;font-size:14px;cursor:pointer">Forgot password?</button>
+        <sc-if value="{{inlinePrimary}}" hint-placeholder-val="{{true}}"><button onClick="{{submitLogin}}" disabled="{{loginDisabled}}" style="height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer" style-hover="background:var(--accent-strong)"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{loginLabel}}</button></sc-if>
+        <p style="margin:0;text-align:center;color:var(--muted)">New here? <button onClick="{{goSignup}}" style="border:0;background:transparent;padding:0;color:var(--accent);font-weight:600;cursor:pointer">Create an account</button></p>
+      </sc-if>
+
+      <sc-if value="{{isSignup}}">
+        <h1 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:32px;line-height:1.1">Create your workshop account</h1>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Your name<input value="{{su.name}}" onChange="{{suName}}" autoComplete="name" style="height:50px;border:1px solid {{suNameBorder}};border-radius:12px;padding:0 14px;background:var(--bg);font-weight:400;font-size:16px"><sc-if value="{{suNameErr}}"><span style="color:var(--err);font-weight:500;font-size:13px">Enter your name.</span></sc-if></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Workshop name<input value="{{su.workshop}}" onChange="{{suWorkshop}}" placeholder="Taller Pillco" style="height:50px;border:1px solid {{suWorkshopBorder}};border-radius:12px;padding:0 14px;background:var(--bg);font-weight:400;font-size:16px"><sc-if value="{{suWorkshopErr}}"><span style="color:var(--err);font-weight:500;font-size:13px">Enter your workshop's name.</span></sc-if></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">City<select value="{{su.city}}" onChange="{{suCity}}" style="height:50px;border:1px solid var(--line);border-radius:12px;padding:0 12px;background:var(--bg);font-weight:400;font-size:16px"><option>Cuenca</option><option>Montecristi</option><option>Sígsig</option><option>Pile</option><option>Other</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Email<input type="email" value="{{su.email}}" onChange="{{suEmail}}" placeholder="you@workshop.com" autoComplete="email" style="height:50px;border:1px solid {{suEmailBorder}};border-radius:12px;padding:0 14px;background:var(--bg);font-weight:400;font-size:16px">
+          <sc-if value="{{suEmailErr}}"><span style="color:var(--err);font-weight:500;font-size:13px">{{suEmailMsg}}</span></sc-if>
+          <sc-if value="{{suExists}}"><span style="color:var(--err);font-weight:500;font-size:13px">This email already has an account. <button onClick="{{goLogin}}" style="border:0;background:transparent;padding:0;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline">Log in instead?</button></span></sc-if>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Password
+          <span style="position:relative;display:flex;align-items:center"><input type="{{pwType}}" value="{{su.pw}}" onChange="{{suPw}}" autoComplete="new-password" style="width:100%;height:50px;border:1px solid {{suPwBorder}};border-radius:12px;padding:0 52px 0 14px;background:var(--bg);font-weight:400;font-size:16px"><button onClick="{{togglePw}}" type="button" aria-label="{{pwToggleLabel}}" style="position:absolute;right:3px;width:44px;height:44px;border:0;border-radius:10px;background:transparent;cursor:pointer;color:var(--muted);font-family:'Material Symbols Rounded';font-size:21px">{{pwIcon}}</button></span>
+          <span style="display:flex;gap:4px;align-items:center;font-weight:500;font-size:13px;color:{{pwHintColor}}"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{pwHintIcon}}</span>At least 8 characters</span>
+        </label>
+        <label style="display:flex;gap:10px;align-items:center;min-height:44px;cursor:pointer;font-size:14px"><input type="checkbox" checked="{{su.terms}}" onChange="{{suTerms}}" aria-invalid="{{suTermsErr}}" style="width:20px;height:20px;accent-color:var(--accent)"><span>I agree to the <a href="#" onClick="{{noop}}">terms</a></span></label>
+        <sc-if value="{{suTermsErr}}"><span style="color:var(--err);font-weight:500;font-size:13px;margin-top:-10px">Please agree to the terms to continue.</span></sc-if>
+        <sc-if value="{{inlinePrimary}}" hint-placeholder-val="{{true}}"><button onClick="{{submitSignup}}" disabled="{{busy}}" style="height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{signupLabel}}</button></sc-if>
+        <p style="margin:0;text-align:center;color:var(--muted)">Already have an account? <button onClick="{{goLogin}}" style="border:0;background:transparent;padding:0;color:var(--accent);font-weight:600;cursor:pointer">Log in</button></p>
+      </sc-if>
+
+      <sc-if value="{{isForgot}}">
+        <sc-if value="{{forgotForm}}" hint-placeholder-val="{{true}}">
+          <h1 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:32px;line-height:1.1">Reset your password</h1>
+          <p style="margin:-6px 0 0;color:var(--muted)">We'll email you a link to choose a new one.</p>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Email<input type="email" value="{{email}}" onChange="{{onEmail}}" placeholder="you@workshop.com" style="height:50px;border:1px solid {{emailBorder}};border-radius:12px;padding:0 14px;background:var(--bg);font-weight:400;font-size:16px"><sc-if value="{{emailErr}}"><span style="color:var(--err);font-weight:500;font-size:13px">{{emailMsg}}</span></sc-if></label>
+          <sc-if value="{{inlinePrimary}}" hint-placeholder-val="{{true}}"><button onClick="{{submitForgot}}" disabled="{{busy}}" style="height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{forgotLabel}}</button></sc-if>
+          <button onClick="{{goLogin}}" style="align-self:center;border:0;background:transparent;padding:8px;color:var(--accent);font-weight:600;cursor:pointer">Back to log in</button>
+        </sc-if>
+        <sc-if value="{{forgotSent}}">
+          <span style="width:52px;height:52px;border-radius:26px;background:var(--ok-tint);color:var(--ok);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:28px">mark_email_read</span>
+          <h1 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:30px;line-height:1.1">Check your email</h1>
+          <p style="margin:0;color:var(--muted)">If an account exists for that email, we sent a reset link.</p>
+          <button onClick="{{goLogin}}" style="align-self:flex-start;border:0;background:transparent;padding:6px 0;color:var(--accent);font-weight:600;cursor:pointer">Back to log in</button>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{is404}}">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">404</span>
+        <h1 style="margin:0;font-family:Newsreader,serif;font-weight:500;font-size:36px;line-height:1.1">Page not found</h1>
+        <p style="margin:0;color:var(--muted)">This page doesn't exist or was moved.</p>
+        <button onClick="{{goLanding}}" style="align-self:flex-start;height:48px;padding:0 20px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Go home</button>
+        <span style="font-size:13px;color:var(--muted)">Logged in? <a href="Toquilla Trace.dc.html">Go to Workshop</a></span>
+      </sc-if>
+
+      <sc-if value="{{isError}}">
+        <span style="width:48px;height:48px;border-radius:24px;background:var(--err-tint);color:var(--err);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:26px">report</span>
+        <h1 style="margin:0;font-size:24px;font-weight:600">Something went wrong</h1>
+        <p style="margin:0;color:var(--muted)">We couldn't load this page. The error was saved to the log.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button onClick="{{retryPage}}" style="height:48px;padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Try again</button><a href="Toquilla Trace.dc.html" style="height:48px;padding:0 18px;display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600;color:var(--ink);text-decoration:none">Go to Workshop</a></div>
+        <span style="display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)">Request ID: req_8f2a91c4e2<button onClick="{{copyReq}}" aria-label="Copy request ID" style="width:32px;height:32px;border:0;background:transparent;cursor:pointer;color:var(--muted);font-family:'Material Symbols Rounded';font-size:15px">{{reqIcon}}</button></span>
+      </sc-if>
+    </section>
+  </div>
+</sc-if>
+  </main>
+
+  <sc-if value="{{showFooter}}" hint-placeholder-val="{{true}}">
+    <footer style="border-top:1px solid var(--line);padding:22px {{padX}} {{footerBottom}};display:flex;gap:16px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:14px">
+      <span style="margin-right:auto">Made in Cuenca, Ecuador</span>
+      <a href="#" onClick="{{noop}}" style="color:var(--muted)">About</a>
+      <a href="#" onClick="{{noop}}" style="color:var(--muted)">Privacy</a>
+    </footer>
+  </sc-if>
+
+  <sc-if value="{{mobileBar}}">
+    <div style="position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgb(40 30 10 / .07);display:flex;gap:8px">
+      <sc-if value="{{isLanding}}">
+        <button onClick="{{scrollVerify}}" style="flex:1;height:52px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">qr_code_scanner</span>Verify a hat</button>
+        <button onClick="{{goSignup}}" style="flex:1;height:52px;border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:15px;cursor:pointer">Get started</button>
+      </sc-if>
+      <sc-if value="{{isLogin}}"><button onClick="{{submitLogin}}" disabled="{{loginDisabled}}" style="flex:1;height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{loginLabel}}</button></sc-if>
+      <sc-if value="{{isSignup}}"><button onClick="{{submitSignup}}" disabled="{{busy}}" style="flex:1;height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{signupLabel}}</button></sc-if>
+      <sc-if value="{{forgotBar}}"><button onClick="{{submitForgot}}" disabled="{{busy}}" style="flex:1;height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{forgotLabel}}</button></sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{sessionExpired}}">
+    <div style="position:fixed;inset:0;z-index:70;background:var(--scrim);display:flex;align-items:{{dlgAlign}};justify-content:center;padding:{{dlgPad}}">
+      <div role="alertdialog" aria-modal="true" aria-label="Session expired" style="width:100%;max-width:440px;background:var(--surface);border-radius:{{dlgRadius}};box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:14px;animation:tt-in 180ms ease both">
+        <span style="width:44px;height:44px;border-radius:22px;background:var(--warn-tint);color:var(--warn);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px">schedule</span>
+        <h2 style="margin:0;font-size:19px;font-weight:600">Your session expired. Log in again to continue.</h2>
+        <p style="margin:0;font-size:13px;color:var(--muted)">You'll come back to <span style="font-family:'JetBrains Mono',monospace">/workshop</span> after logging in.</p>
+        <button onClick="{{sessionLogin}}" style="height:50px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer">Log in</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <div aria-live="polite" style="position:fixed;z-index:90;display:flex;flex-direction:column;gap:8px;width:{{toastW}};left:{{toastLeft}};right:{{toastRight}};top:{{toastTop}};bottom:{{toastBottom}};transform:{{toastTx}};pointer-events:none">
+    <sc-for list="{{toasts}}" as="t"><div role="status" style="pointer-events:auto;display:flex;align-items:center;gap:10px;padding:12px 10px 12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);box-shadow:var(--shadow);animation:tt-in 180ms ease both;font-size:14px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--info)">info</span><span style="flex:1;font-weight:500">{{t.title}}</span><button onClick="{{t.onClose}}" aria-label="Dismiss notification" style="width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--bg);cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">close</button></div></sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;landing&quot;,&quot;login&quot;,&quot;signup&quot;,&quot;forgot&quot;,&quot;404&quot;,&quot;error&quot;,&quot;session&quot;],&quot;default&quot;:&quot;landing&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;loginOutcome&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;success&quot;,&quot;wrong&quot;,&quot;tooMany&quot;,&quot;network&quot;],&quot;default&quot;:&quot;success&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Simulation&quot;}}">
+const h = React.createElement;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+class Component extends DCLogic {
+  state = { screen: "landing", mobile: false, theme: "light", code: "", codeTouched: false, email: "", pw: "", showPw: false, touched: false, banner: null, busy: false, attempts: 0,
+    su: { name: "", workshop: "", city: "Cuenca", email: "", pw: "", terms: false }, suTouched: false, suExists: false, forgotSent: false, toasts: [], session: false, reqCopied: false };
+  verifyRef = React.createRef(); codeRef = React.createRef();
+  componentDidMount() {
+    const onResize = () => this.setState({ mobile: window.innerWidth < 768 }); onResize(); window.addEventListener("resize", onResize);
+    try { const t = localStorage.getItem("tt-theme"); if (t) this.setState({ theme: t === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t }); } catch (e) {}
+    this.readHash(); this.onHash = () => this.readHash(); window.addEventListener("hashchange", this.onHash);
+    this.cleanup = () => { window.removeEventListener("resize", onResize); window.removeEventListener("hashchange", this.onHash); };
+  }
+  componentWillUnmount() { this.cleanup && this.cleanup(); }
+  readHash() {
+    const hs = location.hash.slice(1) || this.props.screen || "landing";
+    if (hs === "loggedout") { this.setState({ screen: "login" }); this.toast("You've been logged out."); }
+    else if (hs === "deleted") { this.setState({ screen: "landing" }); this.toast("Your account was deleted."); }
+    else if (hs === "session") this.setState({ screen: "landing", session: true });
+    else if (["landing", "login", "signup", "forgot", "404", "error"].includes(hs)) this.setState({ screen: hs });
+    else this.setState({ screen: "404" });
+  }
+  go(screen) { this.setState({ screen, banner: null, touched: false, busy: false, forgotSent: false, suTouched: false, suExists: false }); history.replaceState(null, "", "#" + screen); window.scrollTo(0, 0); }
+  toast(title) { const id = Math.random().toString(36).slice(2); this.setState(s => ({ toasts: [...s.toasts, { id, title }].slice(-3) })); setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 5000); }
+  submitLogin() {
+    const st = this.state;
+    if (!EMAIL.test(st.email) || !st.pw) return this.setState({ touched: true });
+    const outcome = this.props.loginOutcome || "success";
+    this.setState({ busy: true, banner: null, touched: true });
+    setTimeout(() => {
+      if (outcome === "network") return this.setState({ busy: false, banner: "network" });
+      if (outcome === "tooMany" || (outcome === "wrong" && st.attempts >= 2)) return this.setState({ busy: false, banner: "tooMany", pw: "" });
+      if (outcome === "wrong") return this.setState(s => ({ busy: false, banner: "wrong", pw: "", attempts: s.attempts + 1 }));
+      location.href = "Toquilla Trace.dc.html";
+    }, 900);
+  }
+  renderVals() {
+    const st = this.state, mobile = st.mobile, scr = st.screen;
+    const codeValid = /^TQ-[A-Z0-9]{5}$/.test(st.code);
+    const codeErr = (st.codeTouched || st.code.length === 8) && st.code.length > 0 && !codeValid;
+    const emailBad = !EMAIL.test(st.email);
+    const emailErr = st.touched && emailBad;
+    const su = st.su, suPwShort = su.pw.length < 8;
+    const card = ["login", "signup", "forgot", "404", "error"].includes(scr);
+    const banners = { wrong: ["Email or password is incorrect.", "lock"], tooMany: ["Too many attempts. Try again in 1 minute.", "timer"], network: ["Couldn't reach the server. Check your connection and try again.", "wifi_off"] };
+    const spinner = h("span", { style: { width: 16, height: 16, borderRadius: "50%", border: "2px solid currentColor", borderRightColor: "transparent", display: "inline-block", animation: "tt-spin 700ms linear infinite" } });
+    const setSu = p => this.setState({ su: Object.assign({}, su, p) });
+    return {
+      theme: st.theme, mobile, desktop: !mobile, padX: mobile ? "16px" : "40px", spinner, busy: st.busy, noop: e => e.preventDefault(),
+      isLanding: scr === "landing", isCard: card, isLogin: scr === "login", isSignup: scr === "signup", isForgot: scr === "forgot", is404: scr === "404", isError: scr === "error",
+      showLoginBtn: scr === "landing" || scr === "404" || scr === "forgot", showFooter: scr === "landing" || !mobile,
+      goLanding: () => this.go("landing"), goLogin: () => this.go("login"), goSignup: () => this.go("signup"), goForgot: () => this.go("forgot"),
+      heroPad: mobile ? "40px 16px 24px" : "96px 40px 36px", stripBottom: mobile ? "32px" : "64px", stripGap: mobile ? "8px" : "14px", stripPad: mobile ? "14px" : "20px 22px", stripText: mobile ? "15px" : "20px", h1Size: mobile ? "44px" : "80px", subSize: mobile ? "17px" : "20px", heroBtnFlex: mobile ? "1 1 100%" : "none",
+      sectionPad: mobile ? "36px 16px" : "72px 40px", featBottom: mobile ? "40px" : "88px", footerBottom: mobile ? "96px" : "22px",
+      verifyRef: this.verifyRef, codeRef: this.codeRef,
+      scrollVerify: () => { const el = this.verifyRef.current; if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 72, behavior: "smooth" }); setTimeout(() => this.codeRef.current && this.codeRef.current.focus({ preventScroll: true }), 350); },
+      code: st.code, codeErr, codeInvalid: !codeValid, codeBorder: codeErr ? "var(--err)" : "var(--line)",
+      onCode: e => { let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); if (v.length > 2) v = v.slice(0, 2) + "-" + v.slice(2, 7); this.setState({ code: v, codeTouched: false }); },
+      onCodeKey: e => { if (e.key === "Enter") { if (codeValid) this.verify(st.code); else this.setState({ codeTouched: true }); } },
+      verify: () => this.verify(st.code), fillSample: () => this.setState({ code: "TQ-9A1M8" }), fillBad: () => this.setState({ code: "TQ-ZZZZZ" }),
+      features: [["mic", "Just tell it: a 10-second voice note instead of a 5-minute form", "Talk in Spanish or English, the way you already send WhatsApp voice notes. The assistant turns it into proposed record changes."], ["how_to_reg", "You approve every change", "Nothing is saved until a person approves it. Rules block impossible changes, like skipping a production stage."], ["verified", "Buyers verify in one tap", "Each hat gets a public passport: who wove it, how long it took, and every stage it went through."]].map(([icon, title, body]) => ({ icon, title, body })),
+
+      cardAlign: mobile ? "flex-start" : "center", cardOuterPad: mobile ? "0 0 96px" : "48px 16px", cardBg: mobile ? "transparent" : "var(--surface)", cardBorder: mobile ? "0" : "1px solid var(--line)", cardPad: mobile ? "28px 16px" : "32px",
+      inlinePrimary: !mobile,
+      email: st.email, onEmail: e => this.setState({ email: e.target.value }), emailErr, emailBorder: emailErr ? "var(--err)" : "var(--line)", emailMsg: st.email ? "That doesn't look like an email." : "Enter your email.",
+      pw: st.pw, onPw: e => this.setState({ pw: e.target.value }), pwErr: st.touched && !st.pw && st.banner !== "wrong" && st.banner !== "tooMany", pwBorder: st.touched && !st.pw && !st.banner ? "var(--err)" : "var(--line)",
+      pwType: st.showPw ? "text" : "password", pwIcon: st.showPw ? "visibility_off" : "visibility", pwToggleLabel: st.showPw ? "Hide password" : "Show password", togglePw: () => this.setState({ showPw: !st.showPw }),
+      hasBanner: !!st.banner, banner: st.banner ? banners[st.banner][0] : "", bannerIcon: st.banner ? banners[st.banner][1] : "", bannerRetry: st.banner === "network",
+      loginLabel: st.busy ? "Logging in..." : "Log in", loginDisabled: st.busy || st.banner === "tooMany", submitLogin: () => this.submitLogin(),
+
+      su, suName: e => setSu({ name: e.target.value }), suWorkshop: e => setSu({ workshop: e.target.value }), suCity: e => setSu({ city: e.target.value }), suEmail: e => { setSu({ email: e.target.value }); this.setState({ suExists: false }); }, suPw: e => setSu({ pw: e.target.value }), suTerms: e => setSu({ terms: e.target.checked }),
+      suNameErr: st.suTouched && !su.name.trim(), suNameBorder: st.suTouched && !su.name.trim() ? "var(--err)" : "var(--line)",
+      suWorkshopErr: st.suTouched && !su.workshop.trim(), suWorkshopBorder: st.suTouched && !su.workshop.trim() ? "var(--err)" : "var(--line)",
+      suEmailErr: st.suTouched && !EMAIL.test(su.email), suEmailMsg: su.email ? "That doesn't look like an email." : "Enter your email.", suEmailBorder: (st.suTouched && !EMAIL.test(su.email)) || st.suExists ? "var(--err)" : "var(--line)", suExists: st.suExists,
+      suPwBorder: st.suTouched && suPwShort ? "var(--err)" : "var(--line)", pwHintColor: su.pw.length >= 8 ? "var(--ok)" : st.suTouched ? "var(--err)" : "var(--muted)", pwHintIcon: su.pw.length >= 8 ? "check_circle" : st.suTouched ? "error" : "info",
+      suTermsErr: st.suTouched && !su.terms, signupLabel: st.busy ? "Creating account..." : "Create account",
+      submitSignup: () => {
+        if (!su.name.trim() || !su.workshop.trim() || !EMAIL.test(su.email) || suPwShort || !su.terms) return this.setState({ suTouched: true });
+        this.setState({ busy: true });
+        setTimeout(() => { if (su.email.toLowerCase() === "xavier@tallerpillco.com") return this.setState({ busy: false, suExists: true }); location.href = "Toquilla Trace.dc.html#welcome"; }, 1000);
+      },
+      forgotForm: !st.forgotSent, forgotSent: st.forgotSent, forgotLabel: st.busy ? "Sending..." : "Send reset link", forgotBar: scr === "forgot" && !st.forgotSent,
+      submitForgot: () => { if (emailBad) return this.setState({ touched: true }); this.setState({ busy: true }); setTimeout(() => this.setState({ busy: false, forgotSent: true }), 900); },
+      retryPage: () => this.go("landing"), reqIcon: st.reqCopied ? "check" : "content_copy",
+      copyReq: () => { navigator.clipboard && navigator.clipboard.writeText("req_8f2a91c4e2").catch(() => {}); this.setState({ reqCopied: true }); setTimeout(() => this.setState({ reqCopied: false }), 2000); },
+      mobileBar: mobile && ["landing", "login", "signup"].includes(scr) || (mobile && scr === "forgot" && !st.forgotSent),
+      sessionExpired: st.session, sessionLogin: () => { this.setState({ session: false }); this.go("login"); },
+      dlgAlign: mobile ? "flex-end" : "center", dlgPad: mobile ? "0" : "24px", dlgRadius: mobile ? "18px 18px 0 0" : "16px",
+      toasts: st.toasts.map(t => Object.assign({}, t, { onClose: () => this.setState(s => ({ toasts: s.toasts.filter(z => z.id !== t.id) })) })),
+      toastW: mobile ? "calc(100% - 24px)" : "380px", toastLeft: mobile ? "50%" : "auto", toastRight: mobile ? "auto" : "20px", toastTop: mobile ? "72px" : "auto", toastBottom: mobile ? "auto" : "20px", toastTx: mobile ? "translateX(-50%)" : "none"
+    };
+  }
+  verify(code) { location.href = "Toquilla Trace.dc.html#passport" + (code === "TQ-9A1M8" ? "" : "/" + code); }
+}
+</script>
+</body>
+</html>

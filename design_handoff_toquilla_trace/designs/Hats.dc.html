@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{--bg:oklch(0.965 0.014 85);--surface:oklch(0.988 0.008 85);--surface2:oklch(0.94 0.018 82);--line:oklch(0.87 0.022 80);--ink:oklch(0.24 0.012 60);--muted:oklch(0.47 0.015 60);--accent:oklch(0.42 0.085 162);--accent-strong:oklch(0.35 0.08 162);--accent-tint:oklch(0.945 0.025 162);--on-accent:oklch(0.99 0.005 85);--ok:oklch(0.46 0.11 150);--ok-tint:oklch(0.95 0.035 150);--warn:oklch(0.5 0.11 65);--warn-tint:oklch(0.95 0.045 85);--err:oklch(0.52 0.17 28);--err-tint:oklch(0.955 0.03 28);--info:oklch(0.48 0.11 250);--info-tint:oklch(0.95 0.025 250);--straw:oklch(0.85 0.055 85);--cream:oklch(0.975 0.022 88);--scrim:rgb(30 24 12 / 0.38);--shadow:0 1px 2px rgb(40 30 10 / .06),0 10px 30px rgb(40 30 10 / .10)}
+[data-theme="dark"]{--bg:oklch(0.2 0.01 70);--surface:oklch(0.24 0.012 70);--surface2:oklch(0.28 0.014 70);--line:oklch(0.36 0.015 70);--ink:oklch(0.94 0.012 85);--muted:oklch(0.74 0.015 80);--accent:oklch(0.74 0.11 162);--accent-strong:oklch(0.8 0.1 162);--accent-tint:oklch(0.3 0.04 162);--on-accent:oklch(0.18 0.02 162);--ok:oklch(0.76 0.13 150);--ok-tint:oklch(0.29 0.05 150);--warn:oklch(0.82 0.12 80);--warn-tint:oklch(0.31 0.05 75);--err:oklch(0.74 0.15 28);--err-tint:oklch(0.3 0.06 28);--info:oklch(0.76 0.1 245);--info-tint:oklch(0.29 0.04 245);--straw:oklch(0.42 0.04 85);--cream:oklch(0.26 0.02 85);--scrim:rgb(0 0 0 / 0.55);--shadow:0 1px 2px rgb(0 0 0 / .3),0 10px 30px rgb(0 0 0 / .35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{color:var(--accent-strong)}
+button,input,textarea,select{font:inherit;color:inherit}
+button:disabled{opacity:.45;cursor:not-allowed!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::placeholder{color:var(--muted);opacity:.8}
+@keyframes tt-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes tt-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes tt-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;display:flex">
+
+  <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}">
+  <aside style="width:{{sideW}}px;flex:none;position:sticky;top:0;height:100vh;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:4px;transition:width 180ms ease;overflow:hidden">
+    <a href="Toquilla Trace.dc.html" aria-label="Toquilla Trace — go to Workshop" style="display:flex;align-items:center;gap:10px;padding:6px 8px;color:var(--ink);text-decoration:none;margin-bottom:18px;border-radius:8px">
+      <span style="width:28px;height:28px;flex:none;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="font-family:Newsreader,serif;font-size:20px;font-weight:600;white-space:nowrap">Toquilla Trace</span></sc-if>
+    </a>
+    <nav aria-label="Main" style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+        <button onClick="{{n.onClick}}" title="{{n.tip}}" aria-current="{{n.current}}" style="position:relative;display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:{{n.bg}};font-weight:{{n.weight}};cursor:pointer;font-size:14px;text-align:left;white-space:nowrap" style-hover="background:var(--accent-tint)">
+          <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:{{n.iconColor}}">{{n.icon}}</span>
+          <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="flex:1">{{n.label}}</span></sc-if>
+          <sc-if value="{{n.hasBadge}}"><span style="position:{{n.badgePos}};top:5px;right:6px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:700;display:grid;place-items:center">3</span></sc-if>
+          <sc-if value="{{n.dot}}"><span style="position:{{n.badgePos}};top:10px;right:12px;width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+        </button>
+      </sc-for>
+    </nav>
+    <sc-if value="{{isAdmin}}">
+      <nav aria-label="Admin" style="display:flex;flex-direction:column;gap:2px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+        <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><div style="display:flex;align-items:center;gap:6px;padding:0 12px 6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">shield_person</span>Admin</div></sc-if>
+        <sc-for list="{{adminNav}}" as="n" hint-placeholder-count="2">
+          <button onClick="{{n.onClick}}" title="{{n.tip}}" style="position:relative;display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:{{n.bg}};font-weight:{{n.weight}};cursor:pointer;font-size:14px;text-align:left;white-space:nowrap" style-hover="background:var(--accent-tint)">
+            <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:{{n.iconColor}}">{{n.icon}}</span>
+            <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="flex:1">{{n.label}}</span></sc-if>
+            <sc-if value="{{n.dot}}"><span style="position:{{n.badgePos}};top:10px;right:12px;width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+          </button>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <div style="flex:1"></div>
+    <button onClick="{{toggleMenu}}" aria-label="Open user menu" style="display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:10px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)">
+      <span style="width:32px;height:32px;flex:none;border-radius:16px;background:var(--straw);display:grid;place-items:center;font-weight:600;font-size:13px">XP</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="display:flex;flex-direction:column;white-space:nowrap"><span style="font-weight:600;font-size:13px">Xavier</span><span style="font-size:12px;color:var(--muted)">Taller Pillco, Cuenca</span></span></sc-if>
+    </button>
+    <button onClick="{{toggleSidebar}}" title="{{collapseLabel}}" aria-label="{{collapseLabel}}" style="display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap" style-hover="background:var(--surface2)">
+      <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{collapseIcon}}</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>{{collapseLabel}}</span></sc-if>
+    </button>
+  </aside>
+  </sc-if>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <sc-if value="{{mobile}}">
+      <header style="position:sticky;top:0;z-index:20;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 16px;background:var(--surface);border-bottom:1px solid var(--line)">
+        <a href="Toquilla Trace.dc.html" style="display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none">
+          <span style="width:26px;height:26px;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span>
+          <span style="font-family:Newsreader,serif;font-size:19px;font-weight:600">Toquilla Trace</span>
+        </a>
+        <button onClick="{{toggleMenu}}" aria-label="Open user menu" style="width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0"><span style="width:32px;height:32px;border-radius:16px;background:var(--straw);display:grid;place-items:center;font-weight:600;font-size:13px">XP</span></button>
+      </header>
+    </sc-if>
+
+    <main style="flex:1;width:100%;max-width:1320px;margin:0 auto;padding:{{mainPad}};display:flex;flex-direction:column;gap:18px">
+
+<!-- HATS LIST -->
+<sc-if value="{{isList}}" hint-placeholder-val="{{true}}">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div><h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Hats</h1><div style="color:var(--muted)">{{hatCountLabel}}</div></div>
+    <div style="display:flex;gap:8px">
+      <button onClick="{{exportCsv}}" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">download</span>Export CSV</button>
+      <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}"><a href="Toquilla Trace.dc.html#record" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1.5px solid var(--accent);border-radius:10px;background:var(--accent-tint);color:var(--accent);font-weight:600;text-decoration:none"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">mic</span>Just tell it</a></sc-if>
+      <sc-if value="{{true}}"><button onClick="{{openNewHat}}" style="height:44px;padding:0 16px;display:flex;align-items:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer" style-hover="background:var(--accent-strong)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>New hat</button></sc-if>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <div style="flex:1 1 260px;position:relative;display:flex;align-items:center">
+        <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--muted)">search</span>
+        <input value="{{q}}" onChange="{{onQ}}" placeholder="Search by code or weaver" aria-label="Search by code or weaver" style="width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 40px;background:var(--surface);outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)">
+        <sc-if value="{{hasQ}}"><button onClick="{{clearQ}}" aria-label="Clear search" style="position:absolute;right:4px;width:36px;height:36px;border:0;border-radius:8px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">close</button></sc-if>
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">Sort
+        <select value="{{sort}}" onChange="{{onSort}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--surface);font-weight:600;color:var(--ink)"><option value="updated">Last updated</option><option value="code">Code</option><option value="grade">Grade</option><option value="stage">Stage</option></select>
+      </label>
+      <sc-if value="{{showViewToggle}}" hint-placeholder-val="{{true}}">
+        <div role="radiogroup" aria-label="View" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--surface);height:44px">
+          <sc-for list="{{viewOpts}}" as="v"><button role="radio" aria-checked="{{v.on}}" onClick="{{v.onClick}}" style="display:flex;align-items:center;gap:4px;padding:0 10px;border:0;border-radius:7px;background:{{v.bg}};font-weight:600;font-size:13px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">{{v.icon}}</span>{{v.label}}</button></sc-for>
+        </div>
+      </sc-if>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:{{chipWrap}};overflow-x:auto;padding-bottom:2px;position:relative">
+      <sc-for list="{{filters}}" as="f" hint-placeholder-count="4">
+        <div style="position:relative;flex:none">
+          <button onClick="{{f.onToggle}}" aria-expanded="{{f.open}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid {{f.border}};border-radius:20px;background:{{f.bg}};font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap">{{f.label}}<sc-if value="{{f.active}}"><span style="min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--on-accent);font-size:11px;display:grid;place-items:center">{{f.count}}</span></sc-if><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></button>
+        </div>
+      </sc-for>
+      <button onClick="{{toggleFlagged}}" aria-pressed="{{flagged}}" style="flex:none;height:40px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid {{flaggedBorder}};border-radius:20px;background:{{flaggedBg}};font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:var(--warn)">flag</span>Flagged only</button>
+      <sc-if value="{{anyFilter}}"><button onClick="{{clearFilters}}" style="flex:none;height:40px;padding:0 10px;border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer;white-space:nowrap">Clear filters</button></sc-if>
+    </div>
+  </div>
+
+  <sc-if value="{{filterOpen}}">
+    <div onClick="{{closeFilter}}" style="position:fixed;inset:0;z-index:55;background:{{filterScrim}}"></div>
+    <div role="dialog" aria-label="{{fp.label}} filter" style="position:fixed;z-index:56;left:{{fpLeft}};right:{{fpRight}};top:{{fpTop}};bottom:{{fpBottom}};width:{{fpW}};padding:10px;border-radius:{{fpRadius}};background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;animation:tt-in 150ms ease both">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px 8px"><strong>{{fp.label}}</strong><span style="font-size:12px;color:var(--muted)">{{fp.count}} selected</span></div>
+      <sc-for list="{{fp.options}}" as="o">
+        <label style="display:flex;align-items:center;gap:10px;min-height:44px;padding:0 8px;border-radius:8px;cursor:pointer" style-hover="background:var(--surface2)"><input type="checkbox" checked="{{o.on}}" onChange="{{o.onChange}}" style="width:18px;height:18px;accent-color:var(--accent)"><span style="flex:1">{{o.label}}</span><span style="font-size:12px;color:var(--muted)">{{o.n}}</span></label>
+      </sc-for>
+      <div style="display:flex;justify-content:space-between;gap:8px;padding:8px 4px 2px;border-top:1px solid var(--line);margin-top:4px">
+        <button onClick="{{fp.onClear}}" style="height:40px;padding:0 10px;border:0;background:transparent;color:var(--muted);font-weight:600;cursor:pointer">Clear</button>
+        <button onClick="{{closeFilter}}" style="height:40px;padding:0 16px;border:0;border-radius:9px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Done</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isLoading}}">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{skeletons}}" as="s"><div style="height:{{skelH}};border-radius:12px;background:var(--surface2);animation:tt-pulse 1.4s ease-in-out infinite"></div></sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isEmptyWorkshop}}">
+    <div style="border:1px dashed var(--line);border-radius:16px;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:repeating-linear-gradient(45deg,transparent 0 10px,var(--surface2) 10px 11px),repeating-linear-gradient(-45deg,transparent 0 10px,var(--surface2) 10px 11px)">
+      <span style="width:48px;height:48px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:26px;color:var(--muted)">styler</span>
+      <strong style="background:var(--bg);padding:2px 8px;border-radius:6px;font-size:16px">No hats yet.</strong>
+      <button onClick="{{openNewHat}}" style="height:44px;padding:0 18px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Add your first hat</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isNoResults}}">
+    <div style="border:1px dashed var(--line);border-radius:16px;padding:36px 24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+      <span style="font-family:'Material Symbols Rounded';font-size:30px;line-height:1;color:var(--muted)">filter_alt_off</span>
+      <strong style="font-size:16px">No hats match these filters.</strong>
+      <button onClick="{{clearFilters}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Clear filters</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showTable}}" hint-placeholder-val="{{true}}">
+    <div role="table" aria-label="Hats" style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:visible">
+      <div role="row" style="display:grid;grid-template-columns:{{cols}};align-items:center;gap:12px;padding:0 14px;height:44px;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">
+        <input type="checkbox" checked="{{allOnPage}}" onChange="{{toggleAllPage}}" aria-label="Select all on this page" style="width:18px;height:18px;accent-color:var(--accent)">
+        <span>Code</span><span>Grade</span><span>Rows/in</span><span>Weaver</span><span>Stage</span><span>Owner</span><span>Flags</span><span>Updated</span><span></span>
+      </div>
+      <sc-for list="{{pageRows}}" as="r" hint-placeholder-count="8">
+        <div role="row" onClick="{{r.onOpen}}" style="position:relative;display:grid;grid-template-columns:{{cols}};align-items:center;gap:12px;padding:0 14px;min-height:56px;border-bottom:1px solid var(--line);cursor:pointer;background:{{r.rowBg}};transition:background 120ms" style-hover="background:var(--surface2)">
+          <input type="checkbox" checked="{{r.selected}}" onChange="{{r.onSelect}}" onClick="{{stop}}" aria-label="{{r.selectLabel}}" style="width:18px;height:18px;accent-color:var(--accent)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="font-family:'JetBrains Mono',monospace;font-weight:500">{{r.code}}</span><button onClick="{{r.onCopy}}" aria-label="Copy code" title="Copy code" style="width:28px;height:28px;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Material Symbols Rounded';font-size:15px;opacity:.6" style-hover="opacity:1;background:var(--surface)">content_copy</button></span>
+          <span><span style="display:inline-flex;height:24px;padding:0 9px;align-items:center;border-radius:6px;font-size:12px;font-weight:700;background:{{r.gBg}};color:{{r.gColor}}">{{r.grade}}</span></span>
+          <span style="font-family:'JetBrains Mono',monospace">{{r.rows}}</span>
+          <span style="display:flex;flex-direction:column;min-width:0"><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.weaver}}</span><span style="font-size:12px;color:var(--muted)">{{r.village}}</span></span>
+          <span style="display:flex;flex-direction:column;gap:4px" aria-label="{{r.stageAria}}"><span style="display:flex;gap:4px"><sc-for list="{{r.dots}}" as="d"><span style="width:9px;height:9px;border-radius:5px;background:{{d.bg}};border:1.5px solid {{d.border}}"></span></sc-for></span><span style="font-size:12px;font-weight:600">{{r.stageName}}</span></span>
+          <span style="font-size:13px">{{r.owner}}</span>
+          <span><sc-if value="{{r.hasFlags}}"><button onClick="{{r.onFlags}}" title="{{r.flagTip}}" aria-label="{{r.flagTip}}" style="height:28px;padding:0 8px;display:inline-flex;align-items:center;gap:3px;border:0;border-radius:7px;background:var(--warn-tint);color:var(--warn);font-weight:700;font-size:12px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">flag</span>{{r.flagCount}}</button></sc-if></span>
+          <span title="{{r.abs}}" style="font-size:13px;color:var(--muted)">{{r.rel}}</span>
+          <button onClick="{{r.onMenu}}" aria-label="Row actions" aria-haspopup="menu" style="width:36px;height:36px;border:0;border-radius:8px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px" style-hover="background:var(--surface)">more_horiz</button>
+          <sc-if value="{{r.flagsOpen}}"><div role="tooltip" onClick="{{stop}}" style="position:absolute;z-index:30;right:140px;top:48px;width:280px;padding:10px 12px;border-radius:10px;background:var(--ink);color:var(--bg);font-size:13px;box-shadow:var(--shadow)"><sc-for list="{{r.flags}}" as="fl"><div>• {{fl}}</div></sc-for></div></sc-if>
+          <sc-if value="{{r.menuOpen}}">
+            <div role="menu" onClick="{{stop}}" style="position:absolute;z-index:40;right:14px;top:50px;width:250px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;cursor:default">
+              <sc-for list="{{r.actions}}" as="a">
+                <button role="menuitem" onClick="{{a.onClick}}" disabled="{{a.disabled}}" title="{{a.reason}}" style="min-height:40px;display:flex;align-items:center;gap:10px;padding:6px 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;color:{{a.color}}" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">{{a.icon}}</span><span style="display:flex;flex-direction:column"><span>{{a.label}}</span><sc-if value="{{a.hasReason}}"><span style="font-size:11.5px;color:var(--muted)">{{a.reason}}</span></sc-if></span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;flex-wrap:wrap">
+        <span style="color:var(--muted);flex:1">{{rangeLabel}}</span>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">Rows per page<select value="{{pageSize}}" onChange="{{onPageSize}}" style="height:36px;border:1px solid var(--line);border-radius:8px;padding:0 8px;background:var(--bg);color:var(--ink)"><option value="20">20</option><option value="50">50</option><option value="100">100</option></select></label>
+        <button onClick="{{prevPage}}" disabled="{{noPrev}}" style="height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-weight:600;cursor:pointer">Previous</button>
+        <button onClick="{{nextPage}}" disabled="{{noNext}}" style="height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-weight:600;cursor:pointer">Next</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showCards}}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">
+      <sc-for list="{{cardRows}}" as="r">
+        <div onClick="{{r.onOpen}}" style="position:relative;background:var(--surface);border:1.5px solid {{r.cardBorder}};border-radius:14px;padding:12px 6px 12px 14px;display:flex;flex-direction:column;gap:10px;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" checked="{{r.selected}}" onChange="{{r.onSelect}}" onClick="{{stop}}" aria-label="{{r.selectLabel}}" style="width:20px;height:20px;accent-color:var(--accent);margin:0">
+            <span style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:15px;white-space:nowrap;flex:none">{{r.code}}</span>
+            <span style="flex:none;display:inline-flex;height:24px;padding:0 9px;align-items:center;border-radius:6px;font-size:12px;font-weight:700;background:{{r.gBg}};color:{{r.gColor}}">{{r.grade}}</span>
+            <div style="flex:1"></div>
+            <button onClick="{{r.onCopy}}" aria-label="Copy code" style="width:40px;height:40px;border:0;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">content_copy</button>
+            <button onClick="{{r.onMenu}}" aria-label="Hat actions" style="width:44px;height:44px;border:0;border-radius:8px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">more_vert</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding-right:8px">
+            <span style="display:flex;flex-direction:column"><span style="font-weight:500">{{r.weaver}}</span><span style="font-size:12px;color:var(--muted)">{{r.village}} · {{r.rows}} rows/inch</span></span>
+            <span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="display:flex;gap:4px"><sc-for list="{{r.dots}}" as="d"><span style="width:9px;height:9px;border-radius:5px;background:{{d.bg}};border:1.5px solid {{d.border}}"></span></sc-for></span><span style="font-size:12px;font-weight:600">{{r.stageName}}</span></span>
+          </div>
+          <sc-if value="{{r.hasFlags}}"><div style="display:flex;gap:6px;align-items:flex-start;padding:8px 10px;margin-right:8px;border-radius:8px;background:var(--warn-tint);font-size:12.5px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1.2;color:var(--warn)">flag</span><span>{{r.flagTip}}</span></div></sc-if>
+          <div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between;padding-right:8px"><span>Owner: {{r.owner}}</span><span title="{{r.abs}}">{{r.rel}}</span></div>
+          <sc-if value="{{r.menuOpen}}">
+            <div role="menu" onClick="{{stop}}" style="position:absolute;z-index:40;right:8px;top:52px;width:260px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;cursor:default">
+              <sc-for list="{{r.actions}}" as="a">
+                <button role="menuitem" onClick="{{a.onClick}}" disabled="{{a.disabled}}" style="min-height:44px;display:flex;align-items:center;gap:10px;padding:6px 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;color:{{a.color}}"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">{{a.icon}}</span><span style="display:flex;flex-direction:column"><span>{{a.label}}</span><sc-if value="{{a.hasReason}}"><span style="font-size:11.5px;color:var(--muted)">{{a.reason}}</span></sc-if></span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{showLoadMore}}"><button onClick="{{loadMore}}" style="height:48px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600;cursor:pointer">Load more</button></sc-if>
+    <sc-if value="{{showCardPager}}">
+      <div style="display:flex;align-items:center;gap:10px;justify-content:flex-end"><span style="color:var(--muted);flex:1">{{rangeLabel}}</span><button onClick="{{prevPage}}" disabled="{{noPrev}}" style="height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-weight:600;cursor:pointer">Previous</button><button onClick="{{nextPage}}" disabled="{{noNext}}" style="height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-weight:600;cursor:pointer">Next</button></div>
+    </sc-if>
+  </sc-if>
+  <sc-if value="{{rowMenuOpen}}"><div onClick="{{closeRowMenu}}" style="position:fixed;inset:0;z-index:35"></div></sc-if>
+</sc-if>
+
+<!-- HAT DETAIL -->
+<sc-if value="{{isDetail}}">
+  <nav aria-label="Breadcrumb" style="display:flex;align-items:center;gap:6px;font-size:13px">
+    <button onClick="{{backToHats}}" style="border:0;background:transparent;padding:6px 0;color:var(--accent);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:2px"><sc-if value="{{mobile}}"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chevron_left</span></sc-if>Hats</button>
+    <span style="color:var(--muted)">/</span><span style="font-family:'JetBrains Mono',monospace">{{h.code}}</span>
+  </nav>
+
+  <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;justify-content:space-between">
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <div style="display:flex;align-items:center;gap:6px">
+        <h1 style="margin:0;font-family:'JetBrains Mono',monospace;font-size:{{codeSize}};font-weight:500;letter-spacing:.02em">{{h.code}}</h1>
+        <button onClick="{{copyCode}}" aria-label="Copy code" title="Copy code" style="width:40px;height:40px;border:0;border-radius:9px;background:transparent;cursor:pointer;color:var(--muted);font-family:'Material Symbols Rounded';font-size:20px" style-hover="background:var(--surface2)">content_copy</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span style="display:inline-flex;height:26px;padding:0 10px;align-items:center;border-radius:7px;font-size:12px;font-weight:700;background:{{h.gBg}};color:{{h.gColor}}">{{h.grade}}</span>
+        <span style="display:inline-flex;height:26px;padding:0 10px;align-items:center;gap:5px;border-radius:7px;font-size:12px;font-weight:700;background:var(--info-tint);color:var(--info)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">timelapse</span>{{h.stageName}}</span>
+        <span style="display:inline-flex;height:26px;padding:0 10px;align-items:center;gap:5px;border-radius:7px;font-size:12px;font-weight:700;background:var(--ok-tint);color:var(--ok)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">verified</span>Verified</span>
+        <sc-if value="{{h.hasOpenFlags}}"><span style="display:inline-flex;height:26px;padding:0 10px;align-items:center;gap:5px;border-radius:7px;font-size:12px;font-weight:700;background:var(--warn-tint);color:var(--warn)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">flag</span>{{h.openFlagCount}} flag</span></sc-if>
+        <sc-if value="{{h.archived}}"><span style="display:inline-flex;height:26px;padding:0 10px;align-items:center;border-radius:7px;font-size:12px;font-weight:700;background:var(--surface2);color:var(--muted)">Archived</span></sc-if>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;position:relative">
+      <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}">
+        <a href="{{micHref}}" title="Record a voice note about this hat" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1.5px solid var(--accent);border-radius:10px;background:var(--accent-tint);color:var(--accent);font-weight:600;text-decoration:none"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">mic</span>Tell it</a>
+        <span title="{{advanceReason}}" style="display:inline-flex"><button onClick="{{openAdvance}}" disabled="{{advanceDisabled}}" style="height:44px;padding:0 16px;display:flex;align-items:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer" style-hover="background:var(--accent-strong)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_forward</span>{{advanceLabel}}</button></span>
+        <button onClick="{{openShare}}" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">ios_share</span>Share</button>
+      </sc-if>
+      <button onClick="{{toggleHeaderMenu}}" aria-label="More actions" aria-haspopup="menu" style="width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px">more_horiz</button>
+      <sc-if value="{{headerMenu}}">
+        <div onClick="{{closeHeaderMenu}}" style="position:fixed;inset:0;z-index:35"></div>
+        <div role="menu" style="position:absolute;z-index:40;right:0;top:52px;width:240px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column">
+          <sc-for list="{{headerActions}}" as="a"><button role="menuitem" onClick="{{a.onClick}}" style="min-height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;color:{{a.color}}" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">{{a.icon}}</span>{{a.label}}</button></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <sc-if value="{{showFlags}}">
+    <section aria-label="Flags" style="border:1.5px solid var(--warn);background:var(--warn-tint);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{flagRows}}" as="f">
+        <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;opacity:{{f.opacity}};position:relative">
+          <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1.2;color:{{f.iconColor}}">{{f.icon}}</span>
+          <div style="flex:1 1 260px;display:flex;flex-direction:column;gap:2px">
+            <span style="font-weight:600">{{f.text}}</span>
+            <span style="font-size:12px;color:var(--muted)">{{f.meta}}</span>
+          </div>
+          <sc-if value="{{f.open}}">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button onClick="{{fixGrade}}" style="height:40px;padding:0 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;cursor:pointer">Fix grade</button>
+              <button onClick="{{f.onReview}}" style="height:40px;padding:0 12px;border:0;border-radius:9px;background:transparent;font-weight:600;cursor:pointer;color:var(--ink)" style-hover="background:var(--surface)">Mark as reviewed</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{f.reviewing}}">
+            <div style="flex:1 1 100%;display:flex;gap:8px;flex-wrap:wrap;padding:10px;border-radius:10px;background:var(--surface);border:1px solid var(--line)">
+              <label style="flex:1 1 220px;display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600">Reason (required)<input value="{{reviewReason}}" onChange="{{onReviewReason}}" placeholder="Recounted, it's 28." style="height:40px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:var(--bg);font-weight:400;font-size:14px"></label>
+              <div style="display:flex;gap:6px;align-items:flex-end"><button onClick="{{cancelReview}}" style="height:40px;padding:0 12px;border:0;background:transparent;font-weight:600;cursor:pointer">Cancel</button><button onClick="{{saveReview}}" disabled="{{noReason}}" style="height:40px;padding:0 14px;border:0;border-radius:9px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Save</button></div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+
+  <section aria-label="Production timeline" style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;position:relative">
+    <h2 style="margin:0 0 14px;font-size:15px;font-weight:600">Production timeline</h2>
+    <ol style="list-style:none;margin:0;padding:0;display:{{tlDisplay}};grid-template-columns:repeat(5,minmax(0,1fr));gap:{{tlGap}};flex-direction:column">
+      <sc-for list="{{timeline}}" as="t" hint-placeholder-count="5">
+        <li style="display:flex;flex-direction:{{tlItemDir}};gap:10px;position:relative">
+          <div style="display:flex;flex-direction:{{tlRailDir}};align-items:center;gap:0">
+            <button onClick="{{t.onTap}}" disabled="{{t.notDone}}" aria-label="{{t.aria}}" style="width:30px;height:30px;flex:none;border-radius:15px;border:{{t.ring}};background:{{t.bg}};color:var(--surface);display:grid;place-items:center;cursor:pointer;padding:0;font-family:'Material Symbols Rounded';font-size:17px;opacity:1">{{t.icon}}</button>
+            <sc-if value="{{t.notLast}}"><span style="flex:1;width:{{lineW}};height:{{lineH}};min-width:{{lineMinW}};min-height:{{lineMinH}};background:{{t.line}}"></span></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px;padding-bottom:14px;min-width:0">
+            <strong style="color:{{t.labelColor}}">{{t.stage}}</strong>
+            <span style="font-size:12px;color:var(--muted)">{{t.line1}}</span>
+            <sc-if value="{{t.done}}"><span style="font-size:12px;color:var(--muted)">Approved by Xavier</span><span style="align-self:flex-start;display:inline-flex;align-items:center;gap:3px;height:22px;white-space:nowrap;padding:0 7px;border-radius:6px;font-size:11px;font-weight:700;border:1px {{t.tagStyle}} {{t.tagColor}};color:{{t.tagColor}}"><span style="font-family:'Material Symbols Rounded';font-size:13px;line-height:1">{{t.tagIcon}}</span>{{t.source}}</span></sc-if>
+          </div>
+          <sc-if value="{{t.popOpen}}">
+            <div role="dialog" aria-label="Stage details" style="position:absolute;z-index:30;top:38px;left:{{tlPopLeft}};width:270px;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;font-size:13px;animation:tt-in 150ms ease both">
+              <div style="display:flex;justify-content:space-between;align-items:center"><strong>{{t.stage}}</strong><button onClick="{{closePop}}" aria-label="Close" style="width:32px;height:32px;border:0;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">close</button></div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px">{{t.ts}}</span>
+              <span>Approved by Xavier · {{t.source}}</span>
+              <sc-if value="{{t.fromAI}}"><blockquote style="margin:0;padding:8px 10px;border-radius:8px;background:var(--surface2);font-size:12.5px">“{{t.note}}”</blockquote><sc-if value="{{isAdmin}}"><a href="Builder.dc.html#run" style="font-weight:600">View trace</a></sc-if></sc-if>
+            </div>
+          </sc-if>
+        </li>
+      </sc-for>
+    </ol>
+  </section>
+
+  <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+    <section aria-label="Details" style="flex:3 1 380px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0;font-size:15px;font-weight:600">Details</h2><sc-if value="{{notEditing}}"><button onClick="{{startEdit}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">edit</span>Edit details</button></sc-if></div>
+      <sc-if value="{{notEditing}}" hint-placeholder-val="{{true}}">
+        <dl style="margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px 18px">
+          <sc-for list="{{detailFields}}" as="d"><div><dt style="font-size:12px;color:var(--muted);font-weight:600">{{d.k}}</dt><dd style="margin:2px 0 0;font-weight:500">
+            <sc-if value="{{d.isLink}}"><a href="Hats.dc.html#weavers" onClick="{{goWeavers}}">{{d.v}}</a></sc-if><sc-if value="{{d.notLink}}">{{d.v}}</sc-if></dd></div></sc-for>
+        </dl>
+      </sc-if>
+      <sc-if value="{{editing}}">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Grade
+            <div role="radiogroup" aria-label="Grade" style="display:flex;padding:3px;border:1px solid {{gradeFocusBorder}};border-radius:10px;background:var(--bg);height:44px;box-shadow:{{gradeFocusShadow}}">
+              <sc-for list="{{draftGrades}}" as="g"><button role="radio" aria-checked="{{g.on}}" onClick="{{g.onClick}}" style="flex:1;border:0;border-radius:7px;background:{{g.bg}};color:{{g.color}};box-shadow:{{g.shadow}};font-weight:600;font-size:13px;cursor:pointer">{{g.label}}</button></sc-for>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Rows per inch<input type="number" value="{{draft.rows}}" onChange="{{dRows}}" style="height:44px;border:1px solid {{dRowsBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Straw color<select value="{{draft.straw}}" onChange="{{dStraw}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:400"><option>Natural</option><option>Bleached</option><option>Dyed</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Size in cm<input type="number" value="{{draft.size}}" onChange="{{dSize}}" style="height:44px;border:1px solid {{dSizeBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Price in USD<input type="number" value="{{draft.price}}" onChange="{{dPrice}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"></label>
+          </div>
+          <sc-if value="{{dRowsErr}}"><span style="color:var(--err);font-size:13px;display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>Rows per inch must be between 6 and 40.</span></sc-if>
+          <sc-if value="{{dSizeErr}}"><span style="color:var(--err);font-size:13px;display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>Size must be between 52 and 64 cm.</span></sc-if>
+          <sc-if value="{{dMismatch}}"><span style="color:var(--warn);font-size:13px;display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">warning</span>{{dMismatchMsg}}</span></sc-if>
+          <span style="font-size:12px;color:var(--muted);display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">lock</span>Stage can't be edited here. Use Advance.</span>
+          <div style="display:flex;gap:8px;justify-content:flex-end"><button onClick="{{cancelEdit}}" style="height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{saveEdit}}" disabled="{{saveDisabled}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Save</button></div>
+        </div>
+      </sc-if>
+    </section>
+    <section aria-label="Ownership" style="flex:2 1 280px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:15px;font-weight:600">Ownership chain</h2>
+      <div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{chain}}" as="c">
+          <span style="display:flex;flex-direction:column;gap:3px"><span style="height:32px;padding:0 12px;border-radius:16px;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;border:1.5px {{c.borderStyle}} {{c.border}};background:{{c.bg}};color:{{c.color}}"><sc-if value="{{c.current}}"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">person_pin</span></sc-if>{{c.label}}</span><span style="font-size:11.5px;color:var(--muted);padding-left:6px">{{c.sub}}</span></span>
+          <sc-if value="{{c.arrow}}"><span style="color:var(--muted);line-height:32px">→</span></sc-if>
+        </sc-for>
+      </div>
+      <button onClick="{{openTransfer}}" disabled="{{notOwner}}" style="align-self:flex-start;height:40px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">swap_horiz</span>Transfer ownership...</button>
+    </section>
+  </div>
+
+  <section style="background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden">
+    <div role="tablist" style="display:flex;border-bottom:1px solid var(--line);padding:0 8px">
+      <sc-for list="{{tabs}}" as="t"><button role="tab" aria-selected="{{t.on}}" onClick="{{t.onClick}}" style="height:48px;padding:0 14px;border:0;border-bottom:2px solid {{t.border}};background:transparent;font-weight:{{t.weight}};cursor:pointer;color:{{t.color}}">{{t.label}}</button></sc-for>
+    </div>
+    <ul style="list-style:none;margin:0;padding:6px 0">
+      <sc-for list="{{tabRows}}" as="r">
+        <li style="display:flex;gap:10px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line)">
+          <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1.2;color:{{r.color}}">{{r.icon}}</span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font-family:{{r.font}};font-size:{{r.size}}">{{r.text}}</span><span style="font-size:12px;color:var(--muted)">{{r.meta}}</span></span>
+          <sc-if value="{{r.isLog}}"><a href="Builder.dc.html#logs" style="font-size:12px;font-weight:600;white-space:nowrap">Open in Logs</a></sc-if>
+        </li>
+      </sc-for>
+    </ul>
+  </section>
+</sc-if>
+
+<!-- WEAVERS -->
+<sc-if value="{{isWeavers}}">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div><h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Weavers</h1><div style="color:var(--muted)">{{weaverCountLabel}}</div></div>
+    <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}"><button onClick="{{openAddWeaver}}" style="height:44px;padding:0 16px;display:flex;align-items:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">person_add</span>Add weaver</button></sc-if>
+  </div>
+  <sc-if value="{{hasWeavers}}" hint-placeholder-val="{{true}}">
+    <div style="position:relative;display:flex;align-items:center;max-width:420px">
+      <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--muted)">search</span>
+      <input value="{{wq}}" onChange="{{onWq}}" placeholder="Search weavers" aria-label="Search weavers" style="width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px 0 40px;background:var(--surface);outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)">
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+      <sc-for list="{{weaverCards}}" as="w" hint-placeholder-count="4">
+        <article style="position:relative;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="width:48px;height:48px;flex:none;border-radius:24px;background:var(--straw);display:grid;place-items:center;font-family:Newsreader,serif;font-size:18px;font-weight:600">{{w.initials}}</span>
+            <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:16px">{{w.name}}</div><div style="font-size:13px;color:var(--muted)">{{w.village}}, {{w.province}}</div></div>
+            <button onClick="{{w.onMenu}}" aria-label="Weaver actions" style="width:44px;height:44px;border:0;border-radius:9px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px;align-self:flex-start;margin:-6px -6px 0 0" style-hover="background:var(--surface2)">more_vert</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{w.specs}}" as="s"><span style="display:inline-flex;height:24px;padding:0 9px;align-items:center;border-radius:6px;font-size:12px;font-weight:700;background:{{s.bg}};color:{{s.color}}">{{s.label}}</span></sc-for></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px"><span><strong style="color:var(--ink)">{{w.hats}}</strong> hats</span><span>{{w.sinceLabel}}</span></div>
+          <sc-if value="{{w.menuOpen}}">
+            <div role="menu" style="position:absolute;z-index:40;right:10px;top:56px;width:250px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column">
+              <sc-for list="{{w.actions}}" as="a"><button role="menuitem" onClick="{{a.onClick}}" disabled="{{a.disabled}}" title="{{a.reason}}" style="min-height:44px;display:flex;align-items:center;gap:10px;padding:6px 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;color:{{a.color}}" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">{{a.icon}}</span><span style="display:flex;flex-direction:column"><span>{{a.label}}</span><sc-if value="{{a.hasReason}}"><span style="font-size:11.5px;color:var(--muted)">{{a.reason}}</span></sc-if></span></button></sc-for>
+            </div>
+          </sc-if>
+        </article>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{noWeavers}}">
+    <div style="border:1px dashed var(--line);border-radius:16px;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:repeating-linear-gradient(45deg,transparent 0 10px,var(--surface2) 10px 11px),repeating-linear-gradient(-45deg,transparent 0 10px,var(--surface2) 10px 11px)">
+      <span style="width:48px;height:48px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:26px;color:var(--muted)">groups</span>
+      <p style="margin:0;max-width:400px;background:var(--bg);padding:4px 10px;border-radius:6px">No weavers yet. Add the artisans you work with so the assistant can recognize them in your notes.</p>
+      <button onClick="{{openAddWeaver}}" style="height:44px;padding:0 18px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Add weaver</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{weaverMenuOpen}}"><div onClick="{{closeWeaverMenu}}" style="position:fixed;inset:0;z-index:35"></div></sc-if>
+</sc-if>
+
+      <sc-if value="{{mobile}}"><div style="height:96px"></div></sc-if>
+    </main>
+  </div>
+
+  <sc-if value="{{showBulk}}">
+    <div role="toolbar" aria-label="Bulk actions" style="position:fixed;z-index:45;left:{{bulkLeft}};right:{{bulkRight}};bottom:{{bulkBottom}};transform:{{bulkTx}};padding:10px 12px;border-radius:{{bulkRadius}};background:var(--ink);color:var(--bg);box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;flex-wrap:wrap;animation:tt-in 160ms ease both">
+      <strong style="padding:0 6px;flex:{{bulkCountFlex}}">{{selCount}} selected</strong>
+      <span title="{{bulkAdvanceTip}}" style="display:inline-flex"><button onClick="{{bulkAdvance}}" disabled="{{bulkAdvanceDisabled}}" style="height:40px;padding:0 12px;border:0;border-radius:9px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Advance stage</button></span>
+      <button onClick="{{exportSelected}}" style="height:40px;padding:0 12px;border:1px solid rgb(255 255 255 / .25);border-radius:9px;background:transparent;color:var(--bg);font-weight:600;cursor:pointer">Export selected</button>
+      <button onClick="{{clearSel}}" style="height:40px;padding:0 10px;border:0;border-radius:9px;background:transparent;color:var(--bg);font-weight:600;cursor:pointer;text-decoration:underline">Clear selection</button>
+      <sc-if value="{{bulkTipVisible}}"><span style="flex:1 1 100%;font-size:12px;opacity:.8;padding:0 6px">Select hats in the same stage to advance them together.</span></sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showMicFab}}">
+    <a href="{{micHref}}" aria-label="{{micFabAria}}" style="position:fixed;z-index:32;right:16px;bottom:{{micFabBottom}};width:64px;height:64px;border-radius:32px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;box-shadow:var(--shadow);text-decoration:none;font-family:'Material Symbols Rounded';font-size:30px;line-height:1">mic</a>
+  </sc-if>
+  <sc-if value="{{showFab}}">
+    <button onClick="{{fabAction}}" style="position:fixed;z-index:30;right:16px;bottom:{{fabBottom}};height:56px;padding:0 20px;border:0;border-radius:28px;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;cursor:pointer;box-shadow:var(--shadow)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{fabIcon}}</span>{{fabLabel}}</button>
+  </sc-if>
+
+  <sc-if value="{{detailBar}}">
+    <div style="position:fixed;z-index:30;left:0;right:0;bottom:64px;padding:10px 12px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgb(40 30 10 / .07);display:flex;flex-direction:column;gap:6px">
+      <sc-if value="{{advanceDisabled}}"><span style="font-size:12px;color:var(--muted);display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">info</span>{{advanceReason}}</span></sc-if>
+      <div style="display:flex;gap:8px">
+        <button onClick="{{openShare}}" aria-label="Share" style="width:50px;height:50px;flex:none;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">ios_share</button>
+        <button onClick="{{openAdvance}}" disabled="{{advanceDisabled}}" style="flex:1;height:50px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">arrow_forward</span>{{advanceLabel}}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{mobile}}">
+    <nav aria-label="Main" style="position:fixed;left:0;right:0;bottom:0;z-index:31;height:64px;display:grid;grid-template-columns:repeat({{tabCols}},1fr);background:var(--surface);border-top:1px solid var(--line)">
+      <sc-for list="{{nav}}" as="n">
+        <button onClick="{{n.onClick}}" aria-current="{{n.current}}" style="position:relative;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:{{n.tabColor}};font-size:11px;font-weight:{{n.weight}};cursor:pointer">
+          <span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1">{{n.icon}}</span>{{n.short}}
+          <sc-if value="{{n.hasBadge}}"><span style="position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--on-accent);font-size:10px;font-weight:700;display:grid;place-items:center">3</span></sc-if>
+          <sc-if value="{{n.dot}}"><span style="position:absolute;top:9px;left:calc(50% + 8px);width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+        </button>
+      </sc-for>
+    </nav>
+  </sc-if>
+
+  <sc-if value="{{menu}}">
+    <div onClick="{{closeMenu}}" style="position:fixed;inset:0;z-index:60"></div>
+    <div role="menu" style="position:fixed;z-index:61;left:{{menuLeft}};right:{{menuRight}};top:{{menuTop}};bottom:{{menuBottom}};width:280px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px">
+      <div style="padding:8px 10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px"><div style="font-weight:700;display:flex;align-items:center;gap:8px">Xavier Pillco<sc-if value="{{isAdmin}}"><span style="height:20px;padding:0 7px;display:inline-flex;align-items:center;gap:3px;border-radius:6px;background:var(--info-tint);color:var(--info);font-size:11px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:13px;line-height:1">shield_person</span>Admin</span></sc-if></div><div style="font-size:13px;color:var(--muted)">xavier@tallerpillco.com</div><div style="font-size:13px;color:var(--muted)">Taller Pillco, Cuenca</div></div>
+      <a role="menuitem" href="Builder.dc.html#settings" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">storefront</span>Profile &amp; workshop</a>
+      <div role="radiogroup" aria-label="Theme" style="display:flex;margin:4px 10px 6px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg)">
+        <sc-for list="{{themeOpts}}" as="t"><button role="radio" aria-checked="{{t.on}}" onClick="{{t.onClick}}" style="flex:1;height:34px;border:0;border-radius:7px;background:{{t.bg}};box-shadow:{{t.shadow}};font-size:13px;font-weight:600;cursor:pointer">{{t.label}}</button></sc-for>
+      </div>
+      <a role="menuitem" href="Toquilla Trace.dc.html" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">help</span>Help</a>
+      <sc-if value="{{adminMobile}}">
+        <div style="padding:8px 10px 2px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);margin-top:4px">Admin tools</div>
+        <a role="menuitem" href="Builder.dc.html#runs" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">account_tree</span>Agent runs</a>
+        <a role="menuitem" href="Builder.dc.html#logs" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">receipt_long</span>Logs<span style="margin-left:auto;width:8px;height:8px;border-radius:4px;background:var(--err)" aria-label="New errors in the last hour"></span></a>
+      </sc-if>
+      <div style="padding:8px 10px 4px;border-top:1px dashed var(--line);margin-top:4px;font-size:11px;color:var(--muted)">Prototype only: view as</div>
+      <div role="radiogroup" aria-label="View as role" style="display:flex;margin:0 10px 6px;padding:3px;border:1px dashed var(--line);border-radius:10px;background:var(--bg)">
+        <sc-for list="{{roleOpts}}" as="r"><button role="radio" aria-checked="{{r.on}}" onClick="{{r.onClick}}" style="flex:1;height:32px;border:0;border-radius:7px;background:{{r.bg}};box-shadow:{{r.shadow}};font-size:13px;font-weight:600;cursor:pointer">{{r.label}}</button></sc-for>
+      </div>
+      <a role="menuitem" href="Auth.dc.html#loggedout" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">logout</span>Log out</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{dialog}}">
+    <div onClick="{{backdropClose}}" style="position:fixed;inset:0;z-index:70;background:var(--scrim);display:flex;align-items:{{dlgAlign}};justify-content:center;padding:{{dlgPad}}">
+      <div role="dialog" aria-modal="true" aria-label="{{dlgTitle}}" onClick="{{stop}}" style="width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--surface);border-radius:{{dlgRadius}};box-shadow:var(--shadow);display:flex;flex-direction:column;animation:tt-in 180ms ease both">
+        <sc-if value="{{mobile}}"><div style="display:flex;justify-content:center;padding-top:8px"><span style="width:40px;height:4px;border-radius:2px;background:var(--line)"></span></div></sc-if>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:20px 20px 4px">
+          <h2 style="margin:0;flex:1;font-size:18px;font-weight:600;line-height:1.3">{{dlgTitle}}</h2>
+          <button onClick="{{closeDialog}}" aria-label="Close" style="width:36px;height:36px;margin:-6px -6px 0 0;border:0;border-radius:9px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">close</button>
+        </div>
+
+        <sc-if value="{{dAdvance}}">
+          <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:8px;padding:12px;border-radius:10px;background:var(--bg);font-weight:600;flex-wrap:wrap">{{h.stageName}}<span style="width:10px;height:10px;border-radius:5px;background:var(--ink)"></span><span style="color:var(--muted)">→</span><span style="width:10px;height:10px;border-radius:5px;border:2px solid var(--accent)"></span><span style="color:var(--accent)">{{h.nextStage}}</span></div>
+            <p style="margin:0;color:var(--muted);display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">lock</span>This can't be undone. Stages only move forward.</p>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Add a note (optional)<textarea rows="2" value="{{advNote}}" onChange="{{onAdvNote}}" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);resize:vertical;font-weight:400"></textarea></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{doAdvance}}" disabled="{{busy}}" style="height:44px;min-width:160px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{advanceConfirmLabel}}</button></div>
+        </sc-if>
+
+        <sc-if value="{{dShare}}">
+          <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:16px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Public link
+              <span style="display:flex;gap:8px"><input readOnly="{{true}}" value="{{publicUrl}}" style="flex:1;min-width:0;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface2);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:400"><button onClick="{{copyShareLink}}" style="height:44px;min-width:110px;padding:0 14px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">{{copyLabel}}</button></span>
+            </label>
+            <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+              <div style="width:132px;height:132px;flex:none;border-radius:12px;border:1px solid var(--line);background:repeating-linear-gradient(90deg,var(--ink) 0 6px,transparent 6px 12px),repeating-linear-gradient(0deg,var(--surface) 0 6px,transparent 6px 12px);display:grid;place-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface);padding:2px 6px;border-radius:4px">QR code</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:160px"><span style="font-size:13px;color:var(--muted)">Print it on the hat's tag. Buyers scan it to open the passport.</span><button onClick="{{downloadQR}}" style="align-self:flex-start;height:40px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">download</span>Download PNG</button></div>
+            </div>
+            <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">
+              <div style="height:84px;background:repeating-linear-gradient(135deg,var(--straw) 0 8px,var(--cream) 8px 16px)"></div>
+              <div style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:var(--muted)">toquillatrace.com</span><strong>{{h.grade}} toquilla hat · {{h.code}}</strong><span style="font-size:12.5px;color:var(--muted)">Verified · Hand-woven by {{h.weaver}}{{sharePriceText}}</span></div>
+            </div>
+            <label style="display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer"><input type="checkbox" role="switch" checked="{{showPrice}}" onChange="{{toggleShowPrice}}" style="width:20px;height:20px;accent-color:var(--accent)">Show price on public page</label>
+          </div>
+          <div style="display:flex;justify-content:flex-end;padding:16px 20px 20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 18px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Done</button></div>
+        </sc-if>
+
+        <sc-if value="{{dQR}}">
+          <div style="padding:12px 20px 0;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div style="width:200px;height:200px;border-radius:14px;border:1px solid var(--line);background:repeating-linear-gradient(90deg,var(--ink) 0 8px,transparent 8px 16px),repeating-linear-gradient(0deg,var(--surface) 0 8px,transparent 8px 16px);display:grid;place-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface);padding:3px 8px;border-radius:4px">QR · {{dlgCode}}</span></div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">toquillatrace.com/hat/{{dlgCode}}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Close</button><button onClick="{{downloadQR}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Download PNG</button></div>
+        </sc-if>
+
+        <sc-if value="{{dTransfer}}">
+          <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:14px">
+            <div role="radiogroup" aria-label="Recipient type" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <sc-for list="{{transferOpts}}" as="o"><label style="display:flex;align-items:center;gap:8px;min-height:48px;padding:0 12px;border:1.5px solid {{o.border}};border-radius:10px;background:{{o.bg}};cursor:pointer;font-weight:600"><input type="radio" name="tt-kind" checked="{{o.on}}" onChange="{{o.onChange}}" style="width:18px;height:18px;accent-color:var(--accent)">{{o.label}}</label></sc-for>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Recipient email
+              <input type="email" value="{{tEmail}}" onChange="{{onTEmail}}" placeholder="ana@shop.com" aria-invalid="{{tEmailErr}}" style="height:44px;border:1px solid {{tEmailBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400">
+              <sc-if value="{{tEmailErr}}"><span style="color:var(--err);font-weight:500;display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>{{tEmailMsg}}</span></sc-if>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Message (optional)<textarea rows="2" value="{{tMsg}}" onChange="{{onTMsg}}" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);resize:vertical;font-weight:400"></textarea></label>
+            <div style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--warn-tint);border:1px solid var(--warn);font-size:13px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--warn)">warning</span>You won't be able to change this hat after transferring it.</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{doTransfer}}" disabled="{{busy}}" style="height:44px;min-width:120px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{transferLabel}}</button></div>
+        </sc-if>
+
+        <sc-if value="{{dArchive}}">
+          <p style="margin:0;padding:8px 20px 0;color:var(--muted)">It will be hidden from lists but its passport stays valid.</p>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{doArchive}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600;cursor:pointer">Archive</button></div>
+        </sc-if>
+
+        <sc-if value="{{dUnsaved}}">
+          <p style="margin:0;padding:8px 20px 0;color:var(--muted)">Your edits to {{h.code}} haven't been saved.</p>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Keep editing</button><button onClick="{{discardEdits}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600;cursor:pointer">Discard</button></div>
+        </sc-if>
+
+        <sc-if value="{{dNewHat}}">
+          <p style="margin:0;padding:2px 20px 0;font-size:13px;color:var(--muted)">Prefer typing a note? <a href="Toquilla Trace.dc.html">The assistant can do this for you.</a></p>
+          <div style="padding:14px 20px 0;display:flex;flex-direction:column;gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Weaver<select value="{{nh.weaver}}" onChange="{{nhWeaver}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:400"><sc-for list="{{weaverNames}}" as="w"><option value="{{w}}">{{w}}</option></sc-for></select></label>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Grade<div role="radiogroup" aria-label="Grade" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);height:44px"><sc-for list="{{nhGrades}}" as="g"><button role="radio" aria-checked="{{g.on}}" onClick="{{g.onClick}}" style="flex:1;border:0;border-radius:7px;background:{{g.bg}};color:{{g.color}};box-shadow:{{g.shadow}};font-weight:600;font-size:13px;cursor:pointer">{{g.label}}</button></sc-for></div></div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Rows per inch<input type="number" value="{{nh.rows}}" onChange="{{nhRows}}" placeholder="6 to 40" style="height:44px;border:1px solid {{nhRowsBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"></label>
+            <sc-if value="{{nhRowsErr}}"><span style="color:var(--err);font-size:13px;display:flex;gap:4px;align-items:center;margin-top:-6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>Rows per inch must be between 6 and 40.</span></sc-if>
+            <sc-if value="{{nhMismatch}}"><span style="color:var(--warn);font-size:13px;display:flex;gap:4px;align-items:center;margin-top:-6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">warning</span>{{nhMismatchMsg}}</span></sc-if>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{createHat}}" disabled="{{busy}}" style="height:44px;min-width:120px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{createLabel}}</button></div>
+        </sc-if>
+
+        <sc-if value="{{dWeaver}}">
+          <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Full name<input value="{{wd.name}}" onChange="{{wdName}}" placeholder="Rosa Pillco" aria-invalid="{{wdNameErr}}" style="height:44px;border:1px solid {{wdNameBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"><sc-if value="{{wdNameErr}}"><span style="color:var(--err);font-weight:500">Enter the weaver's name.</span></sc-if></label>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Village<input value="{{wd.village}}" onChange="{{wdVillage}}" placeholder="Sígsig" aria-invalid="{{wdVillageErr}}" style="height:44px;border:1px solid {{wdVillageBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"><sc-if value="{{wdVillageErr}}"><span style="color:var(--err);font-weight:500">Enter a village.</span></sc-if></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Province<select value="{{wd.province}}" onChange="{{wdProvince}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:400"><option>Azuay</option><option>Cañar</option><option>Manabí</option><option>Other</option></select></label>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Specialty<div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{wdSpecs}}" as="s"><button role="checkbox" aria-checked="{{s.on}}" onClick="{{s.onClick}}" style="height:40px;padding:0 14px;display:flex;align-items:center;gap:4px;border:1.5px solid {{s.border}};border-radius:20px;background:{{s.bg}};font-weight:600;cursor:pointer"><sc-if value="{{s.on}}"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span></sc-if>{{s.label}}</button></sc-for></div></div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;max-width:200px">Weaving since <span style="font-weight:400;color:var(--muted);margin-top:-6px">Optional</span><input type="number" value="{{wd.since}}" onChange="{{wdSince}}" placeholder="1998" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Short bio for the public passport <span style="font-weight:400;color:var(--muted);margin-top:-6px">Optional</span><textarea rows="3" maxLength="200" value="{{wd.bio}}" onChange="{{wdBio}}" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);resize:vertical;font-weight:400"></textarea><span style="align-self:flex-end;font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:400;color:{{bioColor}}">{{bioCount}} / 200</span></label>
+            <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;min-height:44px"><input type="checkbox" checked="{{wd.showName}}" onChange="{{wdShow}}" style="width:20px;height:20px;margin-top:1px;accent-color:var(--accent)"><span style="display:flex;flex-direction:column"><span>Show this weaver's name on public passports</span><span style="font-size:12.5px;color:var(--muted)">Passports will say: “{{passportName}}”</span></span></label>
+            <sc-if value="{{wdDup}}"><div style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--warn-tint);border:1px solid var(--warn);font-size:13px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--warn)">warning</span>A weaver named Rosa Pillco from Sígsig already exists. Add anyway?</div></sc-if>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{saveWeaver}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">{{saveWeaverLabel}}</button></div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <div aria-live="polite" style="position:fixed;z-index:90;display:flex;flex-direction:column;gap:8px;width:{{toastW}};left:{{toastLeft}};right:{{toastRight}};top:{{toastTop}};bottom:{{toastBottom}};transform:{{toastTx}};pointer-events:none">
+    <sc-for list="{{toasts}}" as="t">
+      <div role="status" style="pointer-events:auto;display:flex;align-items:center;gap:10px;padding:12px 10px 12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);box-shadow:var(--shadow);animation:tt-in 180ms ease both">
+        <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:{{t.iconColor}}">{{t.icon}}</span>
+        <span style="flex:1;font-weight:500">{{t.title}}</span>
+        <button onClick="{{t.onClose}}" aria-label="Dismiss notification" style="width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--bg);cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">close</button>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;member&quot;,&quot;admin&quot;],&quot;default&quot;:&quot;member&quot;,&quot;tsType&quot;:&quot;'member'|'admin'&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;initialScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;hats&quot;,&quot;detail&quot;,&quot;weavers&quot;],&quot;default&quot;:&quot;hats&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;listState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;data&quot;,&quot;loading&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;data&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;States&quot;},&quot;weaversState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;data&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;data&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;States&quot;}}">
+const STAGES = ["Weaving", "Washing", "Bleaching", "Blocking", "Finished"];
+const GRADES = ["Standard", "Fino", "Superfino"];
+const gradeFor = r => r >= 25 ? "Superfino" : r >= 15 ? "Fino" : "Standard";
+const h = React.createElement;
+const W0 = [
+  { id: "w1", name: "Rosa Pillco", village: "Sígsig", province: "Azuay", spec: ["Fino"], since: 1992, bio: "Weaves finos at home in Sígsig, usually alongside her daughters.", showName: true },
+  { id: "w2", name: "Rosa Guamán", village: "Cuenca", province: "Azuay", spec: ["Standard"], since: "", bio: "", showName: true },
+  { id: "w3", name: "Manuel Delgado", village: "Pile", province: "Manabí", spec: ["Superfino"], since: 1985, bio: "Learned from his father on the coast of Manabí.", showName: true },
+  { id: "w4", name: "Carmen Quizhpi", village: "Cuenca", province: "Azuay", spec: ["Fino"], since: 2004, bio: "", showName: true },
+  { id: "w5", name: "Lucía Tenesaca", village: "Sígsig", province: "Azuay", spec: ["Standard", "Fino"], since: 2016, bio: "", showName: false }
+];
+const RANGE = { "Rosa Pillco": [15, 22], "Rosa Guamán": [9, 14], "Manuel Delgado": [26, 34], "Carmen Quizhpi": [15, 24] };
+function genHats() {
+  const base = [
+    { code: "TQ-7F3K2", rows: 18, grade: "Fino", weaver: "Rosa Pillco", stage: 1, owner: "Workshop", flags: [], mins: 5, straw: "Natural", size: 57, price: 180 },
+    { code: "TQ-9A1M8", rows: 32, grade: "Superfino", weaver: "Manuel Delgado", stage: 4, owner: "Buyer", flags: [], mins: 60 * 24 * 8, straw: "Natural", size: 58, price: 1200 },
+    { code: "TQ-2C5P0", rows: 10, grade: "Standard", weaver: "Rosa Guamán", stage: 0, owner: "Workshop", flags: [], mins: 30, straw: "Natural", size: 56, price: 45 },
+    { code: "TQ-4K9D1", rows: 18, grade: "Superfino", weaver: "Carmen Quizhpi", stage: 3, owner: "Workshop", flags: ["Grade is Superfino but rows per inch is 18 (Fino range)."], mins: 60, straw: "Bleached", size: 59, price: 650 },
+    { code: "TQ-8B2N4", rows: 20, grade: "Fino", weaver: "Carmen Quizhpi", stage: 1, owner: "Workshop", flags: [], mins: 6, straw: "Natural", size: 58, price: 210 }
+  ];
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const CH = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; const names = Object.keys(RANGE);
+  for (let i = 0; i < 19; i++) {
+    const w = names[Math.floor(rnd() * 4)], [a, b] = RANGE[w], rows = a + Math.floor(rnd() * (b - a + 1)), stage = Math.floor(rnd() * 5);
+    let code = "TQ-"; for (let j = 0; j < 5; j++) code += CH[Math.floor(rnd() * CH.length)];
+    const fast = i === 6;
+    base.push({ code, rows, grade: gradeFor(rows), weaver: w, stage, owner: stage === 4 ? (rnd() < .5 ? "Seller" : "Workshop") : "Workshop", flags: fast ? ["Production faster than expected for a " + gradeFor(rows) + "."] : [], mins: Math.floor(rnd() * 60 * 24 * 20) + 60, straw: ["Natural", "Bleached", "Dyed"][Math.floor(rnd() * 3)], size: 55 + Math.floor(rnd() * 6), price: "" });
+  }
+  return base;
+}
+const village = n => (W0.find(w => w.name === n) || {}).village || "";
+const rel = m => m < 60 ? m + " min ago" : m < 1440 ? Math.floor(m / 60) + " h ago" : Math.floor(m / 1440) + " d ago";
+const abs = m => new Date(Date.now() - m * 60000).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+const gColors = g => g === "Superfino" ? ["var(--accent-tint)", "var(--accent)"] : g === "Fino" ? ["var(--warn-tint)", "var(--ink)"] : ["var(--surface2)", "var(--ink)"];
+const fmtDay = d => new Date(Date.now() - d * 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+function readRole(propRole) {
+  try {
+    const q = new URLSearchParams(location.search).get("role");
+    if (q === "admin" || q === "member") { localStorage.setItem("tt-role", q); return q; }
+    const saved = localStorage.getItem("tt-role");
+    if (saved === "admin" || saved === "member") return saved;
+  } catch (e) {}
+  return propRole === "admin" ? "admin" : "member";
+}
+
+class Component extends DCLogic {
+  state = {
+    role: "member", screen: "hats", code: "TQ-7F3K2", mobile: false, theme: "light", themeChoice: "light", collapsed: false, menu: false, toasts: [],
+    hats: genHats(), q: "", fil: { Stage: [], Grade: [], Weaver: [], Owner: [] }, flagged: false, openFilter: null, sort: "updated", view: "table", page: 0, pageSize: 20, shown: 10,
+    sel: [], rowMenu: null, flagsTip: null, dialog: null, dlgCode: null, busy: false,
+    headerMenu: false, editing: false, draft: null, gradeFocus: false, pop: null, tab: "activity", reviewing: null, reviewReason: "", reviewed: {}, advNote: "",
+    copied: false, showPrice: false, tKind: "seller", tEmail: "", tMsg: "", tTouched: false, transferred: {},
+    weavers: W0, wq: "", wMenu: null, wd: null, wdTouched: false, nh: { weaver: "Rosa Pillco", grade: "Fino", rows: "" }, nhTouched: false
+  };
+  componentDidMount() {
+    const onResize = () => { const m = window.innerWidth < 768; this.setState({ mobile: m, vw: window.innerWidth }); };
+    onResize(); window.addEventListener("resize", onResize);
+    this.setState({ role: readRole(this.props.role) });
+    try { const t = localStorage.getItem("tt-theme"); if (t) this.setState({ themeChoice: t, theme: t === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t }); } catch (e) {}
+    this.readHash(); this.onHash = () => this.readHash(); window.addEventListener("hashchange", this.onHash);
+    this.onKey = e => { if (e.key === "Escape") { this.setState({ menu: false, openFilter: null, rowMenu: null, headerMenu: false, wMenu: null, pop: null }); if (this.state.dialog && !["archive", "transfer", "unsaved"].includes(this.state.dialog)) this.setState({ dialog: null }); } };
+    window.addEventListener("keydown", this.onKey);
+    this.cleanup = () => { window.removeEventListener("resize", onResize); window.removeEventListener("hashchange", this.onHash); window.removeEventListener("keydown", this.onKey); };
+  }
+  componentWillUnmount() { this.cleanup && this.cleanup(); }
+  componentDidUpdate(pp) { if (pp.role !== this.props.role && this.props.role) this.setRole(this.props.role); }
+  setRole(r) { try { localStorage.setItem("tt-role", r); } catch (e) {} this.setState({ role: r, menu: false, tab: r === "admin" ? this.state.tab : "activity" }); }
+  readHash() {
+    const hs = decodeURIComponent(location.hash.slice(1));
+    if (hs.startsWith("detail/")) this.setState({ screen: "detail", code: hs.slice(7), editing: false });
+    else if (hs === "weavers") this.setState({ screen: "weavers" });
+    else if (hs === "flagged") this.setState({ screen: "hats", flagged: true });
+    else if (hs.startsWith("weaver/")) this.setState({ screen: "hats", fil: Object.assign({}, this.state.fil, { Weaver: [hs.slice(7)] }) });
+    else if (this.props.initialScreen && !hs) this.setState({ screen: this.props.initialScreen });
+  }
+  go(screen, code) {
+    if (this.state.screen === "detail" && this.state.editing && this.dirty()) return this.setState({ dialog: "unsaved", pendingNav: [screen, code] });
+    this.setState({ screen, code: code || this.state.code, editing: false, rowMenu: null, pop: null, headerMenu: false, reviewing: null });
+    history.replaceState(null, "", screen === "detail" ? "#detail/" + code : screen === "weavers" ? "#weavers" : "#hats");
+    window.scrollTo(0, 0);
+  }
+  toast(kind, title) {
+    const id = Math.random().toString(36).slice(2);
+    this.setState(s => ({ toasts: [...s.toasts, { id, kind, title }].slice(-3) }));
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 5000);
+  }
+  hat(code) { return this.state.hats.find(x => x.code === code) || this.state.hats[0]; }
+  updHat(code, patch) { this.setState(s => ({ hats: s.hats.map(x => x.code === code ? Object.assign({}, x, patch) : x) })); }
+  copy(text, msg) { navigator.clipboard && navigator.clipboard.writeText(text).catch(() => {}); this.toast("success", msg); }
+  dirty() { const d = this.state.draft, x = this.hat(this.state.code); return d && (d.grade !== x.grade || +d.rows !== x.rows || d.straw !== x.straw || String(d.size) !== String(x.size) || String(d.price) !== String(x.price)); }
+  csv(rows, name) {
+    const out = ["code,grade,rows_per_inch,weaver,stage,owner,flags"].concat(rows.map(x => [x.code, x.grade, x.rows, x.weaver, STAGES[x.stage], x.owner, x.flags.length].join(","))).join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([out], { type: "text/csv" })); a.download = name; a.click();
+  }
+  filtered() {
+    const st = this.state, q = st.q.trim().toLowerCase(), f = st.fil;
+    let list = st.hats.filter(x => !x.archived)
+      .filter(x => !q || x.code.toLowerCase().includes(q) || x.weaver.toLowerCase().includes(q))
+      .filter(x => !f.Stage.length || f.Stage.includes(STAGES[x.stage]))
+      .filter(x => !f.Grade.length || f.Grade.includes(x.grade))
+      .filter(x => !f.Weaver.length || f.Weaver.includes(x.weaver))
+      .filter(x => !f.Owner.length || f.Owner.includesx.owner)
+      .filter(x => !st.flagged || x.flags.length);
+    const by = { updated: (a, b) => a.mins - b.mins, code: (a, b) => a.code.localeCompare(b.code), grade: (a, b) => GRADES.indexOf(b.grade) - GRADES.indexOf(a.grade), stage: (a, b) => a.stage - b.stage }[st.sort];
+    return list.sort(by);
+  }
+  rowActions(x) {
+    const done = x.stage === 4, notOwner = x.owner !== "Workshop";
+    const reason = done ? "This hat is finished." : notOwner ? "Only the current owner can change the stage." : "";
+    return [
+      { label: "Open", icon: "open_in_new", onClick: () => this.go("detail", x.code) },
+      { label: done ? "Advance stage" : "Advance to " + STAGES[x.stage + 1], icon: "arrow_forward", disabled: done || notOwner, reason, hasReason: !!reason, onClick: () => this.setState({ code: x.code, dialog: "advance", rowMenu: null, advNote: "" }) },
+      { label: "Copy public link", icon: "link", onClick: () => { this.setState({ rowMenu: null }); this.copy("https://toquillatrace.com/hat/" + x.code, "Link copied."); } },
+      { label: "Show QR", icon: "qr_code_2", onClick: () => this.setState({ dialog: "qr", dlgCode: x.code, rowMenu: null }) },
+      { label: "Transfer ownership...", icon: "swap_horiz", disabled: notOwner, reason: notOwner ? "Only the current owner can transfer." : "", hasReason: notOwner, onClick: () => this.setState({ code: x.code, dialog: "transfer", rowMenu: null, tEmail: "", tMsg: "", tTouched: false }) },
+      { label: "Archive", icon: "inventory_2", color: "var(--err)", onClick: () => this.setState({ dialog: "archive", dlgCode: x.code, rowMenu: null }) }
+    ].map(a => Object.assign({ color: "var(--ink)", reason: "", hasReason: false, disabled: false }, a));
+  }
+  decorateRow(x) {
+    const [gBg, gColor] = gColors(x.grade); const st = this.state;
+    return Object.assign({}, x, {
+      gBg, gColor, village: village(x.weaver), stageName: STAGES[x.stage], stageAria: "Stage " + (x.stage + 1) + " of 5: " + STAGES[x.stage],
+      dots: STAGES.map((_, i) => ({ bg: i < x.stage ? "var(--ink)" : i === x.stage ? "var(--accent)" : "transparent", border: i <= x.stage ? (i === x.stage ? "var(--accent)" : "var(--ink)") : "var(--line)" })),
+      owner: x.owner === "Workshop" ? "Workshop (me)" : x.owner, hasFlags: x.flags.length > 0, flagCount: x.flags.length, flagTip: x.flags.join(" "), flagsOpen: st.flagsTip === x.code,
+      rel: rel(x.mins), abs: abs(x.mins), selected: st.sel.includes(x.code), selectLabel: "Select " + x.code,
+      rowBg: st.sel.includes(x.code) ? "var(--accent-tint)" : "transparent", cardBorder: st.sel.includes(x.code) ? "var(--accent)" : "var(--line)",
+      menuOpen: st.rowMenu === x.code, actions: st.rowMenu === x.code ? this.rowActions(x) : [],
+      onOpen: () => this.go("detail", x.code),
+      onSelect: e => { e.stopPropagation(); this.setState(s => ({ sel: s.sel.includes(x.code) ? s.sel.filter(c => c !== x.code) : [...s.sel, x.code] })); },
+      onCopy: e => { e.stopPropagation(); this.copy(x.code, "Code copied."); },
+      onMenu: e => { e.stopPropagation(); this.setState({ rowMenu: st.rowMenu === x.code ? null : x.code, flagsTip: null }); },
+      onFlags: e => { e.stopPropagation(); this.setState({ flagsTip: st.flagsTip === x.code ? null : x.code }); }
+    });
+  }
+  renderVals() {
+    const st = this.state, mobile = st.mobile, scr = st.screen, expanded = !st.collapsed;
+    const listState = this.props.listState || "data";
+    const list = this.filtered();
+    const anyFilter = !!(st.q || st.flagged || Object.values(st.fil).some(a => a.length));
+    const pages = Math.max(1, Math.ceil(list.length / st.pageSize)), page = Math.min(st.page, pages - 1);
+    const pageRows = list.slice(page * st.pageSize, (page + 1) * st.pageSize);
+    const narrow = (st.vw || 1440) < (st.collapsed ? 1170 : 1340);
+    const cardsView = mobile || narrow || st.view === "cards";
+    const cardRows = mobile ? list.slice(0, st.shown) : pageRows;
+    const x = this.hat(st.code); const [gBg, gColor] = gColors(x.grade);
+    const owner = x.owner === "Workshop" && !st.transferred[x.code];
+    const advanceDisabled = x.stage === 4 || !owner;
+    const navDefs = [["Workshop", "Workshop", "storefront", "Toquilla Trace.dc.html"], ["Hats", "Hats", "styler", "hats"], ["Weavers", "Weavers", "groups", "weavers"]];
+    const isAdmin = st.role === "admin";
+    const adminNavDefs = isAdmin ? [["Agent runs", "Runs", "account_tree", "Builder.dc.html#runs"], ["Logs", "Logs", "receipt_long", "Builder.dc.html#logs"]] : [];
+    const curNav = scr === "weavers" ? "Weavers" : "Hats";
+    const filterDefs = { Stage: STAGES, Grade: GRADES, Weaver: Object.keys(RANGE), Owner: ["Workshop", "Seller", "Buyer"] };
+    const countFor = (k, o) => st.hats.filter(hh => k === "Stage" ? STAGES[hh.stage] === o : k === "Grade" ? hh.grade === o : k === "Weaver" ? hh.weaver === o : hh.owner === o).length;
+    const fpKey = st.openFilter;
+    const selHats = st.hats.filter(hh => st.sel.includes(hh.code));
+    const sameStage = selHats.length > 0 && selHats.every(hh => hh.stage === selHats[0].stage) && selHats[0].stage < 4;
+    const d = st.draft || {}; const dRowsN = +d.rows, dSizeN = +d.size;
+    const flagsAll = x.flags.map((t, i) => ({ t, i }));
+    const openFlags = flagsAll.filter(f => !st.reviewed[x.code + f.i]);
+    const wd = st.wd || {};
+    const wList = st.weavers.filter(w => !st.wq || (w.name + w.village).toLowerCase().includes(st.wq.toLowerCase()));
+    const weaversEmpty = this.props.weaversState === "empty";
+    const tEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(st.tEmail);
+    const nhRowsN = +st.nh.rows;
+    const titles = { advance: "Move " + x.code + " to " + STAGES[x.stage + 1] + "?", share: "Share this hat's passport", qr: "QR code", transfer: "Transfer " + x.code, archive: "Archive " + (st.dlgCode || x.code) + "?", unsaved: "Discard unsaved changes?", newhat: "Add a hat manually", weaver: wd.id ? "Edit weaver" : "Add weaver" };
+    const segs = (cur, set) => GRADES.map(g => ({ label: g, on: cur === g, bg: cur === g ? "var(--surface)" : "transparent", color: cur === g ? "var(--ink)" : "var(--muted)", shadow: cur === g ? "0 1px 2px rgb(0 0 0 / .12)" : "none", onClick: () => set(g) }));
+    const timeline = STAGES.map((sg, i) => {
+      const done = i < x.stage || x.stage === 4, cur = i === x.stage && x.stage < 4, fromAI = i % 2 === 1;
+      return { stage: sg, done, notDone: !done, notLast: i < 4, aria: done ? sg + ", completed. Show details" : sg + (cur ? ", in progress" : ", upcoming"),
+        line1: done ? fmtDay((x.stage - i) * 6 + 4) : cur ? "In progress since " + fmtDay(4) + " (4 days)" : "Upcoming",
+        ring: cur ? "3px solid var(--accent)" : done ? "0" : "1.5px solid var(--line)", bg: done ? "var(--ok)" : cur ? "var(--accent-tint)" : "transparent",
+        icon: done ? "check" : "", line: i < x.stage ? "var(--ok)" : "var(--line)", labelColor: done || cur ? "var(--ink)" : "var(--muted)",
+        source: fromAI ? "AI proposal" : "Manual", tagIcon: fromAI ? "auto_awesome" : "person", tagColor: fromAI ? "var(--accent)" : "var(--muted)", tagStyle: fromAI ? "dashed" : "solid",
+        fromAI, note: ["", "TQ-" + x.code.slice(3) + " ya está lavado", "", "Ya está hormado en la horma de madera", ""][i] || "", ts: new Date(Date.now() - ((x.stage - i) * 6 + 4) * 86400000).toISOString().replace("T", " ").slice(0, 19) + " UTC",
+        popOpen: st.pop === i, onTap: () => this.setState({ pop: st.pop === i ? null : i }) };
+    });
+    const chainIdx = st.transferred[x.code] ? 0 : x.owner === "Buyer" ? 2 : x.owner === "Seller" ? 1 : 0;
+    const spinner = h("span", { style: { width: 14, height: 14, borderRadius: "50%", border: "2px solid currentColor", borderRightColor: "transparent", display: "inline-block", animation: "tt-spin 700ms linear infinite" } });
+
+    return {
+      theme: st.theme, mobile, desktop: !mobile, expanded, sideW: st.collapsed ? 72 : 240,
+      collapseLabel: st.collapsed ? "Expand sidebar" : "Collapse sidebar", collapseIcon: st.collapsed ? "left_panel_open" : "left_panel_close", toggleSidebar: () => this.setState({ collapsed: !st.collapsed }),
+      nav: navDefs.map(([label, short, icon, target]) => { const on = label === curNav; return { label, short, icon, tip: st.collapsed ? label : "", current: on ? "page" : undefined, bg: on ? "var(--accent-tint)" : "transparent", weight: on ? 700 : 500, iconColor: on ? "var(--accent)" : "var(--muted)", tabColor: on ? "var(--accent)" : "var(--muted)", hasBadge: label === "Workshop", dot: label === "Logs", badgePos: expanded && !mobile ? "static" : "absolute", onClick: () => target.includes(".") ? (location.href = target) : this.go(target) }; }),
+      adminNav: adminNavDefs.map(([label, short, icon, target]) => { const on = label === curNav; return { label, short, icon, tip: st.collapsed ? label : "", current: on ? "page" : undefined, bg: on ? "var(--accent-tint)" : "transparent", weight: on ? 700 : 500, iconColor: on ? "var(--accent)" : "var(--muted)", tabColor: on ? "var(--accent)" : "var(--muted)", hasBadge: label === "Workshop", dot: label === "Logs", badgePos: expanded && !mobile ? "static" : "absolute", onClick: () => target.includes(".") ? (location.href = target) : this.go(target) }; }),
+      isAdmin, isMember: !isAdmin, adminMobile: isAdmin && mobile, tabCols: navDefs.length,
+      roleOpts: [["member", "Member"], ["admin", "Admin"]].map(([v, l]) => { const on = st.role === v; return { label: l, on, bg: on ? "var(--surface)" : "transparent", shadow: on ? "0 1px 2px rgb(0 0 0 / .15)" : "none", onClick: () => this.setRole(v) }; }),
+      mainPad: mobile ? "16px 16px 24px" : "32px 36px", stop: e => e.stopPropagation(), spinner, busy: st.busy,
+      menu: st.menu, toggleMenu: () => this.setState({ menu: !st.menu }), closeMenu: () => this.setState({ menu: false }),
+      menuLeft: mobile ? "auto" : (st.collapsed ? 80 : 248) + "px", menuRight: mobile ? "12px" : "auto", menuTop: mobile ? "60px" : "auto", menuBottom: mobile ? "auto" : "16px",
+      themeOpts: ["Light", "Dark", "System"].map(l => { const v = l.toLowerCase(), on = st.themeChoice === v; return { label: l, on, bg: on ? "var(--surface)" : "transparent", shadow: on ? "0 1px 2px rgb(0 0 0 / .15)" : "none", onClick: () => { try { localStorage.setItem("tt-theme", v); } catch (e) {} this.setState({ themeChoice: v, theme: v === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : v }); } }; }),
+
+      isList: scr === "hats", isDetail: scr === "detail", isWeavers: scr === "weavers",
+      hatCountLabel: list.length === st.hats.length ? st.hats.length + " hats" : list.length + " of " + st.hats.length + " hats",
+      exportCsv: () => { this.csv(list, "toquilla-hats.csv"); this.toast("success", "Exported " + list.length + " hats."); },
+      openNewHat: () => this.setState({ dialog: "newhat", nh: { weaver: "Rosa Pillco", grade: "Fino", rows: "" }, nhTouched: false }),
+      q: st.q, hasQ: !!st.q, onQ: e => { const v = e.target.value; this.setState({ qRaw: v }); clearTimeout(this.qt); this.qt = setTimeout(() => this.setState({ q: v, page: 0 }), 200); this.setState({ q: v }); }, clearQ: () => this.setState({ q: "", page: 0 }),
+      sort: st.sort, onSort: e => this.setState({ sort: e.target.value }),
+      showViewToggle: !mobile && !narrow, viewOpts: [["table", "Table", "table_rows"], ["cards", "Cards", "grid_view"]].map(([v, label, icon]) => ({ label, icon, on: st.view === v, bg: st.view === v ? "var(--accent-tint)" : "transparent", onClick: () => this.setState({ view: v }) })),
+      chipWrap: mobile ? "nowrap" : "wrap",
+      filters: Object.keys(filterDefs).map(k => ({ label: k, count: st.fil[k].length, active: st.fil[k].length > 0, open: fpKey === k, border: st.fil[k].length ? "var(--accent)" : "var(--line)", bg: st.fil[k].length ? "var(--accent-tint)" : "var(--surface)", onToggle: e => { const r = e.currentTarget.getBoundingClientRect(); this.setState({ openFilter: fpKey === k ? null : k, fpRect: { left: r.left, top: r.bottom + 6 } }); } })),
+      filterOpen: !!fpKey, closeFilter: () => this.setState({ openFilter: null }), filterScrim: mobile ? "var(--scrim)" : "transparent",
+      fp: fpKey ? { label: fpKey, count: st.fil[fpKey].length, onClear: () => this.setState({ fil: Object.assign({}, st.fil, { [fpKey]: [] }) }), options: filterDefs[fpKey].map(o => ({ label: o, n: countFor(fpKey, o), on: st.fil[fpKey].includes(o), onChange: () => { const cur = st.fil[fpKey]; this.setState({ page: 0, fil: Object.assign({}, st.fil, { [fpKey]: cur.includes(o) ? cur.filter(c => c !== o) : [...cur, o] }) }); } })) } : { label: "", count: 0, options: [] },
+      fpLeft: mobile ? "0" : ((st.fpRect || {}).left || 0) + "px", fpRight: mobile ? "0" : "auto", fpTop: mobile ? "auto" : ((st.fpRect || {}).top || 0) + "px", fpBottom: mobile ? "0" : "auto", fpW: mobile ? "100%" : "260px", fpRadius: mobile ? "18px 18px 0 0" : "12px",
+      flagged: st.flagged, flaggedBorder: st.flagged ? "var(--warn)" : "var(--line)", flaggedBg: st.flagged ? "var(--warn-tint)" : "var(--surface)", toggleFlagged: () => this.setState({ flagged: !st.flagged, page: 0 }),
+      anyFilter, clearFilters: () => this.setState({ q: "", flagged: false, fil: { Stage: [], Grade: [], Weaver: [], Owner: [] }, page: 0 }),
+      isLoading: listState === "loading", skeletons: [1, 2, 3, 4, 5, 6], skelH: mobile ? "128px" : "56px",
+      isEmptyWorkshop: listState === "empty", isNoResults: listState === "data" && list.length === 0,
+      showTable: listState === "data" && list.length > 0 && !cardsView, showCards: listState === "data" && list.length > 0 && cardsView,
+      cols: "28px 140px 96px 64px minmax(140px,1.4fr) 120px 110px 64px 96px 40px",
+      pageRows: pageRows.map(r => this.decorateRow(r)), cardRows: cardRows.map(r => this.decorateRow(r)),
+      allOnPage: pageRows.length > 0 && pageRows.every(r => st.sel.includes(r.code)),
+      toggleAllPage: () => { const codes = pageRows.map(r => r.code); const all = codes.every(c => st.sel.includes(c)); this.setState({ sel: all ? st.sel.filter(c => !codes.includes(c)) : [...new Set([...st.sel, ...codes])] }); },
+      rangeLabel: (page * st.pageSize + 1) + " to " + Math.min(list.length, (page + 1) * st.pageSize) + " of " + list.length,
+      pageSize: String(st.pageSize), onPageSize: e => this.setState({ pageSize: +e.target.value, page: 0 }),
+      noPrev: page === 0, noNext: page >= pages - 1, prevPage: () => this.setState({ page: page - 1 }), nextPage: () => this.setState({ page: page + 1 }),
+      showLoadMore: mobile && st.shown < list.length, loadMore: () => this.setState({ shown: st.shown + 10 }), showCardPager: !mobile,
+      rowMenuOpen: !!st.rowMenu || !!st.flagsTip, closeRowMenu: () => this.setState({ rowMenu: null, flagsTip: null }),
+
+      showBulk: st.sel.length > 0 && scr === "hats", selCount: st.sel.length,
+      bulkLeft: mobile ? "8px" : "50%", bulkRight: mobile ? "8px" : "auto", bulkBottom: mobile ? "72px" : "24px", bulkTx: mobile ? "none" : "translateX(-50%)", bulkRadius: "14px", bulkCountFlex: mobile ? "1 1 100%" : "none",
+      bulkAdvanceDisabled: !sameStage, bulkAdvanceTip: sameStage ? "" : "Select hats in the same stage", bulkTipVisible: !sameStage && mobile,
+      bulkAdvance: () => { const n = st.sel.length, to = STAGES[selHats[0].stage + 1]; this.setState(s => ({ hats: s.hats.map(hh => s.sel.includes(hh.code) ? Object.assign({}, hh, { stage: hh.stage + 1, mins: 0 }) : hh), sel: [] })); this.toast("success", n + " hats moved to " + to + "."); },
+      exportSelected: () => { this.csv(selHats, "toquilla-selected.csv"); this.toast("success", "Exported " + selHats.length + " hats."); }, clearSel: () => this.setState({ sel: [] }),
+      showFab: mobile && scr === "weavers" && !weaversEmpty,
+      showMicFab: mobile && ((scr === "hats" && st.sel.length === 0) || scr === "detail"), micHref: scr === "detail" ? "Toquilla Trace.dc.html#record/" + x.code : "Toquilla Trace.dc.html#record",
+      micFabAria: scr === "detail" ? "Record a voice note about " + x.code : "Record a voice note", micFabBottom: scr === "detail" ? (advanceDisabled ? "176px" : "152px") : "80px", fabBottom: "80px",
+      fabIcon: scr === "weavers" ? "person_add" : "add", fabLabel: scr === "weavers" ? "Add weaver" : "New hat", fabAction: () => scr === "weavers" ? this.openWeaver(null) : this.setState({ dialog: "newhat", nh: { weaver: "Rosa Pillco", grade: "Fino", rows: "" }, nhTouched: false }),
+
+      h: Object.assign({}, x, { gBg, gColor, stageName: STAGES[x.stage], nextStage: STAGES[x.stage + 1] || "", hasOpenFlags: openFlags.length > 0, openFlagCount: openFlags.length, archived: !!x.archived }),
+      codeSize: mobile ? "28px" : "36px", backToHats: () => this.go("hats"), copyCode: () => this.copy(x.code, "Code copied."),
+      advanceLabel: x.stage === 4 ? "Finished" : "Advance to " + STAGES[x.stage + 1], advanceDisabled, advanceReason: x.stage === 4 ? "This hat is finished." : !owner ? "Only the current owner can change the stage." : "",
+      openAdvance: () => this.setState({ dialog: "advance", advNote: "" }), advNote: st.advNote, onAdvNote: e => this.setState({ advNote: e.target.value }),
+      advanceConfirmLabel: st.busy ? "Moving..." : "Move to " + STAGES[x.stage + 1],
+      doAdvance: () => { const to = STAGES[x.stage + 1]; this.setState({ busy: true }); setTimeout(() => { this.updHat(x.code, { stage: x.stage + 1, mins: 0 }); this.setState({ busy: false, dialog: null }); this.toast("success", x.code + " moved to " + to + "."); }, 800); },
+      detailBar: mobile && scr === "detail",
+      headerMenu: st.headerMenu, toggleHeaderMenu: () => this.setState({ headerMenu: !st.headerMenu }), closeHeaderMenu: () => this.setState({ headerMenu: false }),
+      headerActions: [
+        ...(mobile ? [] : []),
+        { label: "Edit details", icon: "edit", onClick: () => this.setState({ headerMenu: false, editing: true, draft: { grade: x.grade, rows: x.rows, straw: x.straw, size: x.size, price: x.price } }) },
+        { label: "Transfer ownership...", icon: "swap_horiz", onClick: () => this.setState({ headerMenu: false, dialog: "transfer", tEmail: "", tMsg: "", tTouched: false }) },
+        ...(isAdmin ? [
+          { label: "View in agent runs", icon: "account_tree", onClick: () => (location.href = "Builder.dc.html#runs") },
+          { label: "View logs for this hat", icon: "receipt_long", onClick: () => (location.href = "Builder.dc.html#logs") }
+        ] : []),
+        { label: "Archive", icon: "inventory_2", color: "var(--err)", onClick: () => this.setState({ headerMenu: false, dialog: "archive", dlgCode: x.code }) }
+      ].map(a => Object.assign({ color: "var(--ink)" }, a)),
+      showFlags: flagsAll.length > 0,
+      flagRows: flagsAll.map(f => { const rv = st.reviewed[x.code + f.i]; return { text: f.t, open: !rv && st.reviewing !== f.i, reviewing: st.reviewing === f.i, opacity: rv ? .7 : 1, icon: rv ? "check_circle" : "flag", iconColor: rv ? "var(--muted)" : "var(--warn)", meta: rv ? "Reviewed by Xavier: “" + rv + "”" : (f.t.startsWith("Grade") ? "Raised by Assistant · 1 h ago" : "Raised by System · 2 d ago"), onReview: () => this.setState({ reviewing: f.i, reviewReason: "" }) }; }),
+      reviewReason: st.reviewReason, onReviewReason: e => this.setState({ reviewReason: e.target.value }), noReason: !st.reviewReason.trim(), cancelReview: () => this.setState({ reviewing: null }),
+      saveReview: () => { this.setState(s => ({ reviewed: Object.assign({}, s.reviewed, { [x.code + s.reviewing]: s.reviewReason.trim() }), reviewing: null })); this.toast("success", "Flag marked as reviewed."); },
+      fixGrade: () => this.setState({ editing: true, gradeFocus: true, draft: { grade: x.grade, rows: x.rows, straw: x.straw, size: x.size, price: x.price } }),
+      tlDisplay: mobile ? "flex" : "grid", tlGap: mobile ? "0" : "8px", tlItemDir: mobile ? "row" : "column", tlRailDir: mobile ? "column" : "row", lineW: mobile ? "2px" : "auto", lineH: mobile ? "auto" : "2px", lineMinW: mobile ? "2px" : "20px", lineMinH: mobile ? "20px" : "2px", tlPopLeft: mobile ? "40px" : "0",
+      timeline, closePop: () => this.setState({ pop: null }),
+      notEditing: !st.editing, editing: st.editing, startEdit: () => this.setState({ editing: true, gradeFocus: false, draft: { grade: x.grade, rows: x.rows, straw: x.straw, size: x.size, price: x.price } }),
+      detailFields: [["Grade", x.grade], ["Rows per inch", x.rows], ["Straw color", x.straw], ["Size", x.size ? x.size + " cm" : "—"], ["Price", x.price ? "$" + x.price : "—"], ["Weaver", x.weaver, true], ["Workshop", "Taller Pillco, Cuenca"], ["Created", fmtDay(x.stage * 6 + 30) + ", 2026"]].map(([k, v, link]) => ({ k, v, isLink: !!link, notLink: !link })),
+      goWeavers: e => { e.preventDefault(); this.go("weavers"); },
+      draft: d, draftGrades: segs(d.grade, g => this.setState({ draft: Object.assign({}, d, { grade: g }) })),
+      gradeFocusBorder: st.gradeFocus ? "var(--accent)" : "var(--line)", gradeFocusShadow: st.gradeFocus ? "0 0 0 3px var(--accent-tint)" : "none",
+      dRows: e => this.setState({ draft: Object.assign({}, d, { rows: e.target.value }) }), dStraw: e => this.setState({ draft: Object.assign({}, d, { straw: e.target.value }) }),
+      dSize: e => this.setState({ draft: Object.assign({}, d, { size: e.target.value }) }), dPrice: e => this.setState({ draft: Object.assign({}, d, { price: e.target.value }) }),
+      dRowsErr: st.editing && !(dRowsN >= 6 && dRowsN <= 40), dRowsBorder: st.editing && !(dRowsN >= 6 && dRowsN <= 40) ? "var(--err)" : "var(--line)",
+      dSizeErr: st.editing && d.size !== "" && !(dSizeN >= 52 && dSizeN <= 64), dSizeBorder: st.editing && d.size !== "" && !(dSizeN >= 52 && dSizeN <= 64) ? "var(--err)" : "var(--line)",
+      dMismatch: st.editing && dRowsN >= 6 && dRowsN <= 40 && gradeFor(dRowsN) !== d.grade, dMismatchMsg: dRowsN + " rows/inch usually means " + gradeFor(dRowsN) + ".",
+      saveDisabled: !(dRowsN >= 6 && dRowsN <= 40) || (d.size !== "" && !(dSizeN >= 52 && dSizeN <= 64)) || !this.dirty(),
+      cancelEdit: () => this.dirty() ? this.setState({ dialog: "unsaved", pendingNav: null }) : this.setState({ editing: false }),
+      saveEdit: () => { const fixed = gradeFor(+d.rows) === d.grade; this.updHat(x.code, { grade: d.grade, rows: +d.rows, straw: d.straw, size: d.size, price: d.price, flags: fixed ? x.flags.filter(f => !f.startsWith("Grade")) : x.flags }); this.setState({ editing: false, gradeFocus: false }); this.toast("success", "Saved."); },
+      chain: ["Workshop", "Seller", "Buyer"].map((l, i) => { const past = i < chainIdx, now = i === chainIdx; return { label: l, current: now, arrow: i < 2, sub: now ? (st.transferred[x.code] ? "Transfer pending" : "Current owner") : past ? "Until " + fmtDay(8 + (2 - i) * 4) : "", borderStyle: past || now ? "solid" : "dashed", border: now ? "var(--accent)" : "var(--line)", bg: now ? "var(--accent-tint)" : past ? "var(--surface2)" : "transparent", color: now ? "var(--accent)" : past ? "var(--ink)" : "var(--muted)" }; }),
+      notOwner: !owner, openTransfer: () => this.setState({ dialog: "transfer", tEmail: "", tMsg: "", tTouched: false }),
+      tabs: (isAdmin ? [["activity", "Activity"], ["logs", "Logs"]] : [["activity", "Activity"]]).map(([v, label]) => ({ label, on: st.tab === v, border: st.tab === v ? "var(--accent)" : "transparent", weight: st.tab === v ? 700 : 500, color: st.tab === v ? "var(--ink)" : "var(--muted)", onClick: () => this.setState({ tab: v }) })),
+      tabRows: st.tab === "activity" || !isAdmin
+        ? [...STAGES.slice(1, x.stage + 1).map((sg, i) => ({ icon: "check_circle", color: "var(--ok)", text: "Moved to " + sg, meta: "Xavier · " + (i % 2 === 0 ? "From AI proposal" : "Manual") + " · " + fmtDay((x.stage - i - 1) * 6 + 4) })).reverse(), { icon: "add_circle", color: "var(--accent)", text: "Hat created · " + x.grade + " · " + x.rows + " rows/inch", meta: "Xavier · From AI proposal · " + fmtDay(x.stage * 6 + 30) }].map(r => Object.assign({ font: "inherit", size: "14px", isLog: false }, r))
+        : [["10:42:13.512", "info", "hat.stage.advance", "ok · " + x.code], ["10:42:13.390", "info", "proposal.approve", "approved by xavier"], ["10:42:11.204", "warn", "rule.check", "Blocked: stage skip"], ["10:41:58.017", "info", "agent.tool.call", "find_hat " + x.code + " · 38 ms"]].map(([t, lv, a, m]) => ({ icon: lv === "warn" ? "warning" : "info", color: lv === "warn" ? "var(--warn)" : "var(--info)", text: a + "  " + m, meta: t + " · " + lv.toUpperCase() + " · req_8f2a91", font: "'JetBrains Mono',monospace", size: "12.5px", isLog: true })),
+
+      weaverCountLabel: st.weavers.length + " weavers", hasWeavers: !weaversEmpty, noWeavers: weaversEmpty, wq: st.wq, onWq: e => this.setState({ wq: e.target.value }),
+      openAddWeaver: () => this.openWeaver(null),
+      weaverCards: wList.map(w => { const n = st.hats.filter(hh => hh.weaver === w.name).length; return Object.assign({}, w, {
+        initials: w.name.split(" ").map(p => p[0]).join("").slice(0, 2), hats: n, sinceLabel: w.since ? "Weaving since " + w.since : "",
+        specs: w.spec.map(sp => { const [bg, color] = gColors(sp); return { label: sp, bg, color }; }), menuOpen: st.wMenu === w.id,
+        onMenu: () => this.setState({ wMenu: st.wMenu === w.id ? null : w.id }),
+        actions: [
+          { label: "Edit", icon: "edit", onClick: () => this.openWeaver(w) },
+          { label: "View their hats", icon: "styler", onClick: () => { this.setState({ fil: { Stage: [], Grade: [], Weaver: [w.name], Owner: [] }, wMenu: null }); this.go("hats"); } },
+          { label: "Remove", icon: "person_remove", color: "var(--err)", disabled: n > 0, reason: n > 0 ? "Weavers with hats can't be removed." : "", hasReason: n > 0, onClick: () => { this.setState(s => ({ weavers: s.weavers.filter(v => v.id !== w.id), wMenu: null })); this.toast("success", w.name + " removed."); } }
+        ].map(a => Object.assign({ color: "var(--ink)", disabled: false, reason: "", hasReason: false }, a)) }); }),
+      weaverMenuOpen: !!st.wMenu, closeWeaverMenu: () => this.setState({ wMenu: null }),
+
+      dialog: !!st.dialog, dlgTitle: titles[st.dialog] || "", dlgCode: st.dlgCode,
+      dAdvance: st.dialog === "advance", dShare: st.dialog === "share", dQR: st.dialog === "qr", dTransfer: st.dialog === "transfer", dArchive: st.dialog === "archive", dUnsaved: st.dialog === "unsaved", dNewHat: st.dialog === "newhat", dWeaver: st.dialog === "weaver",
+      dlgAlign: mobile ? "flex-end" : "center", dlgPad: mobile ? "0" : "24px", dlgRadius: mobile ? "18px 18px 0 0" : "16px",
+      closeDialog: () => this.setState({ dialog: null, busy: false }), backdropClose: () => { if (!["archive", "transfer", "unsaved"].includes(st.dialog)) this.setState({ dialog: null }); },
+      openShare: () => this.setState({ dialog: "share", copied: false }), publicUrl: "https://toquillatrace.com/hat/" + x.code,
+      copyLabel: st.copied ? "Copied!" : "Copy link", copyShareLink: () => { navigator.clipboard && navigator.clipboard.writeText("https://toquillatrace.com/hat/" + x.code).catch(() => {}); this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); },
+      downloadQR: () => this.toast("success", "QR code downloaded."), showPrice: st.showPrice, toggleShowPrice: () => this.setState({ showPrice: !st.showPrice }), sharePriceText: st.showPrice && x.price ? " · $" + x.price : "",
+      transferOpts: [["seller", "To a seller"], ["buyer", "To a buyer"]].map(([v, label]) => ({ label, on: st.tKind === v, border: st.tKind === v ? "var(--accent)" : "var(--line)", bg: st.tKind === v ? "var(--accent-tint)" : "var(--bg)", onChange: () => this.setState({ tKind: v }) })),
+      tEmail: st.tEmail, onTEmail: e => this.setState({ tEmail: e.target.value }), tMsg: st.tMsg, onTMsg: e => this.setState({ tMsg: e.target.value }),
+      tEmailErr: st.tTouched && !tEmailValid, tEmailBorder: st.tTouched && !tEmailValid ? "var(--err)" : "var(--line)", tEmailMsg: st.tEmail ? "That doesn't look like an email." : "Enter the recipient's email.",
+      transferLabel: st.busy ? "Transferring..." : "Transfer",
+      doTransfer: () => { if (!tEmailValid) return this.setState({ tTouched: true }); this.setState({ busy: true }); setTimeout(() => { this.setState(s => ({ busy: false, dialog: null, transferred: Object.assign({}, s.transferred, { [x.code]: true }) })); this.toast("success", "Transfer recorded. They can claim it from the hat's passport."); }, 900); },
+      doArchive: () => { const c = st.dlgCode || x.code; this.updHat(c, { archived: true }); this.setState({ dialog: null }); this.toast("success", c + " archived."); if (scr === "detail") this.go("hats"); },
+      discardEdits: () => { const pn = st.pendingNav; this.setState({ dialog: null, editing: false, draft: null }); if (pn) setTimeout(() => this.go(pn[0], pn[1]), 0); },
+      nh: st.nh, weaverNames: st.weavers.map(w => w.name), nhWeaver: e => this.setState({ nh: Object.assign({}, st.nh, { weaver: e.target.value }) }),
+      nhGrades: segs(st.nh.grade, g => this.setState({ nh: Object.assign({}, st.nh, { grade: g }) })),
+      nhRows: e => this.setState({ nh: Object.assign({}, st.nh, { rows: e.target.value }), nhTouched: true }),
+      nhRowsErr: st.nhTouched && !(nhRowsN >= 6 && nhRowsN <= 40), nhRowsBorder: st.nhTouched && !(nhRowsN >= 6 && nhRowsN <= 40) ? "var(--err)" : "var(--line)",
+      nhMismatch: nhRowsN >= 6 && nhRowsN <= 40 && gradeFor(nhRowsN) !== st.nh.grade, nhMismatchMsg: nhRowsN + " rows/inch usually means " + gradeFor(nhRowsN) + ".",
+      createLabel: st.busy ? "Creating..." : "Create hat",
+      createHat: () => { if (!(nhRowsN >= 6 && nhRowsN <= 40)) return this.setState({ nhTouched: true }); this.setState({ busy: true }); setTimeout(() => { const code = "TQ-" + Math.random().toString(36).slice(2, 7).toUpperCase(); this.setState(s => ({ busy: false, dialog: null, hats: [{ code, rows: nhRowsN, grade: s.nh.grade, weaver: s.nh.weaver, stage: 0, owner: "Workshop", flags: [], mins: 0, straw: "Natural", size: "", price: "" }, ...s.hats] })); this.toast("success", code + " created."); }, 800); },
+      wd, wdNameErr: st.wdTouched && !(wd.name || "").trim(), wdNameBorder: st.wdTouched && !(wd.name || "").trim() ? "var(--err)" : "var(--line)",
+      wdVillageErr: st.wdTouched && !(wd.village || "").trim(), wdVillageBorder: st.wdTouched && !(wd.village || "").trim() ? "var(--err)" : "var(--line)",
+      wdDup: !wd.id && (wd.name || "").trim().toLowerCase() === "rosa pillco",
+      wdName: e => this.setW({ name: e.target.value }), wdVillage: e => this.setW({ village: e.target.value }), wdProvince: e => this.setW({ province: e.target.value }), wdSince: e => this.setW({ since: e.target.value }), wdBio: e => this.setW({ bio: e.target.value.slice(0, 200) }), wdShow: e => this.setW({ showName: e.target.checked }),
+      wdSpecs: GRADES.map(g => { const on = (wd.spec || []).includes(g); return { label: g, on, border: on ? "var(--accent)" : "var(--line)", bg: on ? "var(--accent-tint)" : "var(--bg)", onClick: () => this.setW({ spec: on ? wd.spec.filter(x2 => x2 !== g) : [...(wd.spec || []), g] }) }; }),
+      bioCount: (wd.bio || "").length, bioColor: (wd.bio || "").length > 180 ? "var(--warn)" : "var(--muted)",
+      passportName: wd.showName ? "Hand-woven by " + ((wd.name || "").trim() || "Rosa Pillco") : "A master weaver from " + ((wd.village || "").trim() || "Sígsig"),
+      saveWeaverLabel: "Save weaver",
+      saveWeaver: () => { if (!(wd.name || "").trim() || !(wd.village || "").trim()) return this.setState({ wdTouched: true }); if (wd.id) this.setState(s => ({ weavers: s.weavers.map(v => v.id === wd.id ? wd : v), dialog: null })); else this.setState(s => ({ weavers: [...s.weavers, Object.assign({}, wd, { id: "w" + Date.now() })], dialog: null })); this.toast("success", wd.name.trim() + " saved."); },
+
+      toasts: st.toasts.map(t => Object.assign({}, t, { icon: t.kind === "success" ? "check_circle" : "info", iconColor: t.kind === "success" ? "var(--ok)" : "var(--info)", onClose: () => this.setState(s => ({ toasts: s.toasts.filter(z => z.id !== t.id) })) })),
+      toastW: mobile ? "calc(100% - 24px)" : "380px", toastLeft: mobile ? "50%" : "auto", toastRight: mobile ? "auto" : "20px", toastTop: mobile ? "64px" : "auto", toastBottom: mobile ? "auto" : "20px", toastTx: mobile ? "translateX(-50%)" : "none"
+    };
+  }
+  openWeaver(w) { this.setState({ dialog: "weaver", wMenu: null, wdTouched: false, wd: w ? Object.assign({}, w) : { name: "", village: "", province: "Azuay", spec: [], since: "", bio: "", showName: true } }); }
+  setW(p) { this.setState(s => ({ wd: Object.assign({}, s.wd, p) })); }
+}
+</script>
+</body>
+</html>

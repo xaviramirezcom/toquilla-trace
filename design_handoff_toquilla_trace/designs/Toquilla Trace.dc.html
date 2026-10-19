@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{--bg:oklch(0.965 0.014 85);--surface:oklch(0.988 0.008 85);--surface2:oklch(0.94 0.018 82);--line:oklch(0.87 0.022 80);--ink:oklch(0.24 0.012 60);--muted:oklch(0.47 0.015 60);--accent:oklch(0.42 0.085 162);--accent-strong:oklch(0.35 0.08 162);--accent-tint:oklch(0.945 0.025 162);--on-accent:oklch(0.99 0.005 85);--ok:oklch(0.46 0.11 150);--ok-tint:oklch(0.95 0.035 150);--warn:oklch(0.5 0.11 65);--warn-tint:oklch(0.95 0.045 85);--err:oklch(0.52 0.17 28);--err-tint:oklch(0.955 0.03 28);--info:oklch(0.48 0.11 250);--info-tint:oklch(0.95 0.025 250);--straw:oklch(0.85 0.055 85);--cream:oklch(0.975 0.022 88);--scrim:rgb(30 24 12 / 0.38);--shadow:0 1px 2px rgb(40 30 10 / .06),0 10px 30px rgb(40 30 10 / .10)}
+[data-theme="dark"]{--bg:oklch(0.2 0.01 70);--surface:oklch(0.24 0.012 70);--surface2:oklch(0.28 0.014 70);--line:oklch(0.36 0.015 70);--ink:oklch(0.94 0.012 85);--muted:oklch(0.74 0.015 80);--accent:oklch(0.74 0.11 162);--accent-strong:oklch(0.8 0.1 162);--accent-tint:oklch(0.3 0.04 162);--on-accent:oklch(0.18 0.02 162);--ok:oklch(0.76 0.13 150);--ok-tint:oklch(0.29 0.05 150);--warn:oklch(0.82 0.12 80);--warn-tint:oklch(0.31 0.05 75);--err:oklch(0.74 0.15 28);--err-tint:oklch(0.3 0.06 28);--info:oklch(0.76 0.1 245);--info-tint:oklch(0.29 0.04 245);--straw:oklch(0.42 0.04 85);--cream:oklch(0.26 0.02 85);--scrim:rgb(0 0 0 / 0.55);--shadow:0 1px 2px rgb(0 0 0 / .3),0 10px 30px rgb(0 0 0 / .35)}
+[data-accent="indigo"]{--accent:oklch(0.42 0.12 275);--accent-strong:oklch(0.35 0.12 275);--accent-tint:oklch(0.945 0.025 275)}
+[data-theme="dark"][data-accent="indigo"]{--accent:oklch(0.76 0.1 275);--accent-strong:oklch(0.82 0.09 275);--accent-tint:oklch(0.3 0.05 275);--on-accent:oklch(0.18 0.03 275)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{color:var(--accent-strong)}
+button,input,textarea,select{font:inherit;color:inherit}
+button:disabled{opacity:.45;cursor:not-allowed!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::placeholder{color:var(--muted);opacity:.8}
+@keyframes tt-spin{to{transform:rotate(360deg)}}
+@keyframes tt-dot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+@keyframes tt-countdown{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes tt-stamp{0%{transform:scale(1.8) rotate(-14deg);opacity:0}60%{transform:scale(.94) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes tt-wave{0%,100%{transform:scaleY(.2)}50%{transform:scaleY(1)}}
+@keyframes tt-ring{0%{transform:scale(.95);opacity:.55}100%{transform:scale(1.55);opacity:0}}
+@keyframes tt-blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes tt-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+</style>
+</helmet>
+<div data-theme="{{theme}}" data-accent="{{accent}}" style="min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:14px;line-height:1.45">
+
+<sc-if value="{{isWorkshop}}" hint-placeholder-val="{{true}}">
+<div style="display:flex;min-height:100vh">
+
+  <sc-if value="{{showSidebar}}" hint-placeholder-val="{{true}}">
+  <aside style="width:{{sideW}}px;flex:none;position:sticky;top:0;height:100vh;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:4px;transition:width 180ms ease;overflow:hidden">
+    <button onClick="{{goWorkshop}}" aria-label="Toquilla Trace — go to Workshop" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border:0;background:transparent;cursor:pointer;color:var(--ink);margin-bottom:18px;border-radius:8px;text-align:left">
+      <span style="width:28px;height:28px;flex:none;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="font-family:Newsreader,serif;font-size:20px;font-weight:600;letter-spacing:-.01em;white-space:nowrap">Toquilla Trace</span></sc-if>
+    </button>
+    <nav aria-label="Main" style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+        <button onClick="{{n.onClick}}" title="{{n.tip}}" aria-current="{{n.current}}" style="position:relative;display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:{{n.bg}};color:var(--ink);font-weight:{{n.weight}};cursor:pointer;font-size:14px;text-align:left;white-space:nowrap;transition:background 150ms" style-hover="background:var(--accent-tint)">
+          <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:{{n.iconColor}}">{{n.icon}}</span>
+          <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="flex:1">{{n.label}}</span></sc-if>
+          <sc-if value="{{n.hasBadge}}"><span style="position:{{n.badgePos}};top:5px;right:6px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:700;display:grid;place-items:center">{{n.badge}}</span></sc-if>
+          <sc-if value="{{n.dot}}"><span aria-label="New errors in the last hour" style="position:{{n.badgePos}};top:10px;right:12px;width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+        </button>
+      </sc-for>
+    </nav>
+    <sc-if value="{{isAdmin}}">
+      <nav aria-label="Admin" style="display:flex;flex-direction:column;gap:2px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+        <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><div style="display:flex;align-items:center;gap:6px;padding:0 12px 6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">shield_person</span>Admin</div></sc-if>
+        <sc-for list="{{adminNav}}" as="n" hint-placeholder-count="2">
+          <button onClick="{{n.onClick}}" title="{{n.tip}}" style="position:relative;display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:{{n.bg}};color:var(--ink);font-weight:{{n.weight}};cursor:pointer;font-size:14px;text-align:left;white-space:nowrap;transition:background 150ms" style-hover="background:var(--accent-tint)">
+            <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:{{n.iconColor}}">{{n.icon}}</span>
+            <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="flex:1">{{n.label}}</span></sc-if>
+            <sc-if value="{{n.dot}}"><span aria-label="New errors in the last hour" style="position:{{n.badgePos}};top:10px;right:12px;width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+          </button>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <div style="flex:1"></div>
+    <button onClick="{{toggleMenu}}" aria-label="Open user menu" style="display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:10px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)">
+      <span style="width:32px;height:32px;flex:none;border-radius:16px;background:var(--straw);color:var(--ink);display:grid;place-items:center;font-weight:600;font-size:13px">XP</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="display:flex;flex-direction:column;min-width:0;white-space:nowrap"><span style="font-weight:600;font-size:13px">Xavier</span><span style="font-size:12px;color:var(--muted)">Taller Pillco, Cuenca</span></span></sc-if>
+    </button>
+    <button onClick="{{toggleSidebar}}" title="{{collapseLabel}}" aria-label="{{collapseLabel}}" style="display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--ink)">
+      <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{collapseIcon}}</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>{{collapseLabel}}</span></sc-if>
+    </button>
+  </aside>
+  </sc-if>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <sc-if value="{{mobile}}">
+      <header style="position:sticky;top:0;z-index:20;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--line)">
+        <button onClick="{{goWorkshop}}" aria-label="Toquilla Trace — go to Workshop" style="display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:0;cursor:pointer">
+          <span style="width:26px;height:26px;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span>
+          <span style="font-family:Newsreader,serif;font-size:19px;font-weight:600">Toquilla Trace</span>
+        </button>
+        <button onClick="{{toggleMenu}}" aria-label="Open user menu" style="width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0"><span style="width:32px;height:32px;border-radius:16px;background:var(--straw);display:grid;place-items:center;font-weight:600;font-size:13px">XP</span></button>
+      </header>
+    </sc-if>
+
+    <sc-if value="{{offline}}">
+      <div role="status" style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--warn-tint);color:var(--ink);border-bottom:1px solid var(--warn);font-size:13px">
+        <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--warn)">wifi_off</span>
+        <span style="flex:1">You're offline. Changes will fail until you reconnect.</span>
+        <button onClick="{{dismissOffline}}" aria-label="Dismiss" style="width:32px;height:32px;border:0;background:transparent;border-radius:8px;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px" style-hover="background:var(--surface2)">close</button>
+      </div>
+    </sc-if>
+
+    <main style="flex:1;width:100%;max-width:1280px;margin:0 auto;padding:{{mainPad}};display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div>
+          <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Workshop</h1>
+          <div style="color:var(--muted);margin-top:2px">{{greeting}}</div>
+        </div>
+        <button onClick="{{openManual}}" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;font-weight:600;transition:background 150ms" style-hover="background:var(--surface2)" style-active="transform:translateY(1px)">
+          <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>New hat manually
+        </button>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+        <div style="flex:2 1 560px;min-width:0;display:flex;flex-direction:column;gap:16px">
+
+          <section aria-label="Agent composer" style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <h2 style="margin:0;font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--accent)">graphic_eq</span>Just tell me what happened</h2>
+                <span style="font-size:13px;color:var(--muted)">Hold the mic and talk, like a WhatsApp voice note.</span>
+              </div>
+              <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}"><button onClick="{{toggleLang}}" aria-label="{{langAria}}" title="Voice language" style="height:36px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:18px;background:var(--bg);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:var(--accent)">translate</span>{{langLabel}}<span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:var(--muted)">swap_horiz</span></button></sc-if>
+            </div>
+            <sc-if value="{{hasHatTag}}"><div style="display:flex"><span style="height:34px;padding:0 4px 0 12px;display:inline-flex;align-items:center;gap:6px;border-radius:17px;background:var(--info-tint);color:var(--info);font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;">sell</span>About <span style="font-family:'JetBrains Mono',monospace">{{hatTag}}</span><button onClick="{{removeHatTag}}" aria-label="Remove hat tag" style="width:30px;height:30px;border:0;border-radius:15px;background:transparent;color:inherit;cursor:pointer;font-family:'Material Symbols Rounded';font-size:16px">close</button></span></div></sc-if>
+            <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}">
+              <sc-if value="{{hasVoiceNotice}}">
+                <div role="{{vn.role}}" style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-radius:12px;border:1px solid {{vn.border}};background:{{vn.bg}};animation:tt-in 160ms ease both">
+                  <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:{{vn.color}}">{{vn.icon}}</span>
+                  <span style="flex:1 1 200px;font-size:14px;font-weight:500;text-wrap:pretty">{{vn.text}}</span>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                    <sc-if value="{{vn.hasLink}}"><a href="#" onClick="{{vn.onLink}}" style="font-weight:600;font-size:13px;padding:8px 4px">{{vn.link}}</a></sc-if>
+                    <sc-if value="{{vn.hasSecondary}}"><button onClick="{{vn.onSecondary}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">keyboard</span>{{vn.secondary}}</button></sc-if>
+                    <sc-if value="{{vn.hasPrimary}}"><button onClick="{{vn.onPrimary}}" style="height:40px;padding:0 14px;display:flex;align-items:center;gap:5px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">mic</span>{{vn.primary}}</button></sc-if>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{isReviewV}}"><div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent)"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">fact_check</span>Check the transcript, then send.</div></sc-if>
+              <sc-if value="{{isRecordingV}}">
+                <div aria-live="polite" aria-label="Live transcript" style="min-height:98px;border:1.5px solid var(--err);border-radius:12px;padding:12px 14px;background:var(--bg);font-size:15px;line-height:1.6">
+                  <sc-if value="{{noWordsYet}}"><span style="color:var(--muted)">Listening… start talking.</span></sc-if>
+                  <sc-for list="{{liveWords}}" as="w"><span title="{{w.tip}}" style="display:inline;margin-right:.28em;color:{{w.color}};text-decoration-line:{{w.deco}};text-decoration-style:wavy;text-decoration-color:var(--warn);text-underline-offset:5px;transition:color 200ms">{{w.w}}</span></sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{notRecordingV}}" hint-placeholder-val="{{true}}">
+              <textarea ref="{{taRef}}" value="{{note}}" onChange="{{onNote}}" readOnly="{{isRunning}}" placeholder="{{placeholder}}" rows="{{taRows}}" aria-label="Note for the assistant" title="Press / to focus" style="width:100%;resize:none;border:1px solid {{taBorder}};border-radius:12px;padding:12px 14px;background:var(--bg);font-size:15px;line-height:1.5;opacity:{{taOpacity}};outline:none;transition:border-color 150ms" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)"></textarea>
+              </sc-if>
+              <sc-if value="{{hasUnsure}}">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)">
+                  <span style="display:flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:var(--warn)">hearing</span>Not sure I heard these right. Tap to retype:</span>
+                  <sc-for list="{{unsure}}" as="u"><button onClick="{{u.onClick}}" title="Not sure I heard this right." style="height:36px;padding:0 10px;border:1px solid var(--warn);border-radius:8px;background:var(--warn-tint);font-weight:600;font-size:14px;cursor:pointer;color:var(--ink);text-decoration:underline wavy var(--warn);text-underline-offset:5px">{{u.w}}</button></sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{overLimit}}"><div style="display:flex;align-items:center;gap:6px;color:var(--err);font-size:13px;margin-top:-4px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">error</span>Keep notes under 1000 characters.</div></sc-if>
+            </sc-if>
+            <sc-if value="{{mobileCardHint}}"><p style="margin:-4px 0 0;font-size:13px;color:var(--muted)">The mic is at the bottom of your screen. Nothing is saved until you approve.</p></sc-if>
+            <sc-if value="{{showChips}}" hint-placeholder-val="{{true}}">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+                <span style="font-size:12px;color:var(--muted)">Or try an example:</span>
+                <sc-for list="{{exampleChips}}" as="c" hint-placeholder-count="3">
+                  <button onClick="{{c.onClick}}" style="height:32px;padding:0 12px;border:1px solid var(--line);border-radius:16px;background:transparent;cursor:pointer;font-size:13px;color:var(--ink);transition:background 150ms" style-hover="background:var(--accent-tint);border-color:var(--accent)">{{c.label}}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{deskIdleFooter}}" hint-placeholder-val="{{true}}">
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <span title="Photos are coming soon." style="display:inline-flex"><button disabled="{{true}}" aria-label="Attach photo (coming soon)" style="width:40px;height:44px;border:1px solid var(--line);border-radius:10px;background:transparent;font-family:'Material Symbols Rounded';font-size:20px">attach_file</button></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:{{countColor}}">{{count}} / 1000</span>
+                <div style="flex:1"></div>
+                <sc-if value="{{isReviewV}}">
+                  <button onClick="{{discardVoice}}" style="height:44px;padding:0 12px;display:flex;align-items:center;gap:4px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-weight:600;cursor:pointer" style-hover="background:var(--surface2);color:var(--err)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;">delete</span>Discard</button>
+                  <button onClick="{{reRecord}}" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;">mic</span>Re-record</button>
+                </sc-if>
+                <sc-if value="{{showDeskMic}}" hint-placeholder-val="{{true}}">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="font-size:13px;font-weight:600;color:var(--muted)">Click to talk</span>
+                    <div style="position:relative;width:72px;height:72px;flex:none;display:grid;place-items:center">
+                    <sc-if value="{{isRecordingV}}">{{pulse}}</sc-if>
+                    <button onClick="{{micClick}}" aria-label="{{micAria}}" aria-pressed="{{isRecordingV}}" title="{{micTitle}}" style="position:relative;width:72px;height:72px;border-radius:36px;border:0;background:{{micBg}};color:{{micFg}};font-family:'Material Symbols Rounded';font-size:34px;line-height:1;cursor:pointer;box-shadow:var(--shadow);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:background 150ms,transform 150ms" style-hover="transform:scale(1.04)" style-active="transform:scale(.96)">{{micIcon}}</button>
+                  </div>
+                  </div>
+                </sc-if>
+                <button onClick="{{send}}" disabled="{{sendDisabled}}" title="Send (⌘ Enter)" style="height:44px;padding:0 18px;display:flex;align-items:center;gap:8px;border:{{sendBorder}};border-radius:10px;background:{{sendBg}};color:{{sendColor}};font-weight:600;cursor:pointer;transition:background 150ms" style-active="transform:translateY(1px)">
+                  <span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;">send</span>Send
+                </button>
+              </div>
+            </sc-if>
+            <sc-if value="{{deskRecFooter}}">
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                <span style="display:flex;align-items:center;gap:8px;color:var(--err);font-weight:700"><span style="width:10px;height:10px;border-radius:5px;background:var(--err);animation:tt-blink 1s ease-in-out infinite"></span>Recording</span>
+                <span style="height:32px;display:flex;align-items:center;color:var(--err)">{{wave}}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;color:{{timerColor}}">{{timer}}</span>
+                <span style="font-size:12px;color:var(--muted)">Up to 2 minutes</span>
+                <div style="flex:1"></div>
+                <button onClick="{{cancelRec}}" style="height:44px;padding:0 12px;display:flex;align-items:center;gap:4px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;">delete</span>Cancel</button>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="font-size:13px;font-weight:600;color:var(--err)">Click to stop</span>
+                  <div style="position:relative;width:72px;height:72px;flex:none;display:grid;place-items:center">
+                    <sc-if value="{{isRecordingV}}">{{pulse}}</sc-if>
+                    <button onClick="{{micClick}}" aria-label="{{micAria}}" aria-pressed="{{isRecordingV}}" title="{{micTitle}}" style="position:relative;width:72px;height:72px;border-radius:36px;border:0;background:{{micBg}};color:{{micFg}};font-family:'Material Symbols Rounded';font-size:34px;line-height:1;cursor:pointer;box-shadow:var(--shadow);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:background 150ms,transform 150ms" style-hover="transform:scale(1.04)" style-active="transform:scale(.96)">{{micIcon}}</button>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{isRunning}}">
+              <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;padding-top:4px">
+                <ol aria-live="polite" style="list-style:none;margin:0;padding:0;flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px">
+                  <sc-for list="{{stepItems}}" as="s">
+                    <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:{{s.color}};animation:tt-in 180ms ease both">
+                      <sc-if value="{{s.isDone}}"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--ok)">check_circle</span></sc-if>
+                      <sc-if value="{{s.isCurrent}}"><span style="width:18px;display:grid;place-items:center;color:var(--accent)">{{spinner}}</span></sc-if>
+                      {{s.text}}
+                    </li>
+                  </sc-for>
+                </ol>
+                <button onClick="{{stopRun}}" style="height:44px;padding:0 16px;display:{{desktopFlex}};align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;font-weight:600" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">stop_circle</span>Stop</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{isFailed}}">
+              <div role="alert" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--err);background:var(--err-tint);border-radius:12px">
+                <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--err)">error</span>
+                <span style="flex:1;min-width:200px;font-weight:500">The assistant couldn't finish. Your note is still here.</span>
+                <button onClick="{{send}}" style="height:36px;padding:0 14px;border:0;border-radius:9px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Try again</button>
+                <button onClick="{{viewRun}}" style="height:36px;padding:0 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;cursor:pointer">View details</button>
+              </div>
+            </sc-if>
+          </section>
+
+          <sc-if value="{{hasRun}}">
+            <div style="display:flex;flex-direction:column;gap:10px;animation:tt-in 200ms ease both">
+              <div style="align-self:flex-end;max-width:86%;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                <span style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px"><sc-if value="{{saidVoice}}"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:var(--accent)">mic</span></sc-if>{{saidLabel}}<sc-if value="{{hasSubmittedTag}}"><span style="font-weight:600;color:var(--info)">· About {{submittedTag}}</span></sc-if></span>
+                <blockquote style="margin:0;padding:10px 14px;background:var(--surface2);border-radius:14px 14px 4px 14px;font-size:14px">“{{submitted}}”</blockquote>
+                <button onClick="{{editNote}}" style="border:0;background:transparent;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer;padding:4px 0">Edit note</button>
+              </div>
+              <div style="display:flex;gap:10px;max-width:92%">
+                <span aria-hidden="true" style="width:30px;height:30px;flex:none;border-radius:15px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:18px">auto_awesome</span>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <span style="font-size:12px;font-weight:600;color:var(--muted)">Assistant</span>
+                  <div style="padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:4px 14px 14px 14px">I understood: Rosa finished 3 Fino hats (18 rows per inch), TQ-7F3K2 is washed and goes to bleaching, TQ-2C5P0 is done, and Carmen's hat may be graded wrong. I prepared 4 actions for you to review.</div>
+                  <sc-if value="{{isAdmin}}"><div style="font-size:12px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap"><span>4 tool calls</span><span>·</span><span>2.1 s</span><span>·</span><span>$0.004</span><span>·</span><a href="#" onClick="{{viewRun}}" style="font-weight:600">View trace</a></div></sc-if>
+                  <sc-if value="{{isMember}}"><div style="font-size:12px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap"><span>4 actions prepared</span><span>·</span><span>2.1 s</span></div></sc-if>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{showEmpty}}" hint-placeholder-val="{{true}}">
+            <div style="border:1px dashed var(--line);border-radius:16px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:repeating-linear-gradient(45deg,transparent 0 10px,var(--surface2) 10px 11px),repeating-linear-gradient(-45deg,transparent 0 10px,var(--surface2) 10px 11px)">
+              <span style="width:44px;height:44px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px;color:var(--muted)">inbox</span>
+              <p style="margin:0;max-width:380px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:6px">No proposals yet. Hold the mic and tell me what happened, and I'll prepare changes for you to approve.</p>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{showPanel}}">
+            <section aria-label="Proposal review" style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <h2 style="margin:0;font-size:18px;font-weight:600;flex:1;min-width:180px">Review proposals ({{proposalCount}})</h2>
+                <button onClick="{{rejectAll}}" disabled="{{noneOpen}}" style="height:44px;padding:0 12px;border:0;background:transparent;color:var(--muted);font-weight:600;cursor:pointer;border-radius:10px" style-hover="background:var(--surface2);color:var(--ink)">Reject all</button>
+                <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}">
+                  <button onClick="{{approveAll}}" disabled="{{approveAllDisabled}}" style="height:44px;padding:0 16px;display:flex;align-items:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer" style-hover="background:var(--accent-strong)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">done_all</span>Approve all valid ({{approveAllCount}})</button>
+                </sc-if>
+              </div>
+              <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)">
+                <span style="display:flex;align-items:center;gap:6px"><span style="width:18px;height:12px;border:1.5px dashed var(--accent);border-radius:3px;background:var(--accent-tint)"></span>Proposed by AI</span>
+                <span style="display:flex;align-items:center;gap:6px"><span style="width:18px;height:12px;border:1.5px solid var(--ok);border-radius:3px;background:var(--ok-tint)"></span>Approved</span>
+                <span style="display:flex;align-items:center;gap:6px"><span style="width:18px;height:12px;border:1.5px solid var(--err);border-radius:3px;background:var(--err-tint)"></span>Blocked by rules</span>
+                <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}"><span style="display:flex;align-items:center;gap:6px;margin-left:auto">Focus a card, then <kbd style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:1px 5px;border:1px solid var(--line);border-radius:4px">A</kbd><kbd style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:1px 5px;border:1px solid var(--line);border-radius:4px">E</kbd><kbd style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:1px 5px;border:1px solid var(--line);border-radius:4px">R</kbd></span></sc-if>
+              </div>
+
+              <sc-for list="{{proposals}}" as="p" hint-placeholder-count="4">
+                <article tabIndex="0" onFocus="{{p.onFocus}}" aria-label="{{p.aria}}" style="border:1.5px {{p.borderStyle}} {{p.borderColor}};background:{{p.bg}};border-radius:14px;padding:{{p.pad}};display:flex;flex-direction:column;gap:12px;transition:background 180ms,border-color 180ms;animation:tt-in 200ms ease both">
+                  <sc-if value="{{p.collapsed}}">
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:13px">
+                      <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">block</span>
+                      <span style="text-decoration:line-through;flex:1;min-width:180px">{{p.summary}}</span>
+                      <span>{{p.collapsedLabel}} ·</span>
+                      <button onClick="{{p.onRestore}}" style="border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer;padding:6px 0">Restore</button>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{p.expandedCard}}" hint-placeholder-val="{{true}}">
+                    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+                      <div style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:10px">
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                          <span style="display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:6px;background:var(--surface);border:1px solid var(--line);font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:{{p.typeColor}}">{{p.typeIcon}}</span>{{p.type}}</span>
+                          <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:var(--accent)">auto_awesome</span>Proposed by AI</span>
+                          <span style="display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:11px;font-size:12px;font-weight:600;background:{{p.confBg}};color:{{p.confColor}}"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">{{p.confIcon}}</span>{{p.confLabel}}</span>
+                          <sc-if value="{{p.edited}}"><span style="height:22px;padding:0 8px;border-radius:11px;font-size:12px;font-weight:600;background:var(--surface2);display:inline-flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">edit</span>{{p.editedLabel}}</span></sc-if>
+                          <sc-if value="{{p.hasStatusTag}}"><span style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:{{p.statusColor}}"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{p.statusIcon}}</span>{{p.statusLabel}}</span></sc-if>
+                        </div>
+                        <div style="font-size:15px;font-weight:600;line-height:1.4">{{p.summary}}</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+                          <sc-for list="{{p.chips}}" as="c">
+                            <span style="display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:7px;background:var(--surface);border:1px solid var(--line);font-size:12px"><span style="color:var(--muted)">{{c.k}}</span><span style="font-weight:600;font-family:{{c.font}}">{{c.v}}</span></span>
+                          </sc-for>
+                          <sc-if value="{{p.showStepper}}">
+                            <span aria-label="{{p.stepAria}}" style="display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:7px;background:var(--surface);border:1px solid var(--line);font-size:12px;font-weight:600">
+                              {{p.from}}<span style="width:9px;height:9px;border-radius:5px;background:var(--ink)"></span><span style="color:var(--muted)">→</span><span style="width:9px;height:9px;border-radius:5px;border:1.5px solid {{p.toDot}}"></span><span style="color:{{p.toColor}}">{{p.to}}</span>
+                            </span>
+                          </sc-if>
+                        </div>
+                        <div>
+                          <button onClick="{{p.onWhy}}" aria-expanded="{{p.whyOpen}}" style="border:0;background:transparent;padding:4px 0;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:2px">Why?<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">{{p.whyIcon}}</span></button>
+                          <sc-if value="{{p.whyOpen}}"><p style="margin:4px 0 0;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted);animation:tt-in 160ms ease both">{{p.why}}</p></sc-if>
+                        </div>
+                      </div>
+                      <sc-if value="{{p.showActions}}">
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:{{p.actionsFlex}};justify-content:flex-end">
+                          <button onClick="{{p.onReject}}" disabled="{{p.isApproving}}" title="Reject (R)" style="height:44px;padding:0 12px;display:flex;align-items:center;gap:4px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-weight:600;cursor:pointer" style-hover="background:var(--surface2);color:var(--ink)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">close</span>Reject</button>
+                          <button onClick="{{p.onEdit}}" disabled="{{p.isApproving}}" title="Edit (E)" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">edit</span>Edit</button>
+                          <sc-if value="{{p.canApprove}}">
+                            <button onClick="{{p.onApprove}}" disabled="{{p.isApproving}}" title="Approve (A)" style="height:44px;width:{{p.approveW}};flex:{{p.approveFlex}};justify-content:center;display:flex;align-items:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer" style-hover="background:var(--accent-strong)" style-active="transform:translateY(1px)">
+                              <sc-if value="{{p.isApproving}}">{{spinner}}</sc-if>
+                              <sc-if value="{{p.notApproving}}"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">check</span></sc-if>
+                              {{p.approveLabel}}
+                            </button>
+                          </sc-if>
+                        </div>
+                      </sc-if>
+                    </div>
+
+                    <sc-if value="{{p.isBlocked}}">
+                      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;border-radius:10px;background:var(--surface);border:1px solid var(--err)">
+                        <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--err)">lock</span>
+                        <span style="flex:1 1 240px;font-size:13px;font-weight:500">{{p.blockMsg}}</span>
+                        <button onClick="{{p.onDismiss}}" style="height:36px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)">Dismiss</button>
+                        <button onClick="{{p.onFix}}" style="height:36px;padding:0 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)">Change to {{p.nextStage}}</button>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{p.isQuestion}}">
+                      <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:10px;background:var(--surface);border:1px solid var(--warn)">
+                        <div style="display:flex;align-items:center;gap:8px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--warn)">help</span>I found 2 weavers named Rosa. Which one?</div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                          <sc-for list="{{p.answers}}" as="a">
+                            <button onClick="{{a.onClick}}" style="min-height:36px;padding:0 14px;border:1px solid var(--line);border-radius:18px;background:var(--bg);font-weight:500;cursor:pointer" style-hover="border-color:var(--warn);background:var(--warn-tint)">{{a.label}}</button>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{p.isFailed}}">
+                      <div role="alert" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;border-radius:10px;background:var(--err-tint);border:1px solid var(--err)">
+                        <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--err)">sync_problem</span>
+                        <span style="flex:1 1 240px;font-size:13px;font-weight:500">Couldn't save this change. Someone may have updated this hat.</span>
+                        <sc-if value="{{isAdmin}}"><button onClick="{{viewLog}}" style="height:36px;padding:0 12px;border:0;border-radius:9px;background:transparent;font-weight:600;cursor:pointer" style-hover="background:var(--surface)">View log</button></sc-if>
+                        <sc-if value="{{isMember}}"><button onClick="{{copyRef}}" title="Copy reference" style="height:36px;padding:0 10px;display:flex;align-items:center;gap:6px;border:0;border-radius:9px;background:transparent;font-size:12px;cursor:pointer" style-hover="background:var(--surface)"><span style="color:var(--muted)">Reference:</span><span style="font-family:'JetBrains Mono',monospace">req_8f2a</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">content_copy</span></button></sc-if>
+                        <button onClick="{{p.onRetry}}" style="height:36px;padding:0 14px;border:0;border-radius:9px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Refresh and retry</button>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{p.isApproved}}">
+                      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ok);font-weight:600">
+                        <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">verified_user</span>Approved by you · just now
+                        <sc-if value="{{p.undoable}}"><button onClick="{{p.onUndo}}" style="border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer;padding:4px 6px">Undo</button></sc-if>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{p.isEditing}}">
+                      <div style="display:flex;flex-direction:column;gap:14px;padding-top:12px;border-top:1px solid var(--line)">
+                        <sc-if value="{{p.editCreate}}">
+                          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+                            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Quantity
+                              <span style="display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--bg);height:44px;width:max-content">
+                                <button onClick="{{p.onQtyDown}}" aria-label="Decrease quantity" style="width:40px;height:38px;border:0;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">remove</button>
+                                <span style="min-width:36px;text-align:center;font-weight:600;font-size:15px">{{p.draft.qty}}</span>
+                                <button onClick="{{p.onQtyUp}}" aria-label="Increase quantity" style="width:40px;height:38px;border:0;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">add</button>
+                              </span>
+                            </label>
+                            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Grade
+                              <div role="radiogroup" aria-label="Grade" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);height:44px">
+                                <sc-for list="{{p.gradeOpts}}" as="g">
+                                  <button role="radio" aria-checked="{{g.on}}" onClick="{{g.onClick}}" style="flex:1;border:0;border-radius:7px;background:{{g.bg}};color:{{g.color}};font-weight:600;font-size:13px;cursor:pointer;box-shadow:{{g.shadow}}">{{g.label}}</button>
+                                </sc-for>
+                              </div>
+                            </div>
+                            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Rows per inch
+                              <input type="number" min="6" max="40" value="{{p.draft.rows}}" onChange="{{p.onRows}}" style="height:44px;border:1px solid {{p.rowsBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:500;font-size:15px;outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)">
+                            </label>
+                            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Weaver
+                              <select value="{{p.draft.weaver}}" onChange="{{p.onWeaver}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:500">
+                                <option value="">Choose a weaver…</option>
+                                <sc-for list="{{weaverOptions}}" as="w"><option value="{{w}}">{{w}}</option></sc-for>
+                                <option value="__new">+ Add new weaver</option>
+                              </select>
+                            </label>
+                          </div>
+                          <sc-if value="{{p.mismatch}}"><div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--warn);font-weight:500"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">warning</span>{{p.mismatchMsg}}<button onClick="{{p.onUseSuggested}}" style="border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer;padding:2px 4px">Use {{p.suggested}}</button></div></sc-if>
+                          <sc-if value="{{p.rowsError}}"><div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--err);font-weight:500"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">error</span>Rows per inch must be between 6 and 40.</div></sc-if>
+                        </sc-if>
+                        <sc-if value="{{p.editAdvance}}">
+                          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;max-width:320px">Stage
+                            <select value="{{p.draft.to}}" onChange="{{p.onTo}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:500">
+                              <sc-for list="{{p.stageOpts}}" as="o"><option value="{{o.label}}" disabled="{{o.disabled}}">{{o.text}}</option></sc-for>
+                            </select>
+                            <span style="font-weight:400;color:var(--muted);display:flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">lock</span>Stages can't be skipped. Only {{p.nextStage}} is allowed next.</span>
+                          </label>
+                        </sc-if>
+                        <sc-if value="{{p.editFlag}}">
+                          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Flag message
+                            <textarea rows="2" value="{{p.draft.message}}" onChange="{{p.onMessage}}" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);resize:vertical;font-weight:400"></textarea>
+                          </label>
+                        </sc-if>
+                        <div style="display:flex;gap:8px;justify-content:flex-end">
+                          <button onClick="{{p.onCancelEdit}}" style="height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer" style-hover="background:var(--surface2)">Cancel</button>
+                          <button onClick="{{p.onSave}}" disabled="{{p.saveDisabled}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer" style-hover="background:var(--accent-strong)">Save changes</button>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </sc-if>
+                </article>
+              </sc-for>
+
+              <sc-if value="{{allDone}}">
+                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 20px;border-radius:14px;border:1.5px solid var(--ok);background:var(--ok-tint);animation:tt-in 220ms ease both">
+                  <span style="width:40px;height:44px;border-radius:20px;background:var(--ok);color:var(--surface);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px">task_alt</span>
+                  <div style="flex:1;min-width:180px"><div style="font-weight:700;font-size:15px">All done.</div><div style="color:var(--muted)">{{doneText}}</div></div>
+                  <button onClick="{{viewHats}}" style="height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">View updated hats</button>
+                  <button onClick="{{writeAnother}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Write another note</button>
+                </div>
+              </sc-if>
+            </section>
+          </sc-if>
+        </div>
+
+        <aside style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{firstRun}}">
+            <section aria-label="Get started" style="border-radius:18px;padding:8px;background:repeating-linear-gradient(45deg,transparent 0 4px,var(--straw) 4px 6px),repeating-linear-gradient(-45deg,transparent 0 4px,var(--straw) 4px 6px),var(--cream)">
+              <div style="background:var(--surface);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px">
+                <div><h2 style="margin:0;font-family:Newsreader,serif;font-size:24px;font-weight:500">Let's add your first hat</h2><p style="margin:4px 0 0;color:var(--muted);font-size:13px">{{obDone}} of 3 done</p></div>
+                <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px">
+                  <sc-for list="{{onboarding}}" as="o">
+                    <li style="display:flex;align-items:center;gap:10px;min-height:44px">
+                      <span role="checkbox" aria-checked="{{o.done}}" aria-label="{{o.label}}" style="width:24px;height:24px;flex:none;border-radius:7px;border:1.5px solid {{o.border}};background:{{o.bg}};color:var(--surface);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:17px">{{o.check}}</span>
+                      <span style="flex:1;font-weight:500;text-decoration:{{o.strike}};color:{{o.color}}">{{o.label}}</span>
+                      <sc-if value="{{o.showBtn}}"><span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><button onClick="{{o.onClick}}" disabled="{{o.disabled}}" title="{{o.tip}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid {{o.btnBorder}};border-radius:9px;background:{{o.btnBg}};color:{{o.btnColor}};font-weight:600;cursor:pointer;white-space:nowrap"><sc-if value="{{o.hasIcon}}"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">mic</span></sc-if>{{o.btn}}</button><sc-if value="{{o.hasLink}}"><button onClick="{{o.onLink}}" style="border:0;background:transparent;padding:2px 0;color:var(--accent);font-weight:600;font-size:12.5px;cursor:pointer">{{o.link}}</button></sc-if></span></sc-if>
+                    </li>
+                  </sc-for>
+                </ol>
+                <sc-if value="{{shareLocked}}"><span style="font-size:12px;color:var(--muted)">Sharing unlocks after your first hat exists.</span></sc-if>
+              </div>
+            </section>
+          </sc-if>
+          <sc-if value="{{notFirstRun}}" hint-placeholder-val="{{true}}">
+          <section aria-label="Today" style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px">
+            <h2 style="margin:0 0 12px;font-size:15px;font-weight:600">Today</h2>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+              <sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+                <button onClick="{{s.onClick}}" style="text-align:left;padding:12px;border:1px solid {{s.border}};border-radius:12px;background:{{s.bg}};cursor:pointer;display:flex;flex-direction:column;gap:2px;transition:border-color 150ms" style-hover="border-color:var(--accent)">
+                  <span style="font-size:26px;font-weight:600;letter-spacing:-.02em;color:{{s.color}};display:flex;align-items:center;gap:6px">{{s.value}}<sc-if value="{{s.warn}}"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">flag</span></sc-if></span>
+                  <span style="font-size:12px;color:var(--muted);font-weight:500">{{s.label}}</span>
+                </button>
+              </sc-for>
+            </div>
+          </section>
+          <section aria-label="Recent activity" style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <h2 style="margin:0;font-size:15px;font-weight:600">Recent activity</h2>
+              <sc-if value="{{isAdmin}}"><a href="#" onClick="{{viewLog}}" style="font-size:13px;font-weight:600">View all in Logs</a></sc-if>
+            </div>
+            <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">
+              <sc-for list="{{activity}}" as="a" hint-placeholder-count="6">
+                <li>
+                  <button onClick="{{a.onClick}}" title="{{a.abs}}" style="width:100%;display:flex;gap:10px;align-items:flex-start;text-align:left;padding:10px 6px;border:0;border-bottom:1px solid var(--line);background:transparent;cursor:pointer;border-radius:6px" style-hover="background:var(--surface2)">
+                    <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1.2;color:{{a.color}}">{{a.icon}}</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font-size:13px">{{a.text}}</span><span style="font-size:12px;color:var(--muted)">{{a.actor}} · {{a.time}}</span></span>
+                  </button>
+                </li>
+              </sc-for>
+            </ul>
+          </section>
+          </sc-if>
+        </aside>
+      </div>
+      <sc-if value="{{mobile}}"><div style="height:{{mobileSpacer}}"></div></sc-if>
+    </main>
+
+    <sc-if value="{{mobile}}">
+      <div style="position:fixed;left:0;right:0;bottom:64px;z-index:25;padding:10px 12px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgb(40 30 10 / .07);display:flex;flex-direction:column;gap:6px">
+        <sc-if value="{{mobileApproveBar}}">
+          <div style="display:flex;gap:8px;align-items:center">
+            <button onClick="{{micDuringReview}}" aria-label="Record another update" title="Record another update" style="width:48px;height:48px;flex:none;border:0;border-radius:24px;background:var(--accent-tint);color:var(--accent);cursor:pointer;font-family:'Material Symbols Rounded';font-size:24px;line-height:1">mic</button>
+            <button onClick="{{rejectAll}}" disabled="{{noneOpen}}" style="height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600;cursor:pointer">Reject all</button>
+            <button onClick="{{approveAll}}" disabled="{{approveAllDisabled}}" style="flex:1;height:48px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:15px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">done_all</span>Approve all valid ({{approveAllCount}})</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{mobileComposer}}">
+          <sc-if value="{{hasVoiceNotice}}">
+                <div role="{{vn.role}}" style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-radius:12px;border:1px solid {{vn.border}};background:{{vn.bg}};animation:tt-in 160ms ease both">
+                  <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:{{vn.color}}">{{vn.icon}}</span>
+                  <span style="flex:1 1 200px;font-size:14px;font-weight:500;text-wrap:pretty">{{vn.text}}</span>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                    <sc-if value="{{vn.hasLink}}"><a href="#" onClick="{{vn.onLink}}" style="font-weight:600;font-size:13px;padding:8px 4px">{{vn.link}}</a></sc-if>
+                    <sc-if value="{{vn.hasSecondary}}"><button onClick="{{vn.onSecondary}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">keyboard</span>{{vn.secondary}}</button></sc-if>
+                    <sc-if value="{{vn.hasPrimary}}"><button onClick="{{vn.onPrimary}}" style="height:40px;padding:0 14px;display:flex;align-items:center;gap:5px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">mic</span>{{vn.primary}}</button></sc-if>
+                  </div>
+                </div>
+              </sc-if>
+          <sc-if value="{{mRecording}}">
+            <div aria-live="polite" aria-label="Live transcript" style="max-height:112px;overflow:auto;padding:10px 12px;border-radius:12px;background:var(--bg);border:1.5px solid var(--err);font-size:16px;line-height:1.5">
+              <sc-if value="{{noWordsYet}}"><span style="color:var(--muted)">Listening… start talking.</span></sc-if>
+              <sc-for list="{{liveWords}}" as="w"><span title="{{w.tip}}" style="display:inline;margin-right:.28em;color:{{w.color}};text-decoration-line:{{w.deco}};text-decoration-style:wavy;text-decoration-color:var(--warn);text-underline-offset:5px;transition:color 200ms">{{w.w}}</span></sc-for>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px;height:28px">
+              <span style="width:8px;height:8px;border-radius:4px;background:var(--err);animation:tt-blink 1s ease-in-out infinite"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;color:{{timerColor}}">{{timer}}</span>
+              <span style="color:var(--err);display:flex;align-items:center;height:28px;overflow:hidden">{{wave}}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px">
+              <div style="justify-self:start;min-width:0">
+                <sc-if value="{{holding}}"><span style="font-size:14px;color:{{slideColor}};font-weight:600;display:flex;align-items:center;gap:0;white-space:nowrap;transform:translateX({{slidePx}});transition:color 120ms"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;">chevron_left</span>Slide to cancel</span></sc-if>
+                <sc-if value="{{tapMode}}"><button onClick="{{cancelRec}}" aria-label="Cancel recording" style="height:44px;padding:0 12px;display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:22px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:var(--err)">delete</span>Cancel</button></sc-if>
+              </div>
+              <div style="position:relative;width:72px;height:72px;flex:none;display:grid;place-items:center">
+                    <sc-if value="{{isRecordingV}}">{{pulse}}</sc-if>
+                    <button onPointerDown="{{micDown}}" onPointerMove="{{micMove}}" onPointerUp="{{micUp}}" onPointerCancel="{{micUp}}" onContextMenu="{{prevent}}" aria-label="{{micAria}}" aria-pressed="{{isRecordingV}}" title="{{micTitle}}" style="position:relative;width:72px;height:72px;border-radius:36px;border:0;background:{{micBg}};color:{{micFg}};font-family:'Material Symbols Rounded';font-size:34px;line-height:1;cursor:pointer;box-shadow:var(--shadow);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:background 150ms,transform 150ms" style-hover="transform:scale(1.04)" style-active="transform:scale(.96)">{{micIcon}}</button>
+                  </div>
+              <span style="justify-self:end;font-size:12.5px;font-weight:600;color:var(--err);text-align:right">{{recHint}}</span>
+            </div>
+            <span style="text-align:center;font-size:11.5px;color:var(--muted)">Up to 2 minutes</span>
+          </sc-if>
+          <sc-if value="{{mReview}}">
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent)"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">fact_check</span>Check the transcript, then send.</div>
+            <textarea ref="{{taRef}}" value="{{note}}" onChange="{{onNote}}" rows="{{dockRows}}" aria-label="Transcript" style="width:100%;resize:none;border:1px solid {{taBorder}};border-radius:14px;padding:12px 14px;background:var(--bg);font-size:16px;line-height:1.45;outline:none" style-focus="border-color:var(--accent)"></textarea>
+            <sc-if value="{{hasUnsure}}">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)">
+                  <span style="display:flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:var(--warn)">hearing</span>Not sure I heard these right. Tap to retype:</span>
+                  <sc-for list="{{unsure}}" as="u"><button onClick="{{u.onClick}}" title="Not sure I heard this right." style="height:36px;padding:0 10px;border:1px solid var(--warn);border-radius:8px;background:var(--warn-tint);font-weight:600;font-size:14px;cursor:pointer;color:var(--ink);text-decoration:underline wavy var(--warn);text-underline-offset:5px">{{u.w}}</button></sc-for>
+                </div>
+              </sc-if>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button onClick="{{discardVoice}}" aria-label="Discard" style="width:48px;height:48px;flex:none;border:1px solid var(--line);border-radius:24px;background:var(--surface);cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px;color:var(--err)">delete</button>
+              <button onClick="{{reRecord}}" style="height:48px;padding:0 14px;flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:24px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;">mic</span>Re-record</button>
+              <button onClick="{{send}}" disabled="{{sendDisabled}}" style="flex:1;height:48px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:24px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;">send</span>Send</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{mTyping}}">
+            <sc-if value="{{overLimit}}"><div style="display:flex;align-items:center;gap:6px;color:var(--err);font-size:12px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;">error</span>Keep notes under 1000 characters.</div></sc-if>
+            <div style="display:flex;gap:6px;align-items:flex-end">
+              <sc-if value="{{micSupported}}"><button onClick="{{backToVoice}}" aria-label="Use voice instead" style="width:44px;height:48px;flex:none;border:0;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:26px;color:var(--accent)">mic</button></sc-if>
+              <textarea ref="{{taRef}}" value="{{note}}" onChange="{{onNote}}" readOnly="{{isRunning}}" placeholder="{{placeholder}}" rows="{{dockRows}}" aria-label="Note for the assistant" style="flex:1;min-width:0;resize:none;border:1px solid {{taBorder}};border-radius:22px;padding:12px 16px;background:var(--bg);font-size:16px;line-height:1.4;opacity:{{taOpacity}};outline:none" style-focus="border-color:var(--accent)"></textarea>
+              <sc-if value="{{isRunning}}"><button onClick="{{stopRun}}" aria-label="Stop" style="width:48px;height:48px;flex:none;border:1px solid var(--line);border-radius:24px;background:var(--surface);cursor:pointer;font-family:'Material Symbols Rounded';font-size:24px">stop</button></sc-if>
+              <sc-if value="{{notRunning}}"><button onClick="{{send}}" disabled="{{sendDisabled}}" aria-label="Send" style="width:48px;height:48px;flex:none;border:0;border-radius:24px;background:var(--accent);color:var(--on-accent);cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">send</button></sc-if>
+            </div>
+            <sc-if value="{{showDockCount}}"><span style="align-self:flex-end;margin-right:60px;font-family:'JetBrains Mono',monospace;font-size:11px;color:{{countColor}}">{{count}} / 1000</span></sc-if>
+          </sc-if>
+          <sc-if value="{{mIdle}}" hint-placeholder-val="{{true}}">
+            <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px">
+              <div style="justify-self:start;min-width:0">
+                <sc-if value="{{hasHatTag}}"><span style="height:32px;padding:0 2px 0 10px;display:inline-flex;align-items:center;gap:2px;border-radius:16px;background:var(--info-tint);color:var(--info);font-size:12px;font-weight:600;white-space:nowrap"><span style="font-family:'JetBrains Mono',monospace">{{hatTag}}</span><button onClick="{{removeHatTag}}" aria-label="Remove hat tag" style="width:28px;height:28px;border:0;background:transparent;color:inherit;cursor:pointer;font-family:'Material Symbols Rounded';font-size:15px">close</button></span></sc-if>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+                <div style="position:relative;width:72px;height:72px;flex:none;display:grid;place-items:center">
+                    <sc-if value="{{isRecordingV}}">{{pulse}}</sc-if>
+                    <button onPointerDown="{{micDown}}" onPointerMove="{{micMove}}" onPointerUp="{{micUp}}" onPointerCancel="{{micUp}}" onContextMenu="{{prevent}}" aria-label="{{micAria}}" aria-pressed="{{isRecordingV}}" title="{{micTitle}}" style="position:relative;width:72px;height:72px;border-radius:36px;border:0;background:{{micBg}};color:{{micFg}};font-family:'Material Symbols Rounded';font-size:34px;line-height:1;cursor:pointer;box-shadow:var(--shadow);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:background 150ms,transform 150ms" style-hover="transform:scale(1.04)" style-active="transform:scale(.96)">{{micIcon}}</button>
+                  </div>
+                <span style="font-size:13px;font-weight:700;margin-top:4px">Hold to talk</span>
+                <button onClick="{{typeInstead}}" style="height:32px;padding:0 8px;display:flex;align-items:center;gap:5px;border:0;background:transparent;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;">keyboard</span>Type instead</button>
+              </div>
+              <button onClick="{{toggleLang}}" aria-label="{{langAria}}" style="justify-self:end;height:36px;padding:0 10px;display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:18px;background:var(--bg);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:var(--accent)">translate</span>{{langShort}}</button>
+            </div>
+          </sc-if>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{mobile}}">
+      <nav aria-label="Main" style="position:fixed;left:0;right:0;bottom:0;z-index:30;height:64px;display:grid;grid-template-columns:repeat({{tabCols}},1fr);background:var(--surface);border-top:1px solid var(--line)">
+        <sc-for list="{{nav}}" as="n">
+          <button onClick="{{n.onClick}}" aria-current="{{n.current}}" style="position:relative;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:{{n.tabColor}};font-size:11px;font-weight:{{n.weight}};cursor:pointer">
+            <span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1">{{n.icon}}</span>{{n.short}}
+            <sc-if value="{{n.hasBadge}}"><span style="position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--on-accent);font-size:10px;font-weight:700;display:grid;place-items:center">{{n.badge}}</span></sc-if>
+            <sc-if value="{{n.dot}}"><span style="position:absolute;top:9px;left:calc(50% + 8px);width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+          </button>
+        </sc-for>
+      </nav>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isPassport}}">
+<div style="min-height:100vh;display:flex;flex-direction:column">
+  <header style="height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 {{pageX}};border-bottom:1px solid var(--line);background:var(--bg)">
+    <button onClick="{{goWorkshop}}" aria-label="Toquilla Trace home" style="display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:0;cursor:pointer">
+      <span style="width:28px;height:28px;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span>
+      <span style="font-family:Newsreader,serif;font-size:20px;font-weight:600">Toquilla Trace</span>
+    </button>
+    <sc-if value="{{buyerIn}}" hint-placeholder-val="{{true}}"><button onClick="{{toggleMenu}}" aria-label="Open user menu" style="width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0"><span style="width:32px;height:32px;border-radius:16px;background:var(--straw);display:grid;place-items:center;font-weight:600;font-size:13px">XP</span></button></sc-if>
+    <sc-if value="{{buyerOut}}"><a href="Auth.dc.html#login" style="height:44px;padding:0 16px;display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;color:var(--ink);text-decoration:none">Log in</a></sc-if>
+  </header>
+
+  <main style="flex:1;width:100%;max-width:1080px;margin:0 auto;padding:28px {{pageX}} 120px;display:flex;flex-direction:column;gap:24px">
+    <sc-if value="{{pArchived}}">
+      <div role="status" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:var(--surface2);color:var(--muted);font-size:14px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">inventory_2</span>This hat was archived by its workshop. Its record is still valid.</div>
+    </sc-if>
+
+    <sc-if value="{{pNotVerified}}">
+      <section style="border:2px solid var(--err);background:var(--err-tint);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <span style="width:48px;height:48px;flex:none;border-radius:24px;background:var(--surface);color:var(--err);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:28px">gpp_bad</span>
+          <div>
+            <h1 style="margin:0;font-family:Newsreader,serif;font-size:32px;font-weight:500;line-height:1.15">We can't verify this hat</h1>
+            <p style="margin:8px 0 0;max-width:560px;font-size:15px">The code <span style="font-family:'JetBrains Mono',monospace;font-weight:500">{{badCode}}</span> isn't in our records. It may be mistyped, or the hat may not be genuine.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button onClick="{{openTryCode}}" style="height:44px;padding:0 18px;border:0;border-radius:11px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Try another code</button>
+          <button onClick="{{reportProblem}}" style="height:44px;padding:0 18px;border:1px solid var(--line);border-radius:11px;background:var(--surface);font-weight:600;cursor:pointer">Report a problem</button>
+        </div>
+        <sc-if value="{{tryCode}}">
+          <div style="display:flex;flex-direction:column;gap:6px;max-width:420px">
+            <label for="tt-code" style="font-weight:600;font-size:13px">Have a hat code?</label>
+            <div style="display:flex;gap:8px">
+              <input id="tt-code" value="{{code}}" onChange="{{onCode}}" maxLength="8" placeholder="TQ-XXXXX" aria-invalid="{{codeInvalid}}" style="flex:1;height:44px;border:1px solid {{codeBorder}};border-radius:11px;padding:0 14px;background:var(--surface);font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:.06em;outline:none" style-focus="box-shadow:0 0 0 3px var(--accent-tint)">
+              <button onClick="{{verifyCode}}" disabled="{{codeNotValid}}" style="height:44px;padding:0 18px;border:0;border-radius:11px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Verify</button>
+            </div>
+            <sc-if value="{{codeInvalid}}"><span style="display:flex;align-items:center;gap:4px;color:var(--err);font-size:13px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>Codes look like TQ-7F3K2.</span></sc-if>
+          </div>
+        </sc-if>
+      </section>
+      <section style="padding:4px 4px 0">
+        <h2 style="margin:0 0 10px;font-family:Newsreader,serif;font-size:22px;font-weight:500">How to spot a real Panama hat</h2>
+        <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px;max-width:640px">
+          <li>Hold it up to the light: real toquilla shows a tight, even weave with a small spiral “rosette” at the crown's center.</li>
+          <li>It should feel supple, not stiff or papery, and spring back after a gentle squeeze of the brim.</li>
+          <li>Ask for the hat code and verify it here. Every genuine Toquilla Trace hat has one.</li>
+        </ul>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{pVerified}}" hint-placeholder-val="{{true}}">
+      <div style="padding:10px;border-radius:22px;background:repeating-linear-gradient(45deg,transparent 0 4px,var(--straw) 4px 6px),repeating-linear-gradient(-45deg,transparent 0 4px,var(--straw) 4px 6px),var(--cream)">
+        <section aria-label="Certificate" style="background:var(--cream);border-radius:14px;padding:{{certPad}};display:flex;gap:24px;align-items:center;flex-wrap:wrap;border:1px solid var(--straw)">
+          <div style="color:var(--ok)">{{seal}}</div>
+          <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--ok)">Verified authentic</span>
+            <span style="font-family:Newsreader,serif;font-size:22px;font-weight:500">Recorded by Taller Pillco, Cuenca</span>
+            <span style="color:var(--muted)">Finished Oct 2, 2026</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-start">
+            <span style="font-size:12px;color:var(--muted)">Hat code</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:500;letter-spacing:.04em">TQ-9A1M8</span>
+          </div>
+        </section>
+      </div>
+
+      <section style="display:flex;gap:28px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 380px;aspect-ratio:4/3;border-radius:18px;border:1px solid var(--line);background:repeating-linear-gradient(135deg,var(--straw) 0 10px,var(--cream) 10px 20px);display:grid;place-items:center;min-width:0">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--cream);padding:12px 16px;border-radius:10px">
+            <span style="font-family:'Material Symbols Rounded';font-size:36px;line-height:1;color:var(--muted)">photo_camera</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)">hat photo · 4:3</span>
+          </div>
+        </div>
+        <div style="flex:1 1 340px;display:flex;flex-direction:column;gap:16px;justify-content:center;min-width:0">
+          <span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted)">Grade</span>
+          <h1 style="margin:-10px 0 0;font-family:Newsreader,serif;font-size:{{gradeSize}};font-weight:500;line-height:1;letter-spacing:-.02em">Superfino</h1>
+          <p style="margin:0;font-size:18px;line-height:1.5">Hand-woven by <strong>Manuel Delgado</strong> in Pile, Manabí</p>
+
+          <sc-if value="{{claimed}}">
+            <div role="status" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1.5px solid var(--ok);background:var(--ok-tint)">
+              <div style="color:var(--ok)">{{claimSeal}}</div>
+              <div><div style="font-weight:700">This hat is now registered to you.</div><div style="font-size:13px;color:var(--muted)">Its passport now shows a verified buyer as owner.</div></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;position:relative">
+            <sc-if value="{{notClaimed}}">
+              <button onClick="{{openClaim}}" style="height:48px;padding:0 22px;display:flex;align-items:center;gap:8px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:15px;cursor:pointer" style-hover="background:var(--accent-strong)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">approval</span>Claim this hat</button>
+            </sc-if>
+            <button onClick="{{toggleShare}}" aria-haspopup="menu" style="height:48px;padding:0 18px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600;font-size:15px;cursor:pointer" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">ios_share</span>Share</button>
+            <button onClick="{{openConcierge}}" style="height:48px;padding:0 18px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600;font-size:15px;cursor:pointer" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">forum</span>Ask about this hat</button>
+            <sc-if value="{{shareMenu}}">
+              <div role="menu" style="position:absolute;top:56px;left:{{shareLeft}};z-index:40;min-width:180px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column">
+                <button role="menuitem" onClick="{{copyLink}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">link</span>Copy link</button>
+                <button role="menuitem" onClick="{{showQR}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">qr_code_2</span>Show QR</button>
+              </div>
+            </sc-if>
+          </div>
+          </sc-if>
+        </div>
+      </section>
+
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:visible">
+        <div style="background:var(--surface);padding:16px;border-radius:15px 0 0 15px"><div style="font-size:12px;color:var(--muted);font-weight:600">Rows per inch</div><div style="font-size:24px;font-weight:600;margin-top:2px">32</div></div>
+        <div style="background:var(--surface);padding:16px;position:relative"><div style="font-size:12px;color:var(--muted);font-weight:600">Grade</div><div style="font-size:24px;font-weight:600;margin-top:2px">Superfino</div>
+          <button onClick="{{toggleGradeTip}}" onMouseEnter="{{showGradeTip}}" onMouseLeave="{{hideGradeTip}}" aria-expanded="{{gradeTip}}" style="border:0;background:transparent;padding:4px 0;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">info</span>What does this mean?</button>
+          <sc-if value="{{gradeTip}}"><div role="tooltip" style="position:absolute;z-index:30;left:12px;top:100%;margin-top:-6px;width:260px;padding:10px 12px;border-radius:10px;background:var(--ink);color:var(--bg);font-size:13px;box-shadow:var(--shadow)">Superfino means 25+ rows per inch. Fewer than 1 in 100 hats reach this grade.</div></sc-if>
+        </div>
+        <div style="background:var(--surface);padding:16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Straw</div><div style="font-size:24px;font-weight:600;margin-top:2px">Natural</div></div>
+        <div style="background:var(--surface);padding:16px;border-radius:0 15px 15px 0"><div style="font-size:12px;color:var(--muted);font-weight:600">Size</div><div style="font-size:24px;font-weight:600;margin-top:2px">58 cm</div></div>
+      </section>
+
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <section aria-label="Story" style="flex:3 1 420px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px">
+          <h2 style="margin:0 0 18px;font-family:Newsreader,serif;font-size:26px;font-weight:500">The story of this hat</h2>
+          <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">
+            <sc-for list="{{story}}" as="s" hint-placeholder-count="5">
+              <li style="display:flex;gap:14px">
+                <div style="display:flex;flex-direction:column;align-items:center">
+                  <span style="width:28px;height:28px;flex:none;border-radius:14px;background:var(--ok);color:var(--surface);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:17px">check</span>
+                  <sc-if value="{{s.notLast}}"><span style="flex:1;width:2px;background:var(--ok);opacity:.4;min-height:24px"></span></sc-if>
+                </div>
+                <div style="padding-bottom:18px;display:flex;flex-direction:column;gap:2px">
+                  <span style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><strong style="font-size:16px">{{s.stage}}</strong><span style="font-size:13px;color:var(--muted)">{{s.date}}</span></span>
+                  <span style="color:var(--muted)">{{s.desc}}</span>
+                </div>
+              </li>
+            </sc-for>
+          </ol>
+        </section>
+        <div style="flex:2 1 300px;min-width:0;display:flex;flex-direction:column;gap:20px">
+          <section aria-label="Weaver" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;gap:12px;align-items:center">
+              <span style="width:52px;height:52px;border-radius:26px;background:var(--straw);display:grid;place-items:center;font-family:Newsreader,serif;font-size:20px;font-weight:600">MD</span>
+              <div><div style="font-family:Newsreader,serif;font-size:21px;font-weight:500">Manuel Delgado</div><div style="color:var(--muted);font-size:13px">Pile, Manabí · Weaving since 1985</div></div>
+            </div>
+            <p style="margin:0;font-size:15px;text-wrap:pretty">Manuel learned to weave from his father on the coast of Manabí. He weaves only in the early morning, when the air is humid enough to keep the straw supple.</p>
+            <a href="#" onClick="{{stop}}" style="font-weight:600;font-size:13px">Other hats by Manuel: 4</a>
+          </section>
+          <section aria-label="Ownership" style="background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Ownership</h2>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{chain}}" as="c">
+                <span style="height:30px;padding:0 12px;border-radius:15px;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;border:1.5px {{c.borderStyle}} {{c.border}};background:{{c.bg}};color:{{c.color}}"><sc-if value="{{c.current}}"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">person_pin</span></sc-if>{{c.label}}</span>
+                <sc-if value="{{c.arrow}}"><span style="color:var(--muted)">→</span></sc-if>
+              </sc-for>
+            </div>
+            <p style="margin:0;color:var(--muted);font-size:14px">{{ownerText}}</p>
+          </section>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:20px {{pageX}};display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:13px">
+    <span>Powered by Toquilla Trace</span>
+    <a href="#" onClick="{{reportProblem}}" style="font-weight:600">Report a problem</a>
+  </footer>
+
+  <sc-if value="{{passportBar}}">
+    <div style="position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgb(40 30 10 / .07);display:flex;gap:8px;align-items:center">
+      <sc-if value="{{notClaimed}}"><button onClick="{{openClaim}}" style="flex:1;height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:16px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">approval</span>Claim this hat</button></sc-if>
+      <sc-if value="{{claimed}}"><span style="flex:1;height:50px;display:flex;align-items:center;gap:8px;padding:0 14px;border-radius:14px;background:var(--ok-tint);color:var(--ok);font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">verified</span>Registered to you</span></sc-if>
+      <button onClick="{{toggleShare}}" aria-label="Share" style="width:50px;height:50px;flex:none;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">ios_share</button>
+      <button onClick="{{openConcierge}}" style="height:50px;padding:0 14px;flex:{{askFlex}};display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">chat</span>Ask</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{showFab}}">
+    <button onClick="{{openConcierge}}" aria-label="Ask about this hat" style="position:fixed;right:20px;bottom:20px;z-index:40;height:56px;padding:0 {{fabPad}};min-width:56px;border:0;border-radius:28px;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:15px;cursor:pointer;box-shadow:var(--shadow)" style-hover="background:var(--accent-strong)">
+      <span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">chat</span>
+      <sc-if value="{{fabLabel}}">Ask about this hat</sc-if>
+    </button>
+  </sc-if>
+
+  <sc-if value="{{concierge}}">
+    <div onClick="{{closeConcierge}}" style="position:fixed;inset:0;z-index:50;background:var(--scrim)"></div>
+    <aside role="dialog" aria-label="Ask about TQ-9A1M8" style="position:fixed;z-index:51;right:0;bottom:0;top:{{panelTop}};width:{{panelW}};background:var(--bg);border-left:1px solid var(--line);border-radius:{{panelRadius}};display:flex;flex-direction:column;box-shadow:var(--shadow);animation:tt-in 180ms ease both">
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:16px 16px 12px;border-bottom:1px solid var(--line)">
+        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">Ask about <span style="font-family:'JetBrains Mono',monospace">TQ-9A1M8</span></div><div style="font-size:12px;color:var(--muted)">Answers come only from this hat's record</div></div>
+        <button onClick="{{newChat}}" aria-label="New chat" title="New chat" style="width:40px;height:44px;border:0;border-radius:10px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px" style-hover="background:var(--surface2)">edit_square</button>
+        <button onClick="{{closeConcierge}}" aria-label="Close" style="width:40px;height:44px;border:0;border-radius:10px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px" style-hover="background:var(--surface2)">close</button>
+      </div>
+      <div ref="{{chatRef}}" aria-live="polite" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:8px;max-width:90%">
+          <span aria-hidden="true" style="width:28px;height:28px;flex:none;border-radius:14px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:16px">auto_awesome</span>
+          <div style="padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:4px 14px 14px 14px">Hi! I can answer questions about this hat using its verified record. What would you like to know?</div>
+        </div>
+        <sc-for list="{{msgs}}" as="m">
+          <sc-if value="{{m.isUser}}"><div style="align-self:flex-end;max-width:82%;padding:10px 12px;background:var(--accent);color:var(--on-accent);border-radius:14px 14px 4px 14px;animation:tt-in 160ms ease both">{{m.text}}</div></sc-if>
+          <sc-if value="{{m.isBot}}">
+            <div style="display:flex;gap:8px;max-width:92%;animation:tt-in 180ms ease both">
+              <span aria-hidden="true" style="width:28px;height:28px;flex:none;border-radius:14px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:16px">auto_awesome</span>
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+                <div style="padding:10px 12px;background:{{m.bg}};border:1px solid {{m.border}};border-radius:4px 14px 14px 14px">{{m.text}}
+                  <sc-if value="{{m.isError}}"> <button onClick="{{m.onRetry}}" style="border:0;background:transparent;color:var(--accent);font-weight:700;cursor:pointer;padding:0">Try again</button></sc-if>
+                  <sc-if value="{{m.contact}}"><div style="margin-top:6px"><a href="mailto:hola@tallerpillco.com" style="font-weight:600">Contact the workshop</a></div></sc-if>
+                  <sc-if value="{{m.claim}}"><div style="margin-top:8px"><button onClick="{{openClaim}}" style="height:36px;padding:0 14px;border:0;border-radius:9px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Claim this hat</button></div></sc-if>
+                </div>
+                <sc-if value="{{m.hasPills}}">
+                  <div style="display:flex;flex-wrap:wrap;gap:6px">
+                    <sc-for list="{{m.pills}}" as="pl"><span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:12px;font-size:11.5px;font-weight:600;background:{{pl.bg}};color:{{pl.color}}"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">{{pl.icon}}</span>{{pl.label}}</span></sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{m.hasTools}}">
+                  <div style="display:flex;gap:2px">
+                    <button onClick="{{m.onCopy}}" aria-label="Copy" title="{{m.copyTip}}" style="width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;color:var(--muted);font-family:'Material Symbols Rounded';font-size:17px" style-hover="background:var(--surface2)">{{m.copyIcon}}</button>
+                    <button onClick="{{m.onUp}}" aria-label="Helpful" aria-pressed="{{m.up}}" style="width:32px;height:32px;border:0;border-radius:8px;background:{{m.upBg}};cursor:pointer;color:{{m.upColor}};font-family:'Material Symbols Rounded';font-size:17px" style-hover="background:var(--surface2)">thumb_up</button>
+                    <button onClick="{{m.onDown}}" aria-label="Not helpful" aria-pressed="{{m.down}}" style="width:32px;height:32px;border:0;border-radius:8px;background:{{m.downBg}};cursor:pointer;color:{{m.downColor}};font-family:'Material Symbols Rounded';font-size:17px" style-hover="background:var(--surface2)">thumb_down</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{m.showWhat}}">
+                  <div style="display:flex;gap:6px">
+                    <input value="{{m.whatText}}" onChange="{{m.onWhat}}" placeholder="What was wrong?" aria-label="What was wrong?" style="flex:1;min-width:0;height:36px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:var(--surface)">
+                    <button onClick="{{m.onWhatSend}}" style="height:36px;padding:0 12px;border:0;border-radius:9px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Send</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{m.whatSent}}"><span style="font-size:12px;color:var(--muted)">Thanks, that helps.</span></sc-if>
+              </div>
+            </div>
+          </sc-if>
+        </sc-for>
+        <sc-if value="{{typing}}">
+          <div style="display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px">
+            <span aria-hidden="true" style="width:28px;height:28px;flex:none;border-radius:14px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:16px">auto_awesome</span>
+            {{dots}} Checking the record...
+          </div>
+        </sc-if>
+        <sc-if value="{{showSuggestions}}">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;padding-left:36px">
+            <sc-for list="{{suggestions}}" as="q"><button onClick="{{q.onClick}}" style="min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:17px;background:var(--surface);font-size:13px;cursor:pointer" style-hover="border-color:var(--accent);background:var(--accent-tint)">{{q.label}}</button></sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{rateLimited}}">
+        <div role="status" style="margin:0 16px 8px;padding:10px 12px;border-radius:10px;background:var(--warn-tint);border:1px solid var(--warn);font-size:13px;display:flex;gap:8px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--warn)">hourglass_top</span>You've asked a lot of questions. Try again in a minute.</div>
+      </sc-if>
+      <div style="padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <textarea value="{{chatInput}}" onChange="{{onChat}}" onKeyDown="{{onChatKey}}" disabled="{{rateLimited}}" rows="{{chatRows}}" maxLength="300" placeholder="Ask a question..." aria-label="Ask a question" style="flex:1;min-width:0;resize:none;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);outline:none;line-height:1.4" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)"></textarea>
+          <button onClick="{{sendChat}}" disabled="{{chatDisabled}}" aria-label="Send" style="width:44px;height:44px;flex:none;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px">send</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted)">
+          <span>AI answers can be wrong. The verified record above is the source of truth.</span>
+          <sc-if value="{{showChatCount}}"><span style="font-family:'JetBrains Mono',monospace;flex:none">{{chatCount}} / 300</span></sc-if>
+        </div>
+      </div>
+    </aside>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{menu}}">
+  <div onClick="{{closeMenu}}" style="position:fixed;inset:0;z-index:60"></div>
+  <div role="menu" style="position:fixed;z-index:61;left:{{menuLeft}};right:{{menuRight}};top:{{menuTop}};bottom:{{menuBottom}};width:280px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;animation:tt-in 150ms ease both">
+    <div style="padding:8px 10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px">
+      <div style="font-weight:700;display:flex;align-items:center;gap:8px">Xavier Pillco<sc-if value="{{isAdmin}}"><span style="height:20px;padding:0 7px;display:inline-flex;align-items:center;gap:3px;border-radius:6px;background:var(--info-tint);color:var(--info);font-size:11px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:13px;line-height:1">shield_person</span>Admin</span></sc-if></div>
+      <div style="font-size:13px;color:var(--muted)">xavier@tallerpillco.com</div>
+      <div style="font-size:13px;color:var(--muted)">Taller Pillco, Cuenca</div>
+    </div>
+    <button role="menuitem" onClick="{{openSettings}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">storefront</span>Profile &amp; workshop</button>
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 10px">
+      <span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">contrast</span><span style="flex:1">Theme</span>
+    </div>
+    <div role="radiogroup" aria-label="Theme" style="display:flex;margin:0 10px 6px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg)">
+      <sc-for list="{{themeOpts}}" as="t"><button role="radio" aria-checked="{{t.on}}" onClick="{{t.onClick}}" style="flex:1;height:32px;border:0;border-radius:7px;background:{{t.bg}};box-shadow:{{t.shadow}};font-size:13px;font-weight:600;cursor:pointer">{{t.label}}</button></sc-for>
+    </div>
+    <button role="menuitem" onClick="{{openHelp}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">help</span>Help</button>
+    <sc-if value="{{adminMobile}}">
+      <div style="padding:8px 10px 2px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);margin-top:4px">Admin tools</div>
+      <button role="menuitem" onClick="{{openRuns}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">account_tree</span>Agent runs</button>
+      <button role="menuitem" onClick="{{openLogs}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">receipt_long</span>Logs<span style="margin-left:auto;width:8px;height:8px;border-radius:4px;background:var(--err)" aria-label="New errors in the last hour"></span></button>
+    </sc-if>
+    <div style="padding:8px 10px 4px;border-top:1px dashed var(--line);margin-top:4px;font-size:11px;color:var(--muted)">Prototype only: view as</div>
+    <div role="radiogroup" aria-label="View as role" style="display:flex;margin:0 10px 6px;padding:3px;border:1px dashed var(--line);border-radius:10px;background:var(--bg)">
+      <sc-for list="{{roleOpts}}" as="r"><button role="radio" aria-checked="{{r.on}}" onClick="{{r.onClick}}" style="flex:1;height:32px;border:0;border-radius:7px;background:{{r.bg}};box-shadow:{{r.shadow}};font-size:13px;font-weight:600;cursor:pointer">{{r.label}}</button></sc-for>
+    </div>
+    <button role="menuitem" onClick="{{toggleOffline}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;color:var(--muted)" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">wifi_off</span>Preview offline banner</button>
+    <button role="menuitem" onClick="{{logout}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">logout</span>Log out</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{dialog}}">
+  <div onClick="{{backdropClose}}" style="position:fixed;inset:0;z-index:70;background:var(--scrim);display:flex;align-items:{{dlgAlign}};justify-content:center;padding:{{dlgPad}}">
+    <div role="dialog" aria-modal="true" aria-label="{{dlgTitle}}" onClick="{{stop}}" style="width:100%;max-width:{{dlgMax}};max-height:92vh;overflow:auto;background:var(--surface);border-radius:{{dlgRadius}};box-shadow:var(--shadow);display:flex;flex-direction:column;animation:tt-in 180ms ease both">
+      <sc-if value="{{mobile}}"><div style="display:flex;justify-content:center;padding-top:8px"><span style="width:40px;height:4px;border-radius:2px;background:var(--line)"></span></div></sc-if>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:20px 20px 4px">
+        <h2 style="margin:0;flex:1;font-size:18px;font-weight:600;line-height:1.3">{{dlgTitle}}</h2>
+        <button onClick="{{closeDialog}}" aria-label="Close" style="width:36px;height:36px;margin:-6px -6px 0 0;border:0;border-radius:9px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px" style-hover="background:var(--surface2)">close</button>
+      </div>
+
+      <sc-if value="{{dHelp}}">
+        <div style="padding:8px 20px 4px;display:flex;flex-direction:column;gap:16px">
+          <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px">
+            <li style="display:flex;gap:12px;align-items:flex-start"><span style="width:32px;height:32px;flex:none;border-radius:9px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:19px">mic</span><span>1. Say what happened in the workshop, in Spanish or English. Typing works too.</span></li>
+            <li style="display:flex;gap:12px;align-items:flex-start"><span style="width:32px;height:32px;flex:none;border-radius:9px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:19px">fact_check</span><span>2. Review what the AI proposes. Nothing is saved until you approve.</span></li>
+            <li style="display:flex;gap:12px;align-items:flex-start"><span style="width:32px;height:32px;flex:none;border-radius:9px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:19px">qr_code_2</span><span>3. Share the hat's passport so buyers can verify it.</span></li>
+          </ol>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="border:1px solid var(--line);border-radius:10px;padding:10px 12px"><div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">Stage order</div><div style="font-size:13px;line-height:1.7">Weaving → Washing → Bleaching → Blocking → Finished</div></div>
+            <div style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.7"><div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">Grades (rows/inch)</div><div style="display:flex;justify-content:space-between"><span>Standard</span><span style="font-family:'JetBrains Mono',monospace">8–14</span></div><div style="display:flex;justify-content:space-between"><span>Fino</span><span style="font-family:'JetBrains Mono',monospace">15–24</span></div><div style="display:flex;justify-content:space-between"><span>Superfino</span><span style="font-family:'JetBrains Mono',monospace">25+</span></div></div>
+          </div>
+          <div style="border:1px solid var(--line);border-radius:10px;padding:10px 12px">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">Keyboard shortcuts</div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;align-items:center">
+              <sc-for list="{{shortcuts}}" as="k"><kbd style="font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:2px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg);justify-self:start">{{k.k}}</kbd><span>{{k.d}}</span></sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;padding:16px 20px 20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 18px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Got it</button></div>
+      </sc-if>
+
+      <sc-if value="{{dLogout}}">
+        <p style="margin:0;padding:8px 20px 0;color:var(--muted)">You have {{openCount}} proposals waiting for review. They'll still be here when you come back.</p>
+        <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{doLogout}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Log out</button></div>
+      </sc-if>
+
+      <sc-if value="{{dDiscard}}">
+        <p style="margin:0;padding:8px 20px 0;color:var(--muted)">The assistant's proposals for this note will be removed. Nothing has been saved yet.</p>
+        <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{confirmDiscard}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600;cursor:pointer">Discard and edit</button></div>
+      </sc-if>
+
+      <sc-if value="{{dClaim}}">
+        <p style="margin:0;padding:8px 20px 0;color:var(--muted)">TQ-9A1M8 was transferred to xavier@tallerpillco.com. Claiming registers it to your account; your name is never shown on the public passport.</p>
+        <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button>
+          <button onClick="{{doClaim}}" disabled="{{busy}}" style="height:44px;min-width:110px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{claimLabel}}</button></div>
+      </sc-if>
+
+      <sc-if value="{{dClaimLogin}}">
+        <p style="margin:0;padding:8px 20px 0;color:var(--muted)">Log in or create an account with the email this hat was transferred to. You'll come back to this passport afterwards.</p>
+        <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><a href="Auth.dc.html#signup" style="height:44px;padding:0 16px;display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;color:var(--ink);text-decoration:none">Create account</a><a href="Auth.dc.html#login" style="height:44px;padding:0 18px;display:flex;align-items:center;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;text-decoration:none">Log in</a></div>
+      </sc-if>
+
+      <sc-if value="{{dWeaver}}">
+        <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Full name
+            <input value="{{wd.name}}" onChange="{{wdName}}" placeholder="Rosa Pillco" style="height:42px;border:1px solid {{wdNameBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400;outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)">
+            <sc-if value="{{wdNameErr}}"><span style="color:var(--err);font-weight:500;display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>Enter the weaver's name.</span></sc-if>
+          </label>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Village
+              <input value="{{wd.village}}" onChange="{{wdVillage}}" placeholder="Sígsig" style="height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400;outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Province
+              <select value="{{wd.province}}" onChange="{{wdProvince}}" style="height:42px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:400"><option>Azuay</option><option>Cañar</option><option>Manabí</option><option>Other</option></select>
+            </label>
+          </div>
+          <sc-if value="{{wdDup}}"><div style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--warn-tint);border:1px solid var(--warn);font-size:13px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--warn)">warning</span>A weaver named Rosa Pillco from Sígsig already exists. Add anyway?</div></sc-if>
+          <label style="display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer;min-height:44px"><input type="checkbox" checked="{{wd.showName}}" onChange="{{wdShow}}" style="width:18px;height:18px;accent-color:var(--accent)">Show this weaver's name on public passports</label>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{saveWeaver}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Save weaver</button></div>
+      </sc-if>
+
+      <sc-if value="{{dManual}}">
+        <p style="margin:0;padding:2px 20px 0;font-size:13px;color:var(--muted)">Prefer typing a note? The assistant can do this for you.</p>
+        <div style="padding:16px 20px 0;display:flex;flex-direction:column;gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Weaver
+            <select value="{{md.weaver}}" onChange="{{mdWeaver}}" style="height:42px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:400">
+              <option value="">Choose a weaver…</option>
+              <sc-for list="{{weaverOptions}}" as="w"><option value="{{w}}">{{w}}</option></sc-for>
+              <option value="__new">+ Add new weaver</option>
+            </select>
+          </label>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Grade
+            <div role="radiogroup" aria-label="Grade" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);height:42px">
+              <sc-for list="{{mdGrades}}" as="g"><button role="radio" aria-checked="{{g.on}}" onClick="{{g.onClick}}" style="flex:1;border:0;border-radius:7px;background:{{g.bg}};color:{{g.color}};box-shadow:{{g.shadow}};font-weight:600;font-size:13px;cursor:pointer">{{g.label}}</button></sc-for>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Rows per inch
+              <input type="number" value="{{md.rows}}" onChange="{{mdRows}}" placeholder="6 to 40" aria-invalid="{{mdRowsErr}}" style="height:42px;border:1px solid {{mdRowsBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400;outline:none" style-focus="box-shadow:0 0 0 3px var(--accent-tint)">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Straw color
+              <select value="{{md.color}}" onChange="{{mdColor}}" style="height:42px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:400"><option>Natural</option><option>Bleached</option><option>Dyed</option></select>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Size in cm <span style="font-weight:400;color:var(--muted);margin-top:-6px">Optional</span>
+              <input type="number" value="{{md.size}}" onChange="{{mdSize}}" placeholder="52 to 64" style="height:42px;border:1px solid {{mdSizeBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400;outline:none">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Price in USD <span style="font-weight:400;color:var(--muted);margin-top:-6px">Optional</span>
+              <input type="number" value="{{md.price}}" onChange="{{mdPrice}}" placeholder="0.00" style="height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400;outline:none">
+            </label>
+          </div>
+          <sc-if value="{{mdRowsErr}}"><span style="color:var(--err);font-size:13px;font-weight:500;display:flex;gap:4px;align-items:center;margin-top:-6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>{{mdRowsMsg}}</span></sc-if>
+          <sc-if value="{{mdSizeErr}}"><span style="color:var(--err);font-size:13px;font-weight:500;display:flex;gap:4px;align-items:center;margin-top:-6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">error</span>Size must be between 52 and 64 cm.</span></sc-if>
+          <sc-if value="{{mdMismatch}}"><span style="color:var(--warn);font-size:13px;font-weight:500;display:flex;gap:4px;align-items:center;margin-top:-6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">warning</span>{{mdMismatchMsg}}</span></sc-if>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Notes <span style="font-weight:400;color:var(--muted);margin-top:-6px">Optional</span>
+            <textarea rows="2" value="{{md.notes}}" onChange="{{mdNotes}}" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);resize:vertical;font-weight:400"></textarea>
+          </label>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button>
+          <button onClick="{{createHat}}" disabled="{{mdDisabled}}" style="height:44px;min-width:120px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><sc-if value="{{busy}}">{{spinner}}</sc-if>{{createLabel}}</button></div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<div aria-live="polite" style="position:fixed;z-index:90;display:flex;flex-direction:column;gap:8px;width:{{toastW}};left:{{toastLeft}};right:{{toastRight}};top:{{toastTop}};bottom:{{toastBottom}};transform:{{toastTx}};pointer-events:none">
+  <sc-for list="{{toasts}}" as="t">
+    <div role="status" onMouseEnter="{{t.onEnter}}" onMouseLeave="{{t.onLeave}}" style="pointer-events:auto;position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;padding:12px 10px 12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);box-shadow:var(--shadow);animation:tt-in 180ms ease both">
+      <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:{{t.iconColor}}">{{t.icon}}</span>
+      <span style="flex:1;font-size:14px;font-weight:500">{{t.title}}</span>
+      <sc-if value="{{t.hasAction}}"><button onClick="{{t.onAction}}" style="height:32px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--bg);font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:2px">{{t.actionLabel}}</button></sc-if>
+      <button onClick="{{t.onClose}}" aria-label="Dismiss notification" style="width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--bg);cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px;opacity:.75">close</button>
+      <sc-if value="{{t.isUndo}}">{{t.bar}}</sc-if>
+    </div>
+  </sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;green&quot;,&quot;indigo&quot;],&quot;default&quot;:&quot;green&quot;,&quot;tsType&quot;:&quot;'green'|'indigo'&quot;,&quot;section&quot;:&quot;Visual&quot;},&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;member&quot;,&quot;admin&quot;],&quot;default&quot;:&quot;member&quot;,&quot;tsType&quot;:&quot;'member'|'admin'&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;passportViewer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;recipient&quot;,&quot;visitor&quot;],&quot;default&quot;:&quot;recipient&quot;,&quot;tsType&quot;:&quot;'recipient'|'visitor'&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;workshop&quot;,&quot;passport&quot;],&quot;default&quot;:&quot;workshop&quot;,&quot;tsType&quot;:&quot;'workshop'|'passport'&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;firstRun&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;composerState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;idle&quot;,&quot;recording&quot;,&quot;recordingLong&quot;,&quot;review&quot;,&quot;lost&quot;,&quot;permission&quot;,&quot;blocked&quot;,&quot;unsupported&quot;,&quot;silence&quot;,&quot;typing&quot;],&quot;default&quot;:&quot;idle&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Voice&quot;},&quot;micPermission&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;prompt&quot;,&quot;granted&quot;,&quot;blocked&quot;,&quot;unsupported&quot;],&quot;default&quot;:&quot;prompt&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Voice&quot;},&quot;voiceError&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;silence&quot;,&quot;lost&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Voice&quot;},&quot;passportState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;verified&quot;,&quot;notVerified&quot;,&quot;archived&quot;],&quot;default&quot;:&quot;verified&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;buyerLoggedIn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;agentOutcome&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;success&quot;,&quot;fail&quot;],&quot;default&quot;:&quot;success&quot;,&quot;tsType&quot;:&quot;'success'|'fail'&quot;,&quot;section&quot;:&quot;Simulation&quot;},&quot;simulateFailure&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Simulation&quot;}}">
+const NOTE = "Doña Rosa terminó 3 finos de 18 hileras. El TQ-7F3K2 ya está lavado, pasa a blanqueo. El TQ-2C5P0 ya está listo. Y el de Carmen dice superfino pero tiene 18 hileras.";
+const PH = [NOTE, "El TQ-7F3K2 ya está lavado, pasa a blanqueo", "Manuel entregó un superfino de 32 hileras"];
+const VOICE = {
+  es: [["Doña"], ["Rosa"], ["terminó"], ["3"], ["finos"], ["de"], ["18"], ["hileras.", 1], ["El"], ["TQ-7F3K2", 1], ["ya"], ["está"], ["lavado,"], ["pasa"], ["a"], ["blanqueo."], ["El"], ["TQ-2C5P0", 1], ["ya"], ["está"], ["listo."], ["Y"], ["el"], ["de"], ["Carmen"], ["dice"], ["superfino"], ["pero"], ["tiene"], ["18"], ["hileras."]],
+  en: [["Rosa"], ["finished"], ["3"], ["finos"], ["at"], ["18"], ["rows.", 1], ["TQ-7F3K2", 1], ["is"], ["washed,"], ["it"], ["goes"], ["to"], ["bleaching."], ["TQ-2C5P0", 1], ["is"], ["done."], ["And"], ["Carmen's"], ["says"], ["superfino"], ["but"], ["it"], ["has"], ["18"], ["rows."]]
+};
+const STEPS = ["Reading your note...", "Looking up weaver 'Rosa' and 3 hats...", "Checking stage rules...", "Preparing proposals..."];
+const STAGES = ["Weaving", "Washing", "Bleaching", "Blocking", "Finished"];
+const WEAVERS = ["Rosa Pillco (Sígsig)", "Rosa Guamán (Cuenca)", "Manuel Delgado (Pile)", "Carmen Quizhpi (Cuenca)"];
+const GRADES = ["Standard", "Fino", "Superfino"];
+const gradeFor = r => r >= 25 ? "Superfino" : r >= 15 ? "Fino" : "Standard";
+const h = React.createElement;
+const ic = (name, style) => h("span", { style: Object.assign({ fontFamily: "'Material Symbols Rounded'", lineHeight: 1 }, style) }, name);
+
+function seed() {
+  return [
+    { id: "p1", type: "Create hat", status: "question", conf: "check", qty: 3, grade: "Fino", rows: 18, weaver: null, why: "You said 'terminó 3 finos de 18 hileras'. 18 rows per inch matches Fino (15 to 24). Two weavers in your workshop are named Rosa, so I need you to pick one." },
+    { id: "p2", type: "Advance stage", status: "pending", conf: "high", code: "TQ-7F3K2", from: "Washing", to: "Bleaching", why: "You said 'el TQ-7F3K2 ya está lavado, pasa a blanqueo'. It's at Washing now, and Bleaching is the next allowed stage." },
+    { id: "p3", type: "Advance stage", status: "blocked", conf: "check", code: "TQ-2C5P0", from: "Weaving", to: "Finished", why: "You said 'el TQ-2C5P0 ya está listo', so I proposed Finished. The rule check stopped it: TQ-2C5P0 is still at Weaving." },
+    { id: "p4", type: "Flag issue", status: "pending", conf: "high", code: "TQ-4K9D1", message: "Grade is Superfino but rows per inch is 18 (Fino range).", why: "You said 'el de Carmen dice superfino pero tiene 18 hileras'. Carmen Quizhpi's open hat recorded as Superfino is TQ-4K9D1, and 18 rows per inch is in the Fino range (15 to 24)." }
+  ];
+}
+const ACTIVITY = [
+  { icon: "check_circle", color: "var(--ok)", text: "You approved: TQ-8B2N4 moved to Washing", actor: "Xavier", time: "5 min ago", abs: "Oct 18, 2026, 9:12 AM" },
+  { icon: "auto_awesome", color: "var(--warn)", text: "Assistant flagged TQ-4K9D1: Superfino with 18 rows/inch", actor: "Assistant", time: "1 h ago", abs: "Oct 18, 2026, 8:17 AM" },
+  { icon: "verified", color: "var(--ok)", text: "TQ-9A1M8 passport verified by a buyer", actor: "Buyer", time: "3 h ago", abs: "Oct 18, 2026, 6:40 AM", passport: true },
+  { icon: "add_circle", color: "var(--accent)", text: "You created TQ-8B2N4 · Fino · Carmen Quizhpi", actor: "Xavier", time: "Yesterday", abs: "Oct 17, 2026, 4:05 PM" },
+  { icon: "swap_horiz", color: "var(--info)", text: "You transferred TQ-9A1M8 to a buyer", actor: "Xavier", time: "Oct 10", abs: "Oct 10, 2026, 11:30 AM", passport: true },
+  { icon: "person_add", color: "var(--muted)", text: "You added weaver Carmen Quizhpi", actor: "Xavier", time: "Oct 3", abs: "Oct 3, 2026, 10:02 AM" }
+];
+const STORY = [
+  { stage: "Weaving", date: "May 12 to Sep 10", desc: "About 4 months of hand-weaving in Pile, Manabí" },
+  { stage: "Washing", date: "Sep 12", desc: "Washed in clean water to soften the straw" },
+  { stage: "Bleaching", date: "Sep 15", desc: "Evened in tone, keeping its natural color" },
+  { stage: "Blocking", date: "Sep 24", desc: "Shaped on a wooden form" },
+  { stage: "Finished", date: "Oct 2, 2026", desc: "Trimmed, banded and approved by Taller Pillco" }
+];
+const QUESTIONS = ["Is this hat real?", "Will it fit a 58 cm head?", "Is it good for golf?", "How do I care for it?", "Who made it?"];
+const P = l => ({ label: "From this hat's passport · " + l, icon: "verified", bg: "var(--ok-tint)", color: "var(--ok)" });
+const G = { label: "General care advice", icon: "lightbulb", bg: "var(--surface2)", color: "var(--muted)" };
+
+function answer(q) {
+  const t = q.toLowerCase();
+  if (/(mine|mío|mio|change|cambi|mark|edit|update|set the)/.test(t)) return { text: "I can only read this hat's record, not change it.", claim: /mine|mío|mio|own|claim/.test(t) || true, pills: [] };
+  if (/(real|genuine|authentic|fake|verif)/.test(t)) return { text: "Yes. TQ-9A1M8 is in the verified record: recorded by Taller Pillco in Cuenca and finished on Oct 2, 2026. Each of its five stages was approved by a person at the workshop.", pills: [P("Verification"), P("Timeline")] };
+  if (/(fit|size|58|cm|head)/.test(t)) return { text: "It's recorded as 58 cm, so it should fit a 58 cm head well. Toquilla straw relaxes a little with wear, so a snug fit at first is normal.", pills: [P("Size"), G] };
+  if (/(golf|sport|beach|tennis)/.test(t)) return { text: "It's light and breathable, which helps in the sun. But it's a Superfino at 32 rows per inch, which is finer and more delicate than most sports hats. For regular golf, a Standard or Fino would take the wear better.", pills: [P("Grade"), G] };
+  if (/(care|clean|store|rain|wet|wash)/.test(t)) return { text: "Handle it by the brim, not the crown pinch. Store it upside down on its crown or in a box, away from heat. If it gets wet, let it dry naturally on a flat surface.", pills: [G] };
+  if (/(who|made|weaver|manuel|wove)/.test(t)) return { text: "Manuel Delgado wove it in Pile, Manabí. He has been weaving since 1985, and this hat took about 4 months of hand-weaving.", pills: [P("Weaver"), P("Timeline")] };
+  if (/(error|broken)/.test(t)) return { error: true, text: "I couldn't answer that." };
+  return { text: "That isn't in this hat's record. You could ask the workshop directly.", contact: true, pills: [] };
+}
+
+function readRole(propRole) {
+  try {
+    const q = new URLSearchParams(location.search).get("role");
+    if (q === "admin" || q === "member") { localStorage.setItem("tt-role", q); return q; }
+    const saved = localStorage.getItem("tt-role");
+    if (saved === "admin" || saved === "member") return saved;
+  } catch (e) {}
+  return propRole === "admin" ? "admin" : "member";
+}
+
+class Component extends DCLogic {
+  state = {
+    role: "member", route: null, theme: "light", collapsed: false, mobile: false, scrolled: false,
+    note: "", ph: 0, run: "idle", step: 0, submitted: "", proposals: [], whyOpen: {}, focused: null,
+    toasts: [], menu: false, dialog: null, dialogCtx: null, busy: false, offline: false, activity: ACTIVITY,
+    concierge: false, msgs: [], chatInput: "", typing: false, claimed: false, shareMenu: false, gradeTip: false,
+    tryCode: false, code: "", pOverride: null,
+    voice: "idle", words: [], elapsed: 0, tapMode: false, holding: false, slideX: 0, typing: false, lang: "es", permOverride: null, vLost: false, hatTag: null, submittedVoice: false, submittedTag: null, badCode: "TQ-ZZZZZ", extraWeavers: [],
+    wd: { name: "", village: "", province: "Azuay", showName: true }, wdTouched: false,
+    md: { weaver: "", grade: "Fino", rows: "", color: "Natural", size: "", price: "", notes: "" }, mdTouched: false
+  };
+  taRef = React.createRef();
+  chatRef = React.createRef();
+  timers = [];
+
+  componentDidMount() {
+    const onResize = () => { const m = window.innerWidth < 768; if (m !== this.state.mobile) this.setState({ mobile: m }); };
+    onResize();
+    this.setState({ role: readRole(this.props.role) });
+    try { const t = localStorage.getItem("tt-theme"); if (t) this.setState({ themeChoice: t, theme: t === "system" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t }); } catch (e) {}
+    if (location.hash === "#passport") this.setState({ route: "passport" });
+    else if (location.hash.startsWith("#passport/")) this.setState({ route: "passport", pOverride: "notVerified", badCode: decodeURIComponent(location.hash.slice(10)) });
+    else if (location.hash.startsWith("#record")) { const code = location.hash.slice(8); this.setState({ route: "workshop", permOverride: "granted", hatTag: code || null }); setTimeout(() => this.startRec(), 250); }
+    else if (location.hash === "#welcome") { this.setState({ firstRun: true }); setTimeout(() => this.toast("success", "Welcome to Toquilla Trace!"), 300); }
+    window.addEventListener("resize", onResize);
+    const onScroll = () => { const s = window.scrollY > 40; if (s !== this.state.scrolled) this.setState({ scrolled: s }); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    this.onKey = e => this.handleKey(e);
+    window.addEventListener("keydown", this.onKey);
+    if (this.props.composerState && this.props.composerState !== "idle") setTimeout(() => this.applyComposerState(this.props.composerState), 50);
+    this.phTimer = setInterval(() => { if (!this.state.note) this.setState(s => ({ ph: (s.ph + 1) % PH.length })); }, 4000);
+    this.cleanup = () => { window.removeEventListener("resize", onResize); window.removeEventListener("scroll", onScroll); window.removeEventListener("keydown", this.onKey); clearInterval(this.phTimer); clearInterval(this.runTimer); };
+  }
+  componentWillUnmount() { this.cleanup && this.cleanup(); clearInterval(this.recT); }
+  setRole(r) { try { localStorage.setItem("tt-role", r); } catch (e) {} this.setState({ role: r, menu: false }); this.toast("info", r === "admin" ? "Viewing as Admin." : "Viewing as Workshop member."); }
+  voiceActive() { return this.state.typing || ["recording", "review", "perm", "blocked", "silence"].includes(this.state.voice); }
+  viewer() { try { const v = new URLSearchParams(location.search).get("viewer"); if (v === "visitor" || v === "recipient") return v; } catch (e) {} return this.props.passportViewer || "recipient"; }
+  perm() { return this.state.permOverride || this.props.micPermission || "prompt"; }
+  applyComposerState(cs) {
+    clearInterval(this.recT);
+    const ws = VOICE[this.state.lang].map(([w, low]) => ({ w, low: !!low }));
+    const base = { permOverride: null, vLost: false, tapMode: false, holding: false, typing: false };
+    if (cs === "recording" || cs === "recordingLong") { this.setState(Object.assign(base, { permOverride: "granted" })); setTimeout(() => this.startRec(cs === "recordingLong" ? 112 : 0, cs === "recordingLong" ? ws.length : 6), 0); }
+    else if (cs === "review" || cs === "lost") this.setState(Object.assign(base, { voice: "review", words: cs === "lost" ? ws.slice(0, 6) : ws, note: (cs === "lost" ? ws.slice(0, 6) : ws).map(x => x.w).join(" "), vLost: cs === "lost" }));
+    else if (cs === "permission") this.setState(Object.assign(base, { voice: "perm" }));
+    else if (cs === "blocked") this.setState(Object.assign(base, { voice: "blocked", permOverride: "blocked" }));
+    else if (cs === "unsupported") this.setState(Object.assign(base, { voice: "idle", permOverride: "unsupported" }));
+    else if (cs === "silence") this.setState(Object.assign(base, { voice: "silence" }));
+    else if (cs === "typing") this.setState(Object.assign(base, { voice: "idle", typing: true }));
+    else this.setState(Object.assign(base, { voice: "idle", words: [], note: "" }));
+  }
+  startRec(offset, preWords) {
+    const p = this.perm();
+    if (p === "unsupported") return false;
+    if (p === "prompt") { this.setState({ voice: "perm" }); return false; }
+    if (p === "blocked") { this.setState({ voice: "blocked" }); return false; }
+    clearInterval(this.recT);
+    const list = VOICE[this.state.lang].map(([w, low]) => ({ w, low: !!low }));
+    let i = preWords || 0;
+    this.recStart = Date.now() - (offset || 0) * 1000;
+    this.setState({ voice: "recording", words: list.slice(0, i), elapsed: offset || 0, vLost: false, typing: false, note: "" });
+    const err = this.props.voiceError || "none";
+    this.recT = setInterval(() => {
+      const el = Math.floor((Date.now() - this.recStart) / 1000);
+      const patch = { elapsed: el };
+      if (err !== "silence" && i < list.length && Date.now() - this.recStart > 600) { i++; patch.words = list.slice(0, i); }
+      this.setState(patch);
+      if (err === "lost" && i === 6) return this.stopRec("lost");
+      if (el >= 120) this.stopRec();
+    }, 380);
+    return true;
+  }
+  stopRec(reason) {
+    clearInterval(this.recT);
+    const ws = this.state.words;
+    if (!ws.length) return this.setState({ voice: "silence", tapMode: false, holding: false });
+    this.setState({ voice: "review", note: ws.map(x => x.w).join(" "), vLost: reason === "lost", tapMode: false, holding: false });
+  }
+  cancelRec() { clearInterval(this.recT); this.setState({ voice: "idle", words: [], note: "", tapMode: false, holding: false, slideX: 0 }); this.toast("info", "Recording discarded."); }
+  componentDidUpdate(pp) {
+    const ps = this._ps || this.state; this._ps = this.state;
+    if (pp.composerState !== this.props.composerState) this.applyComposerState(this.props.composerState);
+    if (pp.role !== this.props.role && this.props.role) this.setRole(this.props.role);
+    if (pp.micPermission !== this.props.micPermission) this.setState({ permOverride: null, voice: "idle" });
+    const was = this.isAllDone(ps.proposals), now = this.isAllDone(this.state.proposals);
+    if (!was && now) {
+      const n = this.state.proposals.filter(p => p.status === "approved").length;
+      if (n) this.toast("success", n + (n === 1 ? " change saved." : " changes saved."));
+    }
+    if (ps.msgs.length !== this.state.msgs.length || ps.typing !== this.state.typing) {
+      const el = this.chatRef.current; if (el) el.scrollTop = el.scrollHeight;
+    }
+  }
+  isAllDone(list) { return list.length > 0 && list.every(p => ["approved", "rejected", "dismissed"].includes(p.status)); }
+
+  handleKey(e) {
+    const tag = (e.target.tagName || "").toLowerCase();
+    const typing = tag === "input" || tag === "textarea" || tag === "select";
+    if (e.key === "Escape") { if (this.state.voice === "recording") this.cancelRec(); this.setState({ menu: false, shareMenu: false, concierge: false }); if (this.state.dialog && !this.isDestructive()) this.closeDialog(); return; }
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && e.target === this.taRef.current) { e.preventDefault(); this.send(); return; }
+    if (typing || this.state.dialog || this.route() !== "workshop") return;
+    if (e.key === "/") { e.preventDefault(); this.taRef.current && this.taRef.current.focus(); return; }
+    const f = this.state.focused; if (!f || e.metaKey || e.ctrlKey) return;
+    const k = e.key.toLowerCase();
+    if (k === "a") this.approve(f); else if (k === "r") this.reject(f); else if (k === "e") this.edit(f);
+  }
+  isDestructive() { return this.state.dialog === "discard"; }
+  route() { return this.state.route || (this.props.startScreen === "passport" ? "passport" : "workshop"); }
+  pState() { return this.state.pOverride || this.props.passportState || "verified"; }
+
+  toast(kind, title, opts = {}) {
+    const id = Math.random().toString(36).slice(2);
+    const dur = kind === "undo" ? 10000 : 5000;
+    const t = Object.assign({ id, kind, title, dur }, opts);
+    this.setState(s => ({ toasts: [...s.toasts, t].slice(-3) }));
+    this.armToast(id, dur);
+  }
+  armToast(id, ms) { clearTimeout(this["tt" + id]); this["tt" + id] = setTimeout(() => this.dropToast(id), ms); }
+  dropToast(id) { this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })); }
+
+  get(id) { return this.state.proposals.find(p => p.id === id); }
+  upd(id, patch) { this.setState(s => ({ proposals: s.proposals.map(p => p.id === id ? Object.assign({}, p, typeof patch === "function" ? patch(p) : patch) : p) })); }
+
+  send() {
+    const n = this.state.note.trim();
+    if (!n || n.length > 1000 || this.state.run === "running") return;
+    clearInterval(this.runTimer);
+    this.sendingVoice = this.state.voice === "review";
+    this.setState({ run: "running", step: 0, voice: "idle", vLost: false });
+    this.runTimer = setInterval(() => {
+      const st = this.state.step + 1;
+      if (st < STEPS.length) return this.setState({ step: st });
+      clearInterval(this.runTimer);
+      if (this.props.agentOutcome === "fail") return this.setState({ run: "failed" });
+      const stamp = Date.now();
+      const keep = this.state.proposals.filter(p => !["approved", "rejected", "dismissed"].includes(p.status));
+      const fresh = seed().map(p => Object.assign(p, { id: p.id + "-" + stamp }));
+      if (keep.length) setTimeout(() => this.toast("info", "New proposals added. Earlier ones are still waiting below."), 50);
+      this.setState({ run: "done", submitted: this.state.note, note: "", proposals: [...fresh, ...keep], whyOpen: {}, focused: null, submittedVoice: !!this.sendingVoice, submittedTag: this.state.hatTag, hatTag: null, typing: false, words: [] });
+    }, 700);
+  }
+  stopRun() { clearInterval(this.runTimer); this.setState({ run: "idle" }); this.toast("info", "Stopped. Nothing was saved."); }
+
+  approve(id, silent) {
+    const p = this.get(id); if (!p || !["pending", "failed"].includes(p.status)) return;
+    this.upd(id, { status: "approving" });
+    setTimeout(() => {
+      const cur = this.get(id); if (!cur || cur.status !== "approving") return;
+      if (this.props.simulateFailure && id.split("-")[0] === "p2" && !cur.failedOnce) { this.upd(id, { status: "failed", failedOnce: true }); return; }
+      this.upd(id, { status: "approved", undoable: true });
+      this.setState(s => ({ activity: [{ icon: "check_circle", color: "var(--ok)", text: "You approved: " + this.summary(cur), actor: "Xavier", time: "just now", abs: new Date().toLocaleString() }, ...s.activity].slice(0, 10) }));
+      setTimeout(() => this.upd(id, { undoable: false }), 10000);
+      if (!silent) this.toast("undo", "Approved: " + this.short(cur), { actionLabel: "Undo", action: () => this.undo(id) });
+    }, 900);
+  }
+  approveAll() {
+    const ids = this.state.proposals.filter(p => p.status === "pending").map(p => p.id);
+    ids.forEach(id => this.approve(id, true));
+    if (ids.length) setTimeout(() => this.toast("undo", "Approved " + ids.length + " proposals.", { actionLabel: "Undo", action: () => ids.forEach(i => this.undo(i)) }), 950);
+  }
+  undo(id) { this.upd(id, { status: "pending", undoable: false }); this.setState(s => ({ activity: s.activity.filter(a => a.time !== "just now" || !a.text.includes(this.summary(this.get(id) || {}))) })); }
+  reject(id) { const p = this.get(id); if (!p || ["approving", "approved"].includes(p.status)) return; this.upd(id, { status: "rejected", prev: p.status }); }
+  edit(id) {
+    const p = this.get(id); if (!p || ["approving", "approved", "rejected", "dismissed"].includes(p.status)) return;
+    this.upd(id, { prev: p.status, status: "editing", draft: { qty: p.qty, grade: p.grade, rows: p.rows, weaver: p.weaver || "", to: p.to === "Finished" ? "Washing" : p.to, message: p.message } });
+  }
+  saveEdit(id) {
+    const p = this.get(id), d = p.draft;
+    const patch = { status: "pending", edited: true, editedLabel: "Edited by you", conf: "high" };
+    if (p.type === "Create hat") Object.assign(patch, { qty: d.qty, grade: d.grade, rows: +d.rows, weaver: d.weaver || null, status: d.weaver ? "pending" : "question" });
+    if (p.type === "Advance stage") patch.to = d.to;
+    if (p.type === "Flag issue") patch.message = d.message;
+    this.upd(id, patch);
+  }
+  setDraft(id, k, v) { this.upd(id, p => ({ draft: Object.assign({}, p.draft, { [k]: v }) })); }
+
+  summary(p) {
+    if (p.type === "Create hat") return `Create ${p.qty} hat${p.qty > 1 ? "s" : ""} · ${p.grade} · ${p.rows} rows/inch · Weaver: ${p.weaver || "2 matches for “Rosa”"}`;
+    if (p.type === "Advance stage") return (p.status === "blocked" ? "Move " : "Advance ") + p.code + " to " + p.to;
+    if (p.type === "Flag issue") return "Flag " + p.code + " · Grade mismatch";
+    return "";
+  }
+  short(p) { return p.type === "Create hat" ? `${p.qty} new ${p.grade} hats` : p.type === "Flag issue" ? `flag on ${p.code}` : `${p.code} → ${p.to}`; }
+
+  decorate(p) {
+    const s = p.status;
+    const look = { pending: ["dashed", "var(--accent)", "var(--accent-tint)"], editing: ["dashed", "var(--accent)", "var(--surface)"], approving: ["dashed", "var(--accent)", "var(--accent-tint)"], approved: ["solid", "var(--ok)", "var(--ok-tint)"], rejected: ["solid", "var(--line)", "transparent"], dismissed: ["solid", "var(--line)", "transparent"], blocked: ["solid", "var(--err)", "var(--err-tint)"], question: ["solid", "var(--warn)", "var(--warn-tint)"], failed: ["solid", "var(--err)", "var(--surface)"] }[s];
+    const tag = { approved: ["Approved", "check_circle", "var(--ok)"], blocked: ["Blocked by rules", "lock", "var(--err)"], question: ["Needs your answer", "help", "var(--warn)"], failed: ["Not saved", "error", "var(--err)"], editing: ["Editing", "edit", "var(--accent)"] }[s];
+    const typeMeta = { "Create hat": ["add_circle", "var(--accent)"], "Advance stage": ["trending_flat", "var(--info)"], "Flag issue": ["flag", "var(--warn)"], "Transfer": ["swap_horiz", "var(--ink)"] }[p.type];
+    let chips = [];
+    if (p.type === "Create hat") chips = [{ k: "Qty", v: p.qty }, { k: "Grade", v: p.grade }, { k: "Rows/inch", v: p.rows }, { k: "Weaver", v: p.weaver || "?" }];
+    if (p.type === "Advance stage") chips = [{ k: "Hat", v: p.code, font: "'JetBrains Mono',monospace" }, { k: "Owner", v: "Workshop" }];
+    if (p.type === "Flag issue") chips = [{ k: "Hat", v: p.code, font: "'JetBrains Mono',monospace" }, { k: "Claimed", v: "Superfino" }, { k: "Measured", v: "18 rows/inch" }, { k: "Fino range", v: "15–24" }];
+    const fromIdx = STAGES.indexOf(p.from || "Weaving");
+    const d = p.draft || {};
+    const rowsN = +d.rows;
+    const sugg = gradeFor(rowsN);
+    const mobile = this.state.mobile;
+    const whyOpen = !!this.state.whyOpen[p.id];
+    return Object.assign({}, p, {
+      aria: p.type + ": " + this.summary(p),
+      borderStyle: look[0], borderColor: look[1], bg: look[2], pad: s === "rejected" || s === "dismissed" ? "8px 16px" : "16px",
+      summary: p.type === "Flag issue" && s !== "rejected" && s !== "dismissed" ? "Flag " + p.code + " · " + (p.message || "") : this.summary(p),
+      chips, typeIcon: typeMeta[0], typeColor: typeMeta[1],
+      confLabel: p.conf === "high" ? "High confidence" : "Check this", confIcon: p.conf === "high" ? "check" : "priority_high",
+      confBg: p.conf === "high" ? "var(--ok-tint)" : "var(--warn-tint)", confColor: p.conf === "high" ? "var(--ok)" : "var(--warn)",
+      hasStatusTag: !!tag, statusLabel: tag && tag[0], statusIcon: tag && tag[1], statusColor: tag && tag[2],
+      edited: !!p.edited, editedLabel: p.editedLabel || "Edited by you",
+      collapsed: s === "rejected" || s === "dismissed", expandedCard: !(s === "rejected" || s === "dismissed"),
+      collapsedLabel: s === "dismissed" ? "Dismissed" : "Rejected",
+      showStepper: p.type === "Advance stage", stepAria: "From " + p.from + " to " + p.to,
+      toDot: s === "blocked" ? "var(--err)" : "var(--accent)", toColor: s === "blocked" ? "var(--err)" : "var(--ink)",
+      whyOpen, whyIcon: whyOpen ? "expand_less" : "expand_more",
+      showActions: ["pending", "approving", "question"].includes(s), canApprove: s !== "question",
+      actionsFlex: mobile ? "1 1 100%" : "none", approveW: mobile ? "auto" : "132px", approveFlex: mobile ? "1" : "none",
+      isApproving: s === "approving", notApproving: s !== "approving", approveLabel: s === "approving" ? "Approving..." : "Approve",
+      isBlocked: s === "blocked", isQuestion: s === "question", isFailed: s === "failed", isApproved: s === "approved", isEditing: s === "editing",
+      undoable: !!p.undoable,
+      blockMsg: `Can't move ${p.code} from ${p.from} to ${p.to}. Next allowed stage: ${STAGES[fromIdx + 1]}.`,
+      nextStage: STAGES[fromIdx + 1],
+      answers: [{ label: "Rosa Pillco (Sígsig)" }, { label: "Rosa Guamán (Cuenca)" }, { label: "Someone else..." }].map(a => ({ label: a.label, onClick: () => a.label === "Someone else..." ? this.openWeaver(p.id) : this.upd(p.id, { weaver: a.label, status: "pending", conf: "high" }) })),
+      editCreate: s === "editing" && p.type === "Create hat", editAdvance: s === "editing" && p.type === "Advance stage", editFlag: s === "editing" && p.type === "Flag issue",
+      gradeOpts: GRADES.map(g => ({ label: g, on: d.grade === g, bg: d.grade === g ? "var(--surface)" : "transparent", color: d.grade === g ? "var(--ink)" : "var(--muted)", shadow: d.grade === g ? "0 1px 2px rgb(0 0 0 / .12)" : "none", onClick: () => this.setDraft(p.id, "grade", g) })),
+      rowsError: s === "editing" && p.type === "Create hat" && !(rowsN >= 6 && rowsN <= 40),
+      rowsBorder: s === "editing" && !(rowsN >= 6 && rowsN <= 40) ? "var(--err)" : "var(--line)",
+      mismatch: p.type === "Create hat" && rowsN >= 6 && rowsN <= 40 && sugg !== d.grade, mismatchMsg: rowsN + " rows/inch usually means " + sugg + ".", suggested: sugg,
+      saveDisabled: p.type === "Create hat" && !(rowsN >= 6 && rowsN <= 40),
+      stageOpts: STAGES.map((sg, i) => ({ label: sg, text: i === fromIdx + 1 ? sg : sg + (i <= fromIdx ? " (done)" : " (can't skip)"), disabled: i !== fromIdx + 1 })),
+      onFocus: () => this.setState({ focused: p.id }),
+      onApprove: () => this.approve(p.id), onReject: () => this.reject(p.id), onEdit: () => this.edit(p.id),
+      onRestore: () => this.upd(p.id, { status: p.prev === "editing" ? "pending" : (p.prev || "pending") }),
+      onUndo: () => this.undo(p.id), onRetry: () => { this.upd(p.id, { status: "pending" }); setTimeout(() => this.approve(p.id), 0); },
+      onWhy: () => this.setState(st => ({ whyOpen: Object.assign({}, st.whyOpen, { [p.id]: !st.whyOpen[p.id] }) })),
+      onFix: () => this.upd(p.id, { to: STAGES[fromIdx + 1], status: "pending", conf: "high", edited: true, editedLabel: "Fixed by you" }),
+      onDismiss: () => this.upd(p.id, { status: "dismissed", prev: "blocked" }),
+      onQtyDown: () => this.setDraft(p.id, "qty", Math.max(1, d.qty - 1)), onQtyUp: () => this.setDraft(p.id, "qty", Math.min(20, d.qty + 1)),
+      onRows: e => this.setDraft(p.id, "rows", e.target.value),
+      onUseSuggested: () => this.setDraft(p.id, "grade", sugg),
+      onWeaver: e => e.target.value === "__new" ? this.openWeaver(p.id) : this.setDraft(p.id, "weaver", e.target.value),
+      onTo: e => this.setDraft(p.id, "to", e.target.value),
+      onMessage: e => this.setDraft(p.id, "message", e.target.value),
+      onSave: () => this.saveEdit(p.id), onCancelEdit: () => this.upd(p.id, { status: p.prev || "pending" })
+    });
+  }
+
+  openWeaver(ctx) { this.setState({ dialog: "weaver", dialogCtx: ctx, wd: { name: "", village: "", province: "Azuay", showName: true }, wdTouched: false }); }
+  closeDialog() { this.setState({ dialog: null, busy: false }); }
+
+  renderVals() {
+    const st = this.state, mobile = st.mobile, route = this.route();
+    const expanded = !st.collapsed;
+    const props = st.proposals;
+    const open = props.filter(p => ["pending", "question", "blocked", "editing", "failed", "approving"].includes(p.status)).length;
+    const pendingN = props.filter(p => p.status === "pending").length;
+    const allDone = this.isAllDone(props);
+    const hr = new Date().getHours();
+    const LINKS = { Hats: "Hats.dc.html", Weavers: "Hats.dc.html#weavers", "Agent runs": "Builder.dc.html#runs", Logs: "Builder.dc.html#logs" };
+    const nav_ = url => { window.location.href = url; };
+    const go = r => () => r === "Workshop" ? this.setState({ route: "workshop" }) : nav_(LINKS[r]);
+    const isAdmin = st.role === "admin";
+    const navDefs = [["Workshop", "Workshop", "storefront"], ["Hats", "Hats", "styler"], ["Weavers", "Weavers", "groups"]];
+    const adminDefs = [["Agent runs", "Runs", "account_tree"], ["Logs", "Logs", "receipt_long"]];
+    const mkNav = ([label, short, icon]) => {
+      const on = route === "workshop" && label === "Workshop";
+      return { label, short, icon, tip: st.collapsed ? label : "", current: on ? "page" : undefined, bg: on ? "var(--accent-tint)" : "transparent", weight: on ? 700 : 500, iconColor: on ? "var(--accent)" : "var(--muted)", tabColor: on ? "var(--accent)" : "var(--muted)", hasBadge: label === "Workshop" && open > 0, badge: open, dot: label === "Logs", badgePos: expanded && !mobile ? "static" : "absolute", onClick: go(label) };
+    };
+    const nav = navDefs.map(mkNav);
+    const adminNav = isAdmin ? adminDefs.map(mkNav) : [];
+    const count = st.note.length;
+    const md = st.md, mdRowsN = +md.rows, mdSizeN = +md.size;
+    const mdRowsErr = st.mdTouched && (md.rows === "" || !(mdRowsN >= 6 && mdRowsN <= 40));
+    const mdSizeErr = md.size !== "" && !(mdSizeN >= 52 && mdSizeN <= 64);
+    const ps = this.pState();
+    const titles = { help: "How Toquilla Trace works", logout: "Log out?", discard: "Discard these proposals and edit your note?", claim: "Claim TQ-9A1M8 as yours?", claimLogin: "Log in to claim this hat", weaver: "Add weaver", manual: "Add a hat manually" };
+    const userCount = st.msgs.filter(m => m.role === "user").length;
+    const rateLimited = userCount >= 8;
+    const asked = st.msgs.filter(m => m.role === "user").map(m => m.text);
+    const codeValid = /^TQ-[A-Z0-9]{5}$/.test(st.code);
+    const wdDup = st.wd.name.trim().toLowerCase() === "rosa pillco";
+
+    return {
+      theme: st.theme, accent: this.props.accent || "green",
+      isWorkshop: route === "workshop", isPassport: route === "passport",
+      mobile, desktop: !mobile, showSidebar: !mobile, expanded, sideW: st.collapsed ? 72 : 240,
+      collapseLabel: st.collapsed ? "Expand sidebar" : "Collapse sidebar", collapseIcon: st.collapsed ? "left_panel_open" : "left_panel_close",
+      toggleSidebar: () => this.setState({ collapsed: !st.collapsed }),
+      nav, adminNav, isAdmin, isMember: !isAdmin, adminMobile: isAdmin && mobile, tabCols: navDefs.length,
+      roleOpts: [["member", "Member"], ["admin", "Admin"]].map(([v, l]) => { const on = st.role === v; return { label: l, on, bg: on ? "var(--surface)" : "transparent", shadow: on ? "0 1px 2px rgb(0 0 0 / .15)" : "none", onClick: () => this.setRole(v) }; }),
+      openRuns: () => nav_("Builder.dc.html#runs"), openLogs: () => nav_("Builder.dc.html#logs"),
+      copyRef: () => { navigator.clipboard && navigator.clipboard.writeText("req_8f2a").catch(() => {}); this.toast("success", "Reference copied. Share it with support."); },
+      goWorkshop: () => this.setState({ route: "workshop", concierge: false }),
+      mainPad: mobile ? "20px 16px" : "32px 36px",
+      greeting: (hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening") + ", Xavier",
+      offline: st.offline, dismissOffline: () => this.setState({ offline: false }), toggleOffline: () => this.setState({ offline: !st.offline, menu: false }),
+      openManual: () => this.setState({ dialog: "manual", md: { weaver: "", grade: "Fino", rows: "", color: "Natural", size: "", price: "", notes: "" }, mdTouched: false }),
+
+      taRef: this.taRef, note: st.note, onNote: e => this.setState({ note: e.target.value }),
+      placeholder: PH[st.ph], taRows: Math.min(8, Math.max(3, st.note.split("\n").length + Math.floor(count / 70))),
+      isRunning: st.run === "running", notRunning: st.run !== "running", isFailed: st.run === "failed",  desktopFlex: mobile ? "none" : "flex",
+      mobileComposer: mobile && (!(props.length > 0 && !allDone) || this.voiceActive()), dockRows: Math.min(5, Math.max(1, st.note.split("\n").length + Math.floor(count / 32))), showDockCount: count > 900,
+      taOpacity: st.run === "running" ? 0.55 : 1, taBorder: count > 1000 ? "var(--err)" : "var(--line)",
+      showChips: st.run !== "running" && !st.note && st.voice !== "recording" && st.voice !== "review",
+      ...this.voiceVals(mobile, count, props, allDone),
+      exampleChips: [["3 new finos from Rosa", NOTE], ["TQ-7F3K2 to bleaching", "El TQ-7F3K2 ya está lavado, pasa a blanqueo"], ["A new superfino from Manuel", "Manuel entregó un superfino de 32 hileras"]].map(([label, v]) => ({ label, onClick: () => { this.setState({ note: v, typing: true, voice: "idle" }); this.taRef.current && this.taRef.current.focus(); } })),
+      count, countColor: count > 1000 ? "var(--err)" : count > 900 ? "var(--warn)" : "var(--muted)", overLimit: count > 1000,
+      sendDisabled: !st.note.trim() || count > 1000, send: () => this.send(), stopRun: () => this.stopRun(),
+      stepItems: STEPS.slice(0, st.step + 1).map((t, i) => ({ text: t, isDone: i < st.step, isCurrent: i === st.step, color: i < st.step ? "var(--muted)" : "var(--ink)" })),
+      spinner: h("span", { style: { width: 14, height: 14, borderRadius: "50%", border: "2px solid currentColor", borderRightColor: "transparent", display: "inline-block", animation: "tt-spin 700ms linear infinite", flex: "none" } }),
+      viewRun: e => { e && e.preventDefault && e.preventDefault(); nav_("Builder.dc.html#run"); },
+      viewLog: e => { e && e.preventDefault && e.preventDefault(); nav_("Builder.dc.html#logs"); },
+      hasRun: st.run === "done" && !!st.submitted, submitted: st.submitted,
+      editNote: () => this.setState({ dialog: "discard" }),
+      confirmDiscard: () => { this.setState({ note: st.submitted, submitted: "", run: "idle", proposals: [], dialog: null }); setTimeout(() => this.taRef.current && this.taRef.current.focus(), 50); },
+      showEmpty: props.length === 0 && st.run !== "running", showPanel: props.length > 0,
+      proposals: props.map(p => this.decorate(p)), proposalCount: props.length,
+      approveAllCount: pendingN, approveAllDisabled: pendingN === 0, approveAll: () => this.approveAll(),
+      noneOpen: open === 0, rejectAll: () => props.forEach(p => this.reject(p.id)),
+      mobileApproveBar: mobile && props.length > 0 && !allDone && !this.voiceActive(), mobileFooterH: 0,
+      micDuringReview: () => { if (this.startRec()) this.setState({ tapMode: true }); },
+      allDone, doneText: `${props.filter(p => p.status === "approved").length} approved, ${props.filter(p => p.status !== "approved").length} rejected.`,
+      viewHats: () => nav_("Hats.dc.html"),
+      writeAnother: () => { this.setState({ proposals: [], submitted: "", run: "idle", note: "" }); setTimeout(() => this.taRef.current && this.taRef.current.focus(), 50); },
+
+      stats: [["Hats in progress", 12], ["Finished this week", 5], ["Waiting for review", open || 3], ["Flags to check", 1, true]].map(([label, value, warn]) => ({ label, value, warn: !!warn, color: warn ? "var(--warn)" : "var(--ink)", bg: warn ? "var(--warn-tint)" : "var(--bg)", border: warn ? "var(--warn)" : "var(--line)", onClick: () => nav_("Hats.dc.html#" + (warn ? "flagged" : "hats")) })),
+      activity: st.activity.map(a => Object.assign({}, a, { onClick: () => { const m = a.text.match(/TQ-[A-Z0-9]{5}/); a.passport ? (this.setState({ route: "passport" }), window.scrollTo(0, 0)) : m ? nav_("Hats.dc.html#detail/" + m[0]) : nav_("Hats.dc.html#weavers"); } })),
+
+      menu: st.menu, toggleMenu: () => this.setState({ menu: !st.menu }), closeMenu: () => this.setState({ menu: false }),
+      menuLeft: mobile ? "auto" : route === "passport" ? "auto" : (st.collapsed ? 80 : 248) + "px", menuRight: mobile || route === "passport" ? "12px" : "auto",
+      menuTop: mobile || route === "passport" ? "60px" : "auto", menuBottom: mobile || route === "passport" ? "auto" : "16px",
+      themeOpts: ["Light", "Dark", "System"].map(l => { const v = l.toLowerCase(); const on = (st.themeChoice || "light") === v; return { label: l, on, bg: on ? "var(--surface)" : "transparent", shadow: on ? "0 1px 2px rgb(0 0 0 / .15)" : "none", onClick: () => { try { localStorage.setItem("tt-theme", v); } catch (e) {} this.setState({ themeChoice: v, theme: v === "system" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : v }); } }; }),
+      openSettings: () => nav_("Builder.dc.html#settings"),
+      openHelp: () => this.setState({ menu: false, dialog: "help" }),
+      logout: () => open > 0 ? this.setState({ menu: false, dialog: "logout" }) : nav_("Auth.dc.html#loggedout"),
+      doLogout: () => nav_("Auth.dc.html#loggedout"),
+      openCount: open,
+
+      dialog: !!st.dialog, dlgTitle: titles[st.dialog] || "",
+      dHelp: st.dialog === "help", dLogout: st.dialog === "logout", dDiscard: st.dialog === "discard", dClaim: st.dialog === "claim", dWeaver: st.dialog === "weaver", dManual: st.dialog === "manual",
+      dlgAlign: mobile ? "flex-end" : "center", dlgPad: mobile ? "0" : "24px", dlgRadius: mobile ? "18px 18px 0 0" : "16px", dlgMax: mobile ? "100%" : st.dialog === "manual" || st.dialog === "help" ? "560px" : "520px",
+      closeDialog: () => this.closeDialog(), backdropClose: () => { if (!this.isDestructive()) this.closeDialog(); }, stop: e => { e.stopPropagation(); if (e.currentTarget.tagName === "A") e.preventDefault(); },
+      busy: st.busy,
+      shortcuts: [["/", "Focus the note box"], ["⌘/Ctrl + Enter", "Send a note"], ["A · R · E", "Approve, reject or edit the focused proposal"], ["G then H", "Go to Hats"], ["G then L", "Go to Logs (admins)"], ["Esc", "Close any menu, drawer or dialog"]].filter(([k]) => isAdmin || k !== "G then L").map(([k, d]) => ({ k, d })),
+
+      wd: st.wd, wdDup, wdNameErr: st.wdTouched && !st.wd.name.trim(), wdNameBorder: st.wdTouched && !st.wd.name.trim() ? "var(--err)" : "var(--line)",
+      wdName: e => this.setState({ wd: Object.assign({}, st.wd, { name: e.target.value }) }), wdVillage: e => this.setState({ wd: Object.assign({}, st.wd, { village: e.target.value }) }),
+      wdProvince: e => this.setState({ wd: Object.assign({}, st.wd, { province: e.target.value }) }), wdShow: e => this.setState({ wd: Object.assign({}, st.wd, { showName: e.target.checked }) }),
+      saveWeaver: () => {
+        if (!st.wd.name.trim()) return this.setState({ wdTouched: true });
+        const label = st.wd.name.trim() + (st.wd.village ? " (" + st.wd.village.trim() + ")" : "");
+        const ctx = st.dialogCtx;
+        this.setState(s => ({ extraWeavers: [...s.extraWeavers, label], dialog: ctx === "manual" ? "manual" : null, md: ctx === "manual" ? Object.assign({}, s.md, { weaver: label }) : s.md }));
+        if (ctx && ctx !== "manual") { const p = this.get(ctx); this.upd(ctx, p && p.status === "editing" ? { draft: Object.assign({}, p.draft, { weaver: label }) } : { weaver: label, status: "pending", conf: "high" }); }
+        this.toast("success", label + " added.");
+      },
+      weaverOptions: [...WEAVERS, ...st.extraWeavers],
+
+      md, mdRowsErr, mdSizeErr, mdRowsMsg: md.rows === "" ? "Enter rows per inch." : "Rows per inch must be between 6 and 40.",
+      mdRowsBorder: mdRowsErr ? "var(--err)" : "var(--line)", mdSizeBorder: mdSizeErr ? "var(--err)" : "var(--line)",
+      mdMismatch: mdRowsN >= 6 && mdRowsN <= 40 && gradeFor(mdRowsN) !== md.grade, mdMismatchMsg: mdRowsN + " rows/inch usually means " + gradeFor(mdRowsN) + ".",
+      mdGrades: GRADES.map(g => ({ label: g, on: md.grade === g, bg: md.grade === g ? "var(--surface)" : "transparent", color: md.grade === g ? "var(--ink)" : "var(--muted)", shadow: md.grade === g ? "0 1px 2px rgb(0 0 0 / .12)" : "none", onClick: () => this.setState({ md: Object.assign({}, md, { grade: g }) }) })),
+      mdWeaver: e => e.target.value === "__new" ? this.setState({ dialog: "weaver", dialogCtx: "manual", wd: { name: "", village: "", province: "Azuay", showName: true }, wdTouched: false }) : this.setState({ md: Object.assign({}, md, { weaver: e.target.value }) }),
+      mdRows: e => this.setState({ md: Object.assign({}, md, { rows: e.target.value }), mdTouched: true }),
+      mdColor: e => this.setState({ md: Object.assign({}, md, { color: e.target.value }) }),
+      mdSize: e => this.setState({ md: Object.assign({}, md, { size: e.target.value }) }),
+      mdPrice: e => this.setState({ md: Object.assign({}, md, { price: e.target.value }) }),
+      mdNotes: e => this.setState({ md: Object.assign({}, md, { notes: e.target.value }) }),
+      mdDisabled: st.busy || mdSizeErr || (st.mdTouched && mdRowsErr),
+      createLabel: st.busy ? "Creating..." : "Create hat",
+      createHat: () => {
+        if (md.rows === "" || !(mdRowsN >= 6 && mdRowsN <= 40)) return this.setState({ mdTouched: true });
+        this.setState({ busy: true });
+        setTimeout(() => { this.setState({ busy: false, dialog: null }); this.toast("success", "TQ-8B2N4 created.", { actionLabel: "View", action: () => nav_("Hats.dc.html#detail/TQ-8B2N4") }); }, 900);
+      },
+
+      pageX: mobile ? "16px" : "32px", certPad: mobile ? "20px" : "28px 32px", gradeSize: mobile ? "56px" : "84px",
+      pVerified: ps !== "notVerified", pNotVerified: ps === "notVerified", pArchived: ps === "archived",
+      badCode: st.badCode, tryCode: st.tryCode, openTryCode: () => this.setState({ tryCode: true, code: "" }),
+      code: st.code, codeNotValid: !codeValid, codeInvalid: st.code.length >= 3 && !codeValid && st.code.length === 8 || (st.code.length > 0 && !st.code.startsWith("T")),
+      codeBorder: (st.code.length === 8 && !codeValid) ? "var(--err)" : "var(--line)",
+      onCode: e => { let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); if (v.length > 2) v = v.slice(0, 2) + "-" + v.slice(2, 7); this.setState({ code: v }); },
+      verifyCode: () => codeValid && (st.code === "TQ-9A1M8" ? this.setState({ pOverride: "verified", tryCode: false }) : this.setState({ badCode: st.code, tryCode: false })),
+      reportProblem: e => { e && e.preventDefault && e.preventDefault(); this.toast("info", "Thanks. We'll look into it."); },
+      seal: h("div", { key: "seal-" + ps, style: { width: 96, height: 96, borderRadius: "50%", border: "2px solid currentColor", outline: "1px dashed currentColor", outlineOffset: 4, display: "grid", placeItems: "center", animation: "tt-stamp 600ms cubic-bezier(.2,1.3,.4,1) both", animationDelay: "150ms" } }, ic("verified", { fontSize: 52, fontVariationSettings: "'FILL' 1" })),
+      claimed: st.claimed, notClaimed: !st.claimed && this.viewer() === "recipient",
+      askFlex: !st.claimed && this.viewer() === "visitor" ? "1" : "none",
+      claimSeal: h("div", { style: { width: 44, height: 44, borderRadius: "50%", border: "2px solid currentColor", display: "grid", placeItems: "center", animation: "tt-stamp 600ms cubic-bezier(.2,1.3,.4,1) both" } }, ic("approval", { fontSize: 26 })),
+      openClaim: () => this.setState({ dialog: this.props.buyerLoggedIn === false ? "claimLogin" : "claim", concierge: false }),
+      buyerIn: this.props.buyerLoggedIn !== false, buyerOut: this.props.buyerLoggedIn === false, dClaimLogin: st.dialog === "claimLogin",
+      firstRun: !!(st.firstRun || this.props.firstRun), notFirstRun: !(st.firstRun || this.props.firstRun),
+      ...(() => { const hatMade = props.some(p => p.type === "Create hat" && p.status === "approved"); const items = [
+        { label: "Add a weaver", done: st.extraWeavers.length > 0, btn: "Add weaver", onClick: () => this.openWeaver(null) },
+        { label: "Send your first voice note", done: !!st.submitted || st.run === "done", btn: "Try it now", primary: true, icon: true, link: "Use an example", onClick: () => this.startRec(), onLink: () => { this.setState({ note: NOTE, typing: true, voice: "idle" }); setTimeout(() => this.taRef.current && this.taRef.current.focus(), 30); } },
+        { label: "Share a passport", done: !!st.sharedOnce, btn: "Share", disabled: !hatMade, tip: hatMade ? "" : "Available after your first hat exists", onClick: () => { this.setState({ sharedOnce: true }); this.toast("success", "Link copied."); } }
+      ].map(o => Object.assign({ disabled: false, tip: "", link: "", onLink: null }, o, { hasLink: !!o.link, hasIcon: !!o.icon, btnBg: o.primary ? "var(--accent)" : "var(--surface)", btnColor: o.primary ? "var(--on-accent)" : "var(--ink)", btnBorder: o.primary ? "var(--accent)" : "var(--line)", check: o.done ? "check" : "", bg: o.done ? "var(--ok)" : "transparent", border: o.done ? "var(--ok)" : "var(--line)", strike: o.done ? "line-through" : "none", color: o.done ? "var(--muted)" : "var(--ink)", showBtn: !o.done }));
+        return { onboarding: items, obDone: items.filter(i => i.done).length, shareLocked: !hatMade }; })(),
+      claimLabel: st.busy ? "Claiming..." : "Claim",
+      doClaim: () => { this.setState({ busy: true }); setTimeout(() => { this.setState({ busy: false, dialog: null, claimed: true }); this.toast("success", "TQ-9A1M8 is now yours."); }, 900); },
+      toggleShare: () => { if (mobile && navigator.share) { navigator.share({ title: "TQ-9A1M8 · Toquilla Trace", url: location.href }).catch(() => {}); } else this.setState({ shareMenu: !st.shareMenu }); },
+      shareMenu: st.shareMenu, shareLeft: mobile ? "0" : "180px",
+      copyLink: () => { navigator.clipboard && navigator.clipboard.writeText("https://toquillatrace.com/hat/TQ-9A1M8").catch(() => {}); this.setState({ shareMenu: false }); this.toast("success", "Link copied."); },
+      showQR: () => { this.setState({ shareMenu: false }); this.toast("info", "QR dialog is designed in the next round."); },
+      gradeTip: st.gradeTip, toggleGradeTip: () => this.setState({ gradeTip: !st.gradeTip }), showGradeTip: () => this.setState({ gradeTip: true }), hideGradeTip: () => this.setState({ gradeTip: false }),
+      story: STORY.map((s, i) => Object.assign({}, s, { notLast: i < STORY.length - 1 })),
+      chain: ["Workshop", "Seller", "Buyer"].map((l, i) => { const cur = st.claimed ? 2 : 0; const past = i < cur, now = i === cur; return { label: l, current: now, arrow: i < 2, borderStyle: !past && !now ? "dashed" : "solid", border: now ? "var(--accent)" : "var(--line)", bg: now ? "var(--accent-tint)" : past ? "var(--surface2)" : "transparent", color: now ? "var(--accent)" : past ? "var(--ink)" : "var(--muted)" }; }),
+      ownerText: st.claimed ? "Registered to you since Oct 18, 2026" : this.viewer() === "visitor" ? "Transferred to a buyer on Oct 10, 2026. Waiting for them to claim it." : this.props.buyerLoggedIn === false ? "Transferred to a buyer on Oct 10, 2026. Log in to claim it if it's yours." : "Transferred to you on Oct 10, 2026. Claim it to register it in your name.",
+
+      showFab: !mobile && !st.concierge && ps !== "notVerified", passportBar: mobile && !st.concierge && ps !== "notVerified", fabLabel: !(mobile && st.scrolled), fabPad: mobile && st.scrolled ? "0" : "20px",
+      openConcierge: () => this.setState({ concierge: true, shareMenu: false }), closeConcierge: () => this.setState({ concierge: false }),
+      concierge: st.concierge, panelW: mobile ? "100%" : "400px", panelTop: mobile ? "6vh" : "0", panelRadius: mobile ? "18px 18px 0 0" : "0",
+      newChat: () => this.setState({ msgs: [], chatInput: "", typing: false }),
+      chatRef: this.chatRef,
+      msgs: st.msgs.map((m, i) => Object.assign({}, m, {
+        claim: !!m.claim && !st.claimed && this.viewer() === "recipient",
+        isUser: m.role === "user", isBot: m.role === "bot", isError: !!m.error, hasPills: !!(m.pills && m.pills.length), hasTools: m.role === "bot" && !m.error,
+        bg: m.error ? "var(--err-tint)" : "var(--surface)", border: m.error ? "var(--err)" : "var(--line)",
+        copyIcon: m.copied ? "check" : "content_copy", copyTip: m.copied ? "Copied!" : "Copy",
+        upBg: m.vote === "up" ? "var(--ok-tint)" : "transparent", upColor: m.vote === "up" ? "var(--ok)" : "var(--muted)",
+        downBg: m.vote === "down" ? "var(--err-tint)" : "transparent", downColor: m.vote === "down" ? "var(--err)" : "var(--muted)",
+        up: m.vote === "up", down: m.vote === "down", showWhat: m.vote === "down" && !m.whatSent, whatText: m.whatText || "", whatSent: !!m.whatSent,
+        onCopy: () => { navigator.clipboard && navigator.clipboard.writeText(m.text).catch(() => {}); this.patchMsg(i, { copied: true }); setTimeout(() => this.patchMsg(i, { copied: false }), 2000); },
+        onUp: () => this.patchMsg(i, { vote: m.vote === "up" ? null : "up" }), onDown: () => this.patchMsg(i, { vote: m.vote === "down" ? null : "down" }),
+        onWhat: e => this.patchMsg(i, { whatText: e.target.value }), onWhatSend: () => this.patchMsg(i, { whatSent: true }),
+        onRetry: () => { this.setState(s => ({ msgs: s.msgs.filter((_, j) => j !== i) })); this.ask("Is this hat real?", true); }
+      })),
+      typing: st.typing, dots: h("span", { style: { display: "inline-flex", gap: 3, alignItems: "center" } }, [0, 1, 2].map(k => h("span", { key: k, style: { width: 6, height: 6, borderRadius: 3, background: "currentColor", animation: `tt-dot 1s ${k * 0.15}s infinite ease-in-out` } }))),
+      showSuggestions: !st.typing && !rateLimited,
+      suggestions: (st.msgs.length ? QUESTIONS.filter(q => !asked.includes(q)).slice(0, 3) : QUESTIONS).map(q => ({ label: q, onClick: () => this.ask(q) })),
+      rateLimited, chatInput: st.chatInput, onChat: e => this.setState({ chatInput: e.target.value.slice(0, 300) }),
+      onChatKey: e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); this.ask(st.chatInput); } },
+      chatRows: Math.min(4, Math.max(1, st.chatInput.split("\n").length + Math.floor(st.chatInput.length / 38))),
+      chatDisabled: !st.chatInput.trim() || rateLimited || st.typing, sendChat: () => this.ask(st.chatInput),
+      showChatCount: st.chatInput.length > 250, chatCount: st.chatInput.length,
+
+      toasts: st.toasts.map(t => {
+        const meta = { success: ["check_circle", "var(--ok)"], info: ["info", "var(--info)"], warning: ["warning", "var(--warn)"], error: ["error", "var(--err)"], undo: ["undo", "var(--accent)"] }[t.kind];
+        return Object.assign({}, t, { icon: meta[0], iconColor: meta[1].replace("var(--", "var(--").replace(")", ")"), hasAction: !!t.action, isUndo: t.kind === "undo",
+          onAction: () => { t.action(); this.dropToast(t.id); }, onClose: () => this.dropToast(t.id),
+          onEnter: () => clearTimeout(this["tt" + t.id]), onLeave: () => this.armToast(t.id, 2500),
+          bar: h("span", { key: "bar" + t.id, style: { position: "absolute", left: 0, bottom: 0, height: 3, width: "100%", background: "var(--accent)", transformOrigin: "left", animation: "tt-countdown 10s linear forwards" } }) });
+      }),
+      toastW: mobile ? "calc(100% - 24px)" : "380px", toastLeft: mobile ? "50%" : "auto", toastRight: mobile ? "auto" : "20px",
+      toastTop: mobile ? "64px" : "auto", toastBottom: mobile ? "auto" : "20px", toastTx: mobile ? "translateX(-50%)" : "none"
+    };
+  }
+
+  voiceVals(mobile, count, props, allDone) {
+    const st = this.state, p = this.perm(), v = st.voice;
+    const rec = v === "recording", rev = v === "review";
+    const supported = p !== "unsupported";
+    const fmt = n => Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0");
+    const mobileComposer = mobile && (!(props.length > 0 && !allDone) || this.voiceActive());
+    const mTyping = mobileComposer && !rec && !rev && (st.typing || st.run === "running" || !supported);
+    const N = {
+      perm: { icon: "mic", color: "var(--accent)", bg: "var(--accent-tint)", border: "var(--accent)", role: "dialog", text: "We need your microphone to turn your voice into a note. Toquilla Trace doesn't store audio. Your browser's speech service turns it into text.", primary: "Allow microphone", onPrimary: () => { this.setState({ permOverride: "granted" }); setTimeout(() => this.startRec(), 0); }, secondary: "Type instead" },
+      blocked: { icon: "mic_off", color: "var(--err)", bg: "var(--err-tint)", border: "var(--err)", role: "alert", text: "Microphone is blocked. Allow it in your browser settings, or type your note instead.", link: "How to allow", onLink: e => { e.preventDefault(); this.toast("info", "Click the lock icon next to the address, then set Microphone to Allow."); }, secondary: "Type instead" },
+      silence: { icon: "hearing_disabled", color: "var(--warn)", bg: "var(--warn-tint)", border: "var(--warn)", role: "alert", text: "Couldn't hear anything. Try again closer to the phone.", primary: "Try again", onPrimary: () => this.startRec(), secondary: "Type instead" },
+      lost: { icon: "wifi_off", color: "var(--warn)", bg: "var(--warn-tint)", border: "var(--warn)", role: "status", text: "Voice input stopped. Your text so far is saved." },
+      unsupported: { icon: "mic_off", color: "var(--muted)", bg: "var(--surface2)", border: "var(--line)", role: "status", text: "Voice isn't supported in this browser. Type your note instead." }
+    };
+    const key = !supported && !st.dismissUnsupported ? "unsupported" : v === "perm" ? "perm" : v === "blocked" ? "blocked" : v === "silence" ? "silence" : rev && st.vLost ? "lost" : null;
+    const n = key ? N[key] : null;
+    const typeInstead = () => { this.setState({ voice: "idle", typing: true }); setTimeout(() => this.taRef.current && this.taRef.current.focus(), 40); };
+    const lowInNote = st.words.filter(x => x.low && st.note.includes(x.w.replace(/[,.]$/, "")));
+    const liveCount = st.words.length;
+    return {
+      langLabel: st.lang === "es" ? "Español (Ecuador)" : "English", langShort: st.lang === "es" ? "Español" : "English",
+      langAria: "Voice language: " + (st.lang === "es" ? "Español (Ecuador)" : "English") + ". Switch to " + (st.lang === "es" ? "English" : "Español (Ecuador)"),
+      toggleLang: () => this.setState({ lang: st.lang === "es" ? "en" : "es" }),
+      hasHatTag: !!st.hatTag, hatTag: st.hatTag || "", removeHatTag: () => this.setState({ hatTag: null }),
+      hasVoiceNotice: !!n, vn: n ? Object.assign({ link: "", hasLink: !!n.link, hasPrimary: !!n.primary, hasSecondary: !!n.secondary, onSecondary: typeInstead }, n) : {},
+      isRecordingV: rec, notRecordingV: !rec, isReviewV: rev, noWordsYet: rec && liveCount === 0,
+      liveWords: st.words.map((x, i) => { const unconf = rec && i >= liveCount - 2; return { w: x.w, tip: x.low ? "Not sure I heard this right." : "", color: unconf ? "var(--muted)" : "var(--ink)", deco: x.low && !unconf ? "underline" : "none" }; }),
+      hasUnsure: rev && lowInNote.length > 0,
+      unsure: lowInNote.map(x => ({ w: x.w.replace(/[,.]$/, ""), onClick: () => { const ta = this.taRef.current; const w = x.w.replace(/[,.]$/, ""); const i = st.note.indexOf(w); if (ta && i >= 0) { ta.focus(); ta.setSelectionRange(i, i + w.length); } } })),
+      mobileCardHint: mobile,
+      deskIdleFooter: !mobile && !rec && st.run !== "running", deskRecFooter: !mobile && rec, showDeskMic: supported && !rev,
+      micClick: () => rec ? this.stopRec() : (this.startRec() && this.setState({ tapMode: true })),
+      micDown: e => {
+        e.preventDefault();
+        if (rec) { if (st.tapMode) this.stopRec(); return; }
+        this.downAt = Date.now(); this.downX = e.clientX;
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (er) {}
+        if (this.startRec()) this.setState({ holding: true, slideX: 0 });
+      },
+      micMove: e => { if (!this.state.holding) return; const dx = Math.min(0, e.clientX - this.downX); this.setState({ slideX: dx }); if (dx < -110) { this.setState({ holding: false }); this.cancelRec(); } },
+      micUp: () => { if (!this.state.holding) return; const held = Date.now() - this.downAt; if (held < 350) this.setState({ holding: false, tapMode: true, slideX: 0 }); else { this.setState({ holding: false, slideX: 0 }); this.stopRec(); } },
+      prevent: e => e.preventDefault(),
+      micAria: rec ? "Stop recording" : mobile ? "Hold to talk" : "Click to talk", micTitle: rec ? "Stop" : mobile ? "Hold to talk, or tap to start" : "Click to talk",
+      micBg: rec ? "var(--err)" : "var(--accent)", micFg: rec ? "oklch(0.99 0.005 85)" : "var(--on-accent)", micIcon: rec && (st.tapMode || !mobile) ? "stop" : "mic",
+      pulse: React.createElement("span", { key: "ring", "aria-hidden": true, style: { position: "absolute", inset: 0, borderRadius: "50%", background: "var(--err)", animation: "tt-ring 1.2s ease-out infinite" } }),
+      wave: React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 3, height: 28 } }, Array.from({ length: mobile ? 18 : 26 }, (_, k) => React.createElement("span", { key: k, style: { width: 3, height: 6 + ((k * 7) % 5) * 5, borderRadius: 2, background: "currentColor", transformOrigin: "center", animation: "tt-wave " + (0.7 + ((k * 13) % 7) / 10) + "s ease-in-out " + ((k * 0.07) % 0.6).toFixed(2) + "s infinite" } }))),
+      timer: fmt(st.elapsed), timerColor: st.elapsed >= 110 ? "var(--warn)" : "var(--ink)",
+      cancelRec: () => this.cancelRec(), discardVoice: () => { this.setState({ voice: "idle", note: "", words: [], vLost: false }); this.toast("info", "Voice note discarded."); }, reRecord: () => this.startRec(),
+      sendBg: st.note.trim() ? "var(--accent)" : "var(--surface)", sendColor: st.note.trim() ? "var(--on-accent)" : "var(--ink)", sendBorder: st.note.trim() ? "0" : "1px solid var(--line)",
+      mRecording: mobileComposer && rec, mReview: mobileComposer && rev, mTyping, mIdle: mobileComposer && !rec && !rev && !mTyping,
+      micSupported: supported, backToVoice: () => this.setState({ typing: false }), typeInstead,
+      holding: st.holding, tapMode: st.tapMode, slidePx: st.slideX + "px", slideColor: st.slideX < -60 ? "var(--err)" : "var(--muted)", recHint: st.tapMode ? "Tap to stop" : "Release to stop",
+      saidLabel: st.submittedVoice ? "You said:" : "You wrote:", saidVoice: !!st.submittedVoice, hasSubmittedTag: !!st.submittedTag, submittedTag: st.submittedTag || "",
+      mobileSpacer: rec || rev ? "320px" : "220px"
+    };
+  }
+  patchMsg(i, patch) { this.setState(s => ({ msgs: s.msgs.map((m, j) => j === i ? Object.assign({}, m, patch) : m) })); }
+  ask(q, silentUser) {
+    q = (q || "").trim(); if (!q || this.state.typing) return;
+    this.setState(s => ({ msgs: silentUser ? s.msgs : [...s.msgs, { role: "user", text: q }], chatInput: "", typing: true }));
+    setTimeout(() => { const a = answer(q); this.setState(s => ({ typing: false, msgs: [...s.msgs, Object.assign({ role: "bot" }, a)] })); }, 1100);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{--bg:oklch(0.965 0.014 85);--surface:oklch(0.988 0.008 85);--surface2:oklch(0.94 0.018 82);--line:oklch(0.87 0.022 80);--ink:oklch(0.24 0.012 60);--muted:oklch(0.47 0.015 60);--accent:oklch(0.42 0.085 162);--accent-strong:oklch(0.35 0.08 162);--accent-tint:oklch(0.945 0.025 162);--on-accent:oklch(0.99 0.005 85);--ok:oklch(0.46 0.11 150);--ok-tint:oklch(0.95 0.035 150);--warn:oklch(0.5 0.11 65);--warn-tint:oklch(0.95 0.045 85);--err:oklch(0.52 0.17 28);--err-tint:oklch(0.955 0.03 28);--info:oklch(0.48 0.11 250);--info-tint:oklch(0.95 0.025 250);--straw:oklch(0.85 0.055 85);--code:oklch(0.22 0.012 60);--code-ink:oklch(0.92 0.012 85);--scrim:rgb(30 24 12 / 0.38);--shadow:0 1px 2px rgb(40 30 10 / .06),0 10px 30px rgb(40 30 10 / .10)}
+[data-theme="dark"]{--bg:oklch(0.2 0.01 70);--surface:oklch(0.24 0.012 70);--surface2:oklch(0.28 0.014 70);--line:oklch(0.36 0.015 70);--ink:oklch(0.94 0.012 85);--muted:oklch(0.74 0.015 80);--accent:oklch(0.74 0.11 162);--accent-strong:oklch(0.8 0.1 162);--accent-tint:oklch(0.3 0.04 162);--on-accent:oklch(0.18 0.02 162);--ok:oklch(0.76 0.13 150);--ok-tint:oklch(0.29 0.05 150);--warn:oklch(0.82 0.12 80);--warn-tint:oklch(0.31 0.05 75);--err:oklch(0.74 0.15 28);--err-tint:oklch(0.3 0.06 28);--info:oklch(0.76 0.1 245);--info-tint:oklch(0.29 0.04 245);--straw:oklch(0.42 0.04 85);--code:oklch(0.16 0.008 70);--code-ink:oklch(0.92 0.012 85);--scrim:rgb(0 0 0 / 0.55);--shadow:0 1px 2px rgb(0 0 0 / .3),0 10px 30px rgb(0 0 0 / .35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{color:var(--accent-strong)}
+button,input,textarea,select{font:inherit;color:inherit}
+button:disabled{opacity:.45;cursor:not-allowed!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::placeholder{color:var(--muted);opacity:.8}
+@keyframes tt-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes tt-slide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes tt-flash{from{background:var(--accent-tint)}to{background:transparent}}
+@keyframes tt-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes tt-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;display:flex">
+
+  <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}">
+  <aside style="width:{{sideW}}px;flex:none;position:sticky;top:0;height:100vh;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:4px;transition:width 180ms ease;overflow:hidden">
+    <a href="Toquilla Trace.dc.html" aria-label="Toquilla Trace — go to Workshop" style="display:flex;align-items:center;gap:10px;padding:6px 8px;color:var(--ink);text-decoration:none;margin-bottom:18px">
+      <span style="width:28px;height:28px;flex:none;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="font-family:Newsreader,serif;font-size:20px;font-weight:600;white-space:nowrap">Toquilla Trace</span></sc-if>
+    </a>
+    <nav aria-label="Main" style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+        <button onClick="{{n.onClick}}" title="{{n.tip}}" aria-current="{{n.current}}" style="position:relative;display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:{{n.bg}};font-weight:{{n.weight}};cursor:pointer;font-size:14px;text-align:left;white-space:nowrap" style-hover="background:var(--accent-tint)">
+          <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:{{n.iconColor}}">{{n.icon}}</span>
+          <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="flex:1">{{n.label}}</span></sc-if>
+          <sc-if value="{{n.hasBadge}}"><span style="position:{{n.badgePos}};top:5px;right:6px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:700;display:grid;place-items:center">3</span></sc-if>
+          <sc-if value="{{n.dot}}"><span style="position:{{n.badgePos}};top:10px;right:12px;width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+        </button>
+      </sc-for>
+    </nav>
+    <sc-if value="{{isAdmin}}">
+      <nav aria-label="Admin" style="display:flex;flex-direction:column;gap:2px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+        <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><div style="display:flex;align-items:center;gap:6px;padding:0 12px 6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">shield_person</span>Admin</div></sc-if>
+        <sc-for list="{{adminNav}}" as="n" hint-placeholder-count="2">
+          <button onClick="{{n.onClick}}" title="{{n.tip}}" aria-current="{{n.current}}" style="position:relative;display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:{{n.bg}};font-weight:{{n.weight}};cursor:pointer;font-size:14px;text-align:left;white-space:nowrap" style-hover="background:var(--accent-tint)">
+            <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:{{n.iconColor}}">{{n.icon}}</span>
+            <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="flex:1">{{n.label}}</span></sc-if>
+            <sc-if value="{{n.dot}}"><span style="position:{{n.badgePos}};top:10px;right:12px;width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if>
+          </button>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <div style="flex:1"></div>
+    <button onClick="{{toggleMenu}}" aria-label="Open user menu" style="display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:10px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)">
+      <span style="width:32px;height:32px;flex:none;border-radius:16px;background:var(--straw);display:grid;place-items:center;font-weight:600;font-size:13px">XP</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="display:flex;flex-direction:column;white-space:nowrap"><span style="font-weight:600;font-size:13px">Xavier</span><span style="font-size:12px;color:var(--muted)">Taller Pillco, Cuenca</span></span></sc-if>
+    </button>
+    <button onClick="{{toggleSidebar}}" title="{{collapseLabel}}" aria-label="{{collapseLabel}}" style="display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap" style-hover="background:var(--surface2)">
+      <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{collapseIcon}}</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>{{collapseLabel}}</span></sc-if>
+    </button>
+  </aside>
+  </sc-if>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <sc-if value="{{mobile}}">
+      <header style="position:sticky;top:0;z-index:20;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 16px;background:var(--surface);border-bottom:1px solid var(--line)">
+        <a href="Toquilla Trace.dc.html" style="display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none"><span style="width:26px;height:26px;border-radius:7px;background:repeating-linear-gradient(45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),repeating-linear-gradient(-45deg,transparent 0 3px,rgb(255 255 255 / .28) 3px 5px),var(--accent)"></span><span style="font-family:Newsreader,serif;font-size:19px;font-weight:600">Toquilla Trace</span></a>
+        <button onClick="{{toggleMenu}}" aria-label="Open user menu" style="width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0"><span style="width:32px;height:32px;border-radius:16px;background:var(--straw);display:grid;place-items:center;font-weight:600;font-size:13px">XP</span></button>
+      </header>
+    </sc-if>
+
+    <main style="flex:1;width:100%;max-width:1440px;margin:0 auto;padding:{{mainPad}};display:flex;flex-direction:column;gap:16px">
+
+<!-- RUNS -->
+<sc-if value="{{isRuns}}" hint-placeholder-val="{{true}}">
+  <div><h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Agent runs</h1><div style="color:var(--muted)">Every time the assistant worked, step by step.</div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <div style="flex:1 1 240px;max-width:360px;position:relative;display:flex;align-items:center"><span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--muted)">search</span><input value="{{rq}}" onChange="{{onRq}}" placeholder="Search notes" aria-label="Search notes" style="width:100%;height:40px;border:1px solid var(--line);border-radius:10px;padding:0 12px 0 40px;background:var(--surface);outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)"></div>
+    <sc-for list="{{runFilters}}" as="f"><button onClick="{{f.onToggle}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid {{f.border}};border-radius:20px;background:{{f.bg}};font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap">{{f.label}}<sc-if value="{{f.active}}"><span style="min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--on-accent);font-size:11px;display:grid;place-items:center">{{f.count}}</span></sc-if><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></button></sc-for>
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">Date<select value="{{range}}" onChange="{{onRange}}" style="height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--surface);font-weight:600;color:var(--ink)"><option value="today">Today</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="custom">Custom…</option></select></label>
+    <sc-if value="{{rangeCustom}}"><span style="display:flex;gap:6px;align-items:center"><input type="date" value="2026-10-11" aria-label="From" style="height:40px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--surface)"><span style="color:var(--muted)">–</span><input type="date" value="2026-10-18" aria-label="To" style="height:40px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--surface)"></span></sc-if>
+    <sc-if value="{{runFiltersActive}}"><button onClick="{{clearRunFilters}}" style="height:40px;padding:0 10px;border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer">Clear filters</button></sc-if>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+    <sc-for list="{{summary}}" as="s" hint-placeholder-count="5"><div style="padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)"><div style="font-size:12px;color:var(--muted);font-weight:600">{{s.label}}</div><div style="font-size:22px;font-weight:600;letter-spacing:-.01em;color:{{s.color}}">{{s.value}}</div></div></sc-for>
+  </div>
+
+  <sc-if value="{{runsLoading}}"><div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{skel}}" as="k"><div style="height:44px;border-radius:10px;background:var(--surface2);animation:tt-pulse 1.4s ease-in-out infinite"></div></sc-for></div></sc-if>
+  <sc-if value="{{runsEmpty}}"><div style="border:1px dashed var(--line);border-radius:14px;padding:36px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:30px;line-height:1;color:var(--muted)">account_tree</span><strong>No runs match these filters.</strong><span style="color:var(--muted)">Runs appear here each time someone sends a note or asks the concierge a question.</span></div></sc-if>
+
+  <sc-if value="{{runsTable}}" hint-placeholder-val="{{true}}">
+    <div role="table" aria-label="Agent runs" style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto">
+      <div role="row" style="display:grid;grid-template-columns:{{runCols}};gap:12px;align-items:center;padding:0 14px;height:40px;min-width:1040px;border-bottom:1px solid var(--line);font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em"><span>Started</span><span>Agent</span><span>User</span><span>Input</span><span>Status</span><span style="text-align:right">Tools</span><span style="text-align:right">Tokens in/out</span><span style="text-align:right">Latency</span><span style="text-align:right">Cost</span><span></span></div>
+      <sc-for list="{{runRows}}" as="r" hint-placeholder-count="8">
+        <div role="row" onClick="{{r.onOpen}}" style="display:grid;grid-template-columns:{{runCols}};gap:12px;align-items:center;padding:0 14px;height:48px;min-width:1040px;border-bottom:1px solid var(--line);cursor:pointer;background:{{r.bg}}" style-hover="background:var(--surface2)">
+          <span title="{{r.abs}}" style="color:var(--muted);font-size:13px">{{r.rel}}</span>
+          <span><span style="display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:6px;font-size:11.5px;font-weight:700;background:{{r.agentBg}};color:{{r.agentColor}}"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">{{r.agentIcon}}</span>{{r.agentShort}}</span></span>
+          <span style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.user}}</span>
+          <span title="{{r.input}}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.input}}</span>
+          <span><span style="display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:11px;font-size:11.5px;font-weight:700;background:{{r.stBg}};color:{{r.stColor}}"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">{{r.stIcon}}</span>{{r.status}}</span></span>
+          <span style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px">{{r.tools}}</span>
+          <span style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px">{{r.tokens}}</span>
+          <span style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px">{{r.latency}}</span>
+          <span style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px">{{r.cost}}</span>
+          <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--muted)">chevron_right</span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{runsCards}}">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{runRows}}" as="r">
+        <button onClick="{{r.onOpen}}" style="text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;display:flex;flex-direction:column;gap:6px">
+          <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:11px;font-size:11.5px;font-weight:700;background:{{r.stBg}};color:{{r.stColor}}"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">{{r.stIcon}}</span>{{r.status}}</span><span style="height:22px;padding:0 8px;border-radius:6px;font-size:11.5px;font-weight:700;background:{{r.agentBg}};color:{{r.agentColor}};display:inline-flex;align-items:center">{{r.agentShort}}</span><span style="margin-left:auto;font-size:12px;color:var(--muted)">{{r.rel}}</span></span>
+          <span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{r.input}}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)">{{r.tools}} tools · {{r.latency}} · {{r.cost}} · {{r.user}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+</sc-if>
+
+<!-- LOGS -->
+<sc-if value="{{isLogs}}">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+    <div><h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Logs</h1><div style="color:var(--muted)">Every action in the app, newest first.</div></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onClick="{{toggleLive}}" role="switch" aria-checked="{{live}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:8px;border:1px solid {{liveBorder}};border-radius:10px;background:{{liveBg}};font-weight:600;cursor:pointer"><span style="width:8px;height:8px;border-radius:4px;background:{{liveDot}};animation:{{liveAnim}}"></span>Live</button>
+      <button onClick="{{exportJson}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">data_object</span>Export JSON</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <div style="flex:1 1 260px;max-width:380px;position:relative;display:flex;align-items:center"><span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--muted)">search</span><input value="{{lq}}" onChange="{{onLq}}" placeholder="Search messages, actions or IDs" aria-label="Search messages, actions or IDs" style="width:100%;height:40px;border:1px solid var(--line);border-radius:10px;padding:0 36px 0 40px;background:var(--surface);outline:none;font-size:13.5px" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)"><sc-if value="{{hasLq}}"><button onClick="{{clearLq}}" aria-label="Clear search" style="position:absolute;right:2px;width:36px;height:36px;border:0;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">close</button></sc-if></div>
+    <sc-for list="{{logFilters}}" as="f"><button onClick="{{f.onToggle}}" style="height:40px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1px solid {{f.border}};border-radius:20px;background:{{f.bg}};font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap">{{f.label}}<sc-if value="{{f.active}}"><span style="min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--on-accent);font-size:11px;display:grid;place-items:center">{{f.count}}</span></sc-if><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></button></sc-for>
+    <select value="{{tr}}" onChange="{{onTr}}" aria-label="Time range" style="height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--surface);font-weight:600"><option value="15m">Last 15 min</option><option value="1h">Last 1 h</option><option value="24h">Last 24 h</option><option value="7d">Last 7 days</option><option value="custom">Custom…</option></select>
+    <sc-if value="{{logFiltersActive}}"><button onClick="{{clearLogFilters}}" style="height:40px;padding:0 10px;border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer">Clear filters</button></sc-if>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <sc-for list="{{levelChips}}" as="c"><button onClick="{{c.onClick}}" aria-pressed="{{c.on}}" style="height:32px;padding:0 12px;display:flex;align-items:center;gap:6px;border:1.5px solid {{c.border}};border-radius:16px;background:{{c.bg}};font-weight:600;font-size:13px;cursor:pointer;color:{{c.color}}"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{c.icon}}</span>{{c.label}} {{c.n}}</button></sc-for>
+    <div style="flex:1"></div>
+    <div role="radiogroup" aria-label="Density" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:9px;background:var(--surface)"><sc-for list="{{densityOpts}}" as="d"><button role="radio" aria-checked="{{d.on}}" onClick="{{d.onClick}}" style="height:28px;padding:0 10px;border:0;border-radius:6px;background:{{d.bg}};font-weight:600;font-size:12.5px;cursor:pointer">{{d.label}}</button></sc-for></div>
+  </div>
+
+  <div style="position:relative;display:flex;gap:0;align-items:stretch;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;height:{{logsH}}">
+    <sc-if value="{{pausedPill}}"><button onClick="{{flushLive}}" style="position:absolute;z-index:5;top:48px;left:50%;transform:translateX(-50%);height:32px;padding:0 14px;border:0;border-radius:16px;background:var(--ink);color:var(--bg);font-weight:600;font-size:13px;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">arrow_upward</span>Paused, {{pendingN}} new rows</button></sc-if>
+    <div ref="{{logScrollRef}}" onScroll="{{onLogScroll}}" style="flex:1;min-width:0;overflow:auto">
+      <sc-if value="{{logsDesktop}}" hint-placeholder-val="{{true}}">
+        <div role="row" style="position:sticky;top:0;z-index:2;display:grid;grid-template-columns:{{logCols}};gap:12px;align-items:center;padding:0 14px;height:36px;border-bottom:1px solid var(--line);background:var(--surface);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;min-width:1080px"><span>Time</span><span>Level</span><span>Source</span><span>Action</span><span>Message</span><span>User</span><span>Request ID</span><span style="text-align:right">ms</span></div>
+      </sc-if>
+      <sc-if value="{{logsLoading}}"><div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px"><sc-for list="{{skel}}" as="k"><div style="height:24px;border-radius:6px;background:var(--surface2);animation:tt-pulse 1.4s ease-in-out infinite"></div></sc-for></div></sc-if>
+      <sc-if value="{{logsNone}}"><div style="padding:48px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1;color:var(--muted)">manage_search</span><strong>No log rows match these filters.</strong><button onClick="{{clearLogFilters}}" style="height:40px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Clear filters</button></div></sc-if>
+      <sc-for list="{{logRows}}" as="r" hint-placeholder-count="12">
+        <sc-if value="{{logsDesktop}}" hint-placeholder-val="{{true}}">
+          <div role="row" onClick="{{r.onOpen}}" aria-selected="{{r.active}}" style="display:grid;grid-template-columns:{{logCols}};gap:12px;align-items:center;padding:0 14px;height:{{rowH}};border-bottom:1px solid var(--line);cursor:pointer;background:{{r.bg}};animation:{{r.anim}};font-size:12.5px;min-width:1080px;box-shadow:{{r.selShadow}}" style-hover="background:var(--surface2)">
+            <span title="{{r.full}}" style="font-family:'JetBrains Mono',monospace;color:var(--muted)">{{r.t}}</span>
+            <span><span style="display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 7px;border-radius:10px;font-size:11px;font-weight:700;background:{{r.lvBg}};color:{{r.lvColor}}"><span style="font-family:'Material Symbols Rounded';font-size:13px;line-height:1">{{r.lvIcon}}</span>{{r.levelLabel}}</span></span>
+            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.source}}</span>
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.action}}</span>
+            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.msg}}</span>
+            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)">{{r.user}}</span>
+            <span style="display:flex;align-items:center;gap:2px"><span style="font-family:'JetBrains Mono',monospace;color:var(--muted)">{{r.reqShort}}</span><button onClick="{{r.onCopyReq}}" aria-label="Copy request ID" title="Copy request ID" style="width:24px;height:24px;border:0;border-radius:5px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Material Symbols Rounded';font-size:14px;opacity:.6" style-hover="opacity:1;background:var(--surface)">content_copy</button></span>
+            <span style="text-align:right;font-family:'JetBrains Mono',monospace">{{r.dur}}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{mobile}}">
+          <button onClick="{{r.onOpen}}" style="width:100%;text-align:left;display:flex;flex-direction:column;gap:3px;padding:10px 14px;border:0;border-bottom:1px solid var(--line);background:{{r.bg}};cursor:pointer;animation:{{r.anim}}">
+            <span style="display:flex;gap:6px;align-items:center"><span style="display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 7px;border-radius:10px;font-size:11px;font-weight:700;background:{{r.lvBg}};color:{{r.lvColor}}"><span style="font-family:'Material Symbols Rounded';font-size:13px;line-height:1">{{r.lvIcon}}</span>{{r.levelLabel}}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500">{{r.action}}</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">{{r.t}}</span></span>
+            <span style="font-size:13px">{{r.msg}}</span>
+            <span style="font-size:11.5px;color:var(--muted)">{{r.source}} · {{r.user}} · {{r.dur}} ms</span>
+          </button>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{logPanel}}">
+      <aside aria-label="Log row detail" style="position:{{lpPos}};inset:{{lpInset}};z-index:60;width:{{lpW}};flex:none;border-left:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;animation:tt-slide 180ms ease both">
+        <div style="display:flex;align-items:center;gap:8px;padding:12px 12px 12px 16px;border-bottom:1px solid var(--line)">
+          <span style="display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 8px;border-radius:11px;font-size:11.5px;font-weight:700;background:{{lr.lvBg}};color:{{lr.lvColor}}"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">{{lr.lvIcon}}</span>{{lr.levelLabel}}</span>
+          <h2 style="margin:0;flex:1;min-width:0;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{lr.action}}</h2>
+          <button onClick="{{prevLog}}" disabled="{{noPrevLog}}" aria-label="Previous row" style="width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px">keyboard_arrow_up</button>
+          <button onClick="{{nextLog}}" disabled="{{noNextLog}}" aria-label="Next row" style="width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px">keyboard_arrow_down</button>
+          <button onClick="{{closeLog}}" aria-label="Close" style="width:36px;height:36px;border:0;border-radius:8px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">close</button>
+        </div>
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:16px">
+          <p style="margin:0;font-size:15px;font-weight:500">{{lr.msg}}</p>
+          <dl style="margin:0;display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:13px">
+            <dt style="color:var(--muted)">Timestamp</dt><dd style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12.5px">{{lr.full}}</dd>
+            <dt style="color:var(--muted)">Source</dt><dd style="margin:0">{{lr.source}}</dd>
+            <dt style="color:var(--muted)">User</dt><dd style="margin:0">{{lr.user}}</dd>
+            <dt style="color:var(--muted)">Request ID</dt><dd style="margin:0;display:flex;gap:4px;align-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">{{lr.req}}</span><button onClick="{{copyReq}}" aria-label="Copy request ID" style="width:28px;height:28px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:var(--muted);font-family:'Material Symbols Rounded';font-size:15px">content_copy</button></dd>
+            <sc-if value="{{lr.hasHat}}"><dt style="color:var(--muted)">Hat</dt><dd style="margin:0"><a href="{{lr.hatHref}}" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">{{lr.hat}}</a></dd></sc-if>
+            <sc-if value="{{lr.hasRun}}"><dt style="color:var(--muted)">Run</dt><dd style="margin:0"><a href="#run" onClick="{{openRunFromLog}}" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">{{lr.run}}</a></dd></sc-if>
+            <dt style="color:var(--muted)">Duration</dt><dd style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12.5px">{{lr.dur}} ms</dd>
+          </dl>
+          <sc-if value="{{lr.isError}}">
+            <div style="border:1px solid var(--err);border-radius:10px;overflow:hidden">
+              <div style="padding:8px 12px;background:var(--err-tint);color:var(--err);font-weight:700;font-size:13px;display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">error</span>{{lr.errMsg}}</div>
+              <pre style="margin:0;padding:12px;background:var(--code);color:var(--code-ink);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.55;overflow:auto;white-space:pre">{{lr.stack}}</pre>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:6px"><strong style="flex:1;font-size:13px">Payload</strong><button onClick="{{togglePayload}}" style="height:30px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer">{{payloadToggleLabel}}</button><button onClick="{{copyPayload}}" style="height:30px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:14px;line-height:1">content_copy</span>{{payloadCopyLabel}}</button></div>
+            <pre style="margin:0;padding:12px;border-radius:10px;background:var(--code);color:var(--code-ink);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.55;overflow:auto;white-space:pre"><sc-for list="{{payloadTokens}}" as="tk"><span style="color:{{tk.c}}">{{tk.t}}</span></sc-for></pre>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line)">
+          <button onClick="{{copyPrompt}}" style="flex:1 1 100%;height:44px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">auto_awesome</span>Copy as prompt for an AI assistant</button>
+          <button onClick="{{copyReq}}" style="flex:1;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Copy request ID</button>
+          <button onClick="{{filterByReq}}" style="flex:1;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer;white-space:nowrap">Show all rows for this request</button>
+        </div>
+      </aside>
+    </sc-if>
+  </div>
+</sc-if>
+
+<!-- ADMINS ONLY -->
+<sc-if value="{{isDenied}}">
+  <div style="max-width:560px;margin:8vh auto 0;width:100%;padding:28px;border:1px solid var(--line);border-radius:16px;background:var(--surface);display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+    <span style="width:48px;height:48px;border-radius:12px;background:var(--info-tint);color:var(--info);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:28px">shield_person</span>
+    <h1 style="margin:0;font-size:22px;font-weight:600">{{deniedTitle}} is for admins</h1>
+    <p style="margin:0;color:var(--muted)">This page shows technical details from every workshop, so only Toquilla Trace admins can open it. If something isn't working, share the reference from the error message with support.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="Toquilla Trace.dc.html" style="height:44px;padding:0 16px;display:flex;align-items:center;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;text-decoration:none">Go to Workshop</a>
+      <button onClick="{{viewAsAdmin}}" style="height:44px;padding:0 14px;border:1px dashed var(--line);border-radius:10px;background:transparent;color:var(--muted);font-weight:600;cursor:pointer">Prototype only: view as Admin</button>
+    </div>
+  </div>
+</sc-if>
+
+<!-- SETTINGS -->
+<sc-if value="{{isSettings}}">
+  <div style="max-width:760px;width:100%;display:flex;flex-direction:column;gap:16px">
+    <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Settings</h1>
+    <div role="tablist" style="display:flex;border-bottom:1px solid var(--line)">
+      <sc-for list="{{setTabs}}" as="t"><button role="tab" aria-selected="{{t.on}}" onClick="{{t.onClick}}" style="height:46px;padding:0 16px;border:0;border-bottom:2px solid {{t.border}};background:transparent;font-weight:{{t.weight}};color:{{t.color}};cursor:pointer">{{t.label}}</button></sc-for>
+    </div>
+    <section style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+      <sc-if value="{{tProfile}}" hint-placeholder-val="{{true}}">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Name<input value="{{sv.name}}" onChange="{{sName}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400;outline:none" style-focus="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Email<input readOnly="{{true}}" value="xavier@tallerpillco.com" style="height:44px;border:1px dashed var(--line);border-radius:10px;padding:0 12px;background:var(--surface2);font-weight:400;color:var(--muted)"><span style="font-weight:400;color:var(--muted);display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">lock</span>Contact support to change</span></label>
+        <div><button onClick="{{openPw}}" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">key</span>Change password</button></div>
+      </sc-if>
+      <sc-if value="{{tWorkshop}}">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Workshop name<input value="{{sv.workshop}}" onChange="{{sWorkshop}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">City<select value="{{sv.city}}" onChange="{{sCity}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-weight:400"><option>Cuenca</option><option>Montecristi</option><option>Sígsig</option><option>Pile</option><option>Other</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Public contact email<input type="email" value="{{sv.contact}}" onChange="{{sContact}}" style="height:44px;border:1px solid {{contactBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"><span style="font-weight:400;color:var(--muted)">Buyers reach you here from the concierge's “Contact the workshop” link.</span><sc-if value="{{contactErr}}"><span style="color:var(--err);font-weight:500">That doesn't look like an email.</span></sc-if></label>
+        <label style="display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer"><input type="checkbox" role="switch" checked="{{sv.prices}}" onChange="{{sPrices}}" style="width:20px;height:20px;accent-color:var(--accent)">Show prices on public passports by default</label>
+      </sc-if>
+      <sc-if value="{{tAppearance}}">
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Theme<div role="radiogroup" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);max-width:360px"><sc-for list="{{svTheme}}" as="o"><button role="radio" aria-checked="{{o.on}}" onClick="{{o.onClick}}" style="flex:1;height:38px;border:0;border-radius:7px;background:{{o.bg}};box-shadow:{{o.shadow}};font-weight:600;cursor:pointer">{{o.label}}</button></sc-for></div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Density<div role="radiogroup" style="display:flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);max-width:260px"><sc-for list="{{svDensity}}" as="o"><button role="radio" aria-checked="{{o.on}}" onClick="{{o.onClick}}" style="flex:1;height:38px;border:0;border-radius:7px;background:{{o.bg}};box-shadow:{{o.shadow}};font-weight:600;cursor:pointer">{{o.label}}</button></sc-for></div></div>
+      </sc-if>
+      <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:14px">
+        <sc-if value="{{setDirty}}"><button onClick="{{resetSettings}}" style="height:44px;padding:0 14px;border:0;background:transparent;font-weight:600;cursor:pointer;color:var(--muted)">Discard</button></sc-if>
+        <button onClick="{{saveSettings}}" disabled="{{saveDisabled}}" style="height:44px;min-width:140px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer"><sc-if value="{{saving}}">{{spinner}}</sc-if>{{saveLabel}}</button>
+      </div>
+    </section>
+    <sc-if value="{{tProfile}}" hint-placeholder-val="{{true}}">
+      <section style="border:1.5px solid var(--err);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px"><h2 style="margin:0;font-size:15px;color:var(--err)">Danger zone</h2><p style="margin:4px 0 0;color:var(--muted)">Deleting your account removes your workshop and hats. Passports of hats already sold stay verifiable.</p></div>
+        <button onClick="{{openDelete}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600;cursor:pointer">Delete account</button>
+      </section>
+    </sc-if>
+  </div>
+</sc-if>
+
+      <sc-if value="{{mobile}}"><div style="height:72px"></div></sc-if>
+    </main>
+  </div>
+
+  <sc-if value="{{filterOpen}}">
+    <div onClick="{{closeFilter}}" style="position:fixed;inset:0;z-index:55;background:{{filterScrim}}"></div>
+    <div role="dialog" aria-label="{{fp.label}}" style="position:fixed;z-index:56;left:{{fpLeft}};right:{{fpRight}};top:{{fpTop}};bottom:{{fpBottom}};width:{{fpW}};max-height:70vh;overflow:auto;padding:10px;border-radius:{{fpRadius}};background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;animation:tt-in 150ms ease both">
+      <div style="display:flex;justify-content:space-between;padding:4px 8px 8px"><strong>{{fp.label}}</strong><span style="font-size:12px;color:var(--muted)">{{fp.count}} selected</span></div>
+      <sc-if value="{{fp.searchable}}"><input value="{{fpQ}}" onChange="{{onFpQ}}" placeholder="Search actions" aria-label="Search options" style="height:38px;margin:0 4px 6px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:var(--bg);font-size:13px"></sc-if>
+      <sc-for list="{{fp.options}}" as="o"><label style="display:flex;align-items:center;gap:10px;min-height:40px;padding:0 8px;border-radius:8px;cursor:pointer" style-hover="background:var(--surface2)"><input type="checkbox" checked="{{o.on}}" onChange="{{o.onChange}}" style="width:18px;height:18px;accent-color:var(--accent)"><span style="flex:1;font-family:{{o.font}};font-size:13px">{{o.label}}</span></label></sc-for>
+      <div style="display:flex;justify-content:space-between;padding:8px 4px 2px;border-top:1px solid var(--line);margin-top:4px"><button onClick="{{fp.onClear}}" style="height:38px;padding:0 10px;border:0;background:transparent;color:var(--muted);font-weight:600;cursor:pointer">Clear</button><button onClick="{{closeFilter}}" style="height:38px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Done</button></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{runOpen}}">
+    <div onClick="{{closeRun}}" style="position:fixed;inset:0;z-index:58;background:var(--scrim)"></div>
+    <aside role="dialog" aria-label="Run detail" style="position:fixed;z-index:59;top:0;right:0;bottom:0;width:{{drawerW}};background:var(--bg);border-left:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;animation:tt-slide 200ms ease both">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500">{{run.id}}</span>
+          <button onClick="{{copyRunId}}" aria-label="Copy run ID" style="width:32px;height:32px;border:0;border-radius:7px;background:transparent;cursor:pointer;color:var(--muted);font-family:'Material Symbols Rounded';font-size:16px">content_copy</button>
+          <span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:12px;font-size:12px;font-weight:700;background:{{run.stBg}};color:{{run.stColor}}"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">{{run.stIcon}}</span>{{run.status}}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:6px;font-size:12px;font-weight:700;background:{{run.agentBg}};color:{{run.agentColor}}">{{run.agent}}</span>
+          <div style="flex:1"></div>
+          <button onClick="{{closeRun}}" aria-label="Close" style="width:40px;height:40px;border:0;border-radius:9px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">close</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted)"><span>Started <strong style="color:var(--ink);font-family:'JetBrains Mono',monospace;font-weight:500">10:41:57</strong></span><span>Finished <strong style="color:var(--ink);font-family:'JetBrains Mono',monospace;font-weight:500">10:41:59</strong></span><span>Latency <strong style="color:var(--ink)">{{run.latency}}</strong></span><span>Tokens <strong style="color:var(--ink)">{{run.tokens}}</strong></span><span>Cost <strong style="color:var(--ink)">{{run.cost}}</strong></span><span>Model <strong style="color:var(--ink);font-family:'JetBrains Mono',monospace;font-weight:500">claude-opus-5-5</strong></span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;position:relative">
+          <button onClick="{{copyRunJson}}" style="height:38px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;font-size:13px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">data_object</span>Copy run as JSON</button>
+          <button onClick="{{toggleHatsMenu}}" aria-haspopup="menu" style="height:38px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;font-size:13px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">styler</span>Open related hats<span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">expand_more</span></button>
+          <button onClick="{{logsForRun}}" style="height:38px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-weight:600;font-size:13px;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">receipt_long</span>View logs for this run</button>
+          <sc-if value="{{hatsMenu}}"><div role="menu" style="position:absolute;z-index:5;top:44px;left:150px;width:200px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column"><sc-for list="{{relatedHats}}" as="c"><a role="menuitem" href="{{c.href}}" style="height:40px;display:flex;align-items:center;padding:0 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)">{{c.code}}</a></sc-for></div></sc-if>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:16px">
+        <sc-if value="{{runDetailLoading}}"><div style="display:flex;flex-direction:column;gap:8px"><sc-for list="{{skel}}" as="k"><div style="height:56px;border-radius:12px;background:var(--surface2);animation:tt-pulse 1.4s ease-in-out infinite"></div></sc-for></div></sc-if>
+        <sc-if value="{{runDetailReady}}" hint-placeholder-val="{{true}}">
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Input</span><blockquote style="margin:0;padding:12px 14px;border-radius:12px;background:var(--surface2);font-size:15px">“{{run.input}}”</blockquote></div>
+        <div style="display:flex;align-items:center;gap:8px"><span style="flex:1;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Steps ({{stepCount}})</span><button onClick="{{expandAll}}" style="height:32px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);font-size:12.5px;font-weight:600;cursor:pointer">Expand all</button><button onClick="{{collapseAll}}" style="height:32px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);font-size:12.5px;font-weight:600;cursor:pointer">Collapse all</button></div>
+        <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">
+          <sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+            <li style="display:flex;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center"><span style="width:28px;height:28px;flex:none;border-radius:14px;display:grid;place-items:center;font-size:12px;font-weight:700;background:{{s.dotBg}};color:{{s.dotColor}};border:1.5px {{s.dotStyle}} {{s.dotBorder}}">{{s.n}}</span><sc-if value="{{s.notLast}}"><span style="flex:1;width:2px;background:var(--line);min-height:12px"></span></sc-if></div>
+              <div style="flex:1;min-width:0;padding-bottom:12px">
+                <div style="border:1.5px {{s.cardStyle}} {{s.cardBorder}};border-radius:12px;background:{{s.cardBg}};overflow:hidden">
+                  <button onClick="{{s.onToggle}}" aria-expanded="{{s.open}}" style="width:100%;display:flex;align-items:center;gap:8px;padding:10px 12px;border:0;background:transparent;cursor:pointer;text-align:left;flex-wrap:wrap">
+                    <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:{{s.iconColor}}">{{s.icon}}</span>
+                    <strong style="font-size:13.5px">{{s.kind}}</strong>
+                    <sc-if value="{{s.hasName}}"><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">{{s.name}}</span></sc-if>
+                    <sc-if value="{{s.hasTag}}"><span style="height:20px;padding:0 7px;border-radius:5px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;background:{{s.tagBg}};color:{{s.tagColor}}">{{s.tag}}</span></sc-if>
+                    <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)">{{s.meta}}</span>
+                    <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--muted)">{{s.chev}}</span>
+                  </button>
+                  <sc-if value="{{s.open}}">
+                    <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px">
+                      <sc-if value="{{s.hasText}}"><p style="margin:0;font-size:13.5px;color:{{s.textColor}}">{{s.text}}</p></sc-if>
+                      <sc-for list="{{s.blocks}}" as="b">
+                        <div style="border-radius:10px;overflow:hidden;border:1px solid var(--line)">
+                          <div style="display:flex;align-items:center;padding:4px 4px 4px 10px;background:var(--surface2);font-size:11.5px;font-weight:700;color:var(--muted)"><span style="flex:1">{{b.label}}</span><button onClick="{{b.onToggle}}" style="height:26px;padding:0 8px;border:0;background:transparent;font-size:11.5px;font-weight:600;cursor:pointer">{{b.toggleLabel}}</button><button onClick="{{b.onCopy}}" aria-label="Copy JSON" style="width:28px;height:26px;border:0;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:15px">content_copy</button></div>
+                          <sc-if value="{{b.open}}"><pre style="margin:0;padding:10px 12px;background:var(--code);color:var(--code-ink);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.55;overflow:auto;white-space:pre"><sc-for list="{{b.tokens}}" as="tk"><span style="color:{{tk.c}}">{{tk.t}}</span></sc-for></pre></sc-if>
+                        </div>
+                      </sc-for>
+                      <sc-if value="{{s.hasProposals}}"><div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{s.proposals}}" as="p"><div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;border:1.5px {{p.style}} {{p.border}};background:{{p.bg}};font-size:13px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:{{p.border}}">{{p.icon}}</span><span style="flex:1">{{p.text}}</span><span style="font-size:11.5px;font-weight:700;color:{{p.border}}">{{p.state}}</span></div></sc-for></div></sc-if>
+                      <sc-if value="{{s.hasDiff}}"><div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 12px;font-size:12.5px;padding:10px;border-radius:9px;background:var(--surface2)"><span style="font-weight:700;color:var(--muted)">Field</span><span style="font-weight:700;color:var(--muted)">Before (AI)</span><span style="font-weight:700;color:var(--muted)">After (you)</span><sc-for list="{{s.diff}}" as="d"><span style="font-family:'JetBrains Mono',monospace">{{d.f}}</span><span style="text-decoration:line-through;color:var(--err)">{{d.a}}</span><span style="color:var(--ok);font-weight:600">{{d.b}}</span></sc-for></div></sc-if>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+            </li>
+          </sc-for>
+        </ol>
+        </sc-if>
+      </div>
+    </aside>
+  </sc-if>
+
+  <sc-if value="{{mobile}}">
+    <nav aria-label="Main" style="position:fixed;left:0;right:0;bottom:0;z-index:31;height:64px;display:grid;grid-template-columns:repeat({{tabCols}},1fr);background:var(--surface);border-top:1px solid var(--line)">
+      <sc-for list="{{nav}}" as="n"><button onClick="{{n.onClick}}" aria-current="{{n.current}}" style="position:relative;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:{{n.tabColor}};font-size:11px;font-weight:{{n.weight}};cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1">{{n.icon}}</span>{{n.short}}<sc-if value="{{n.hasBadge}}"><span style="position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--on-accent);font-size:10px;font-weight:700;display:grid;place-items:center">3</span></sc-if><sc-if value="{{n.dot}}"><span style="position:absolute;top:9px;left:calc(50% + 8px);width:8px;height:8px;border-radius:4px;background:var(--err)"></span></sc-if></button></sc-for>
+    </nav>
+  </sc-if>
+
+  <sc-if value="{{menu}}">
+    <div onClick="{{closeMenu}}" style="position:fixed;inset:0;z-index:60"></div>
+    <div role="menu" style="position:fixed;z-index:61;left:{{menuLeft}};right:{{menuRight}};top:{{menuTop}};bottom:{{menuBottom}};width:280px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px">
+      <div style="padding:8px 10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px"><div style="font-weight:700;display:flex;align-items:center;gap:8px">Xavier Pillco<sc-if value="{{isAdmin}}"><span style="height:20px;padding:0 7px;display:inline-flex;align-items:center;gap:3px;border-radius:6px;background:var(--info-tint);color:var(--info);font-size:11px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:13px;line-height:1">shield_person</span>Admin</span></sc-if></div><div style="font-size:13px;color:var(--muted)">xavier@tallerpillco.com</div><div style="font-size:13px;color:var(--muted)">Taller Pillco, Cuenca</div></div>
+      <button role="menuitem" onClick="{{goSettings}}" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">storefront</span>Profile &amp; workshop</button>
+      <div role="radiogroup" aria-label="Theme" style="display:flex;margin:4px 10px 6px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg)"><sc-for list="{{themeOpts}}" as="t"><button role="radio" aria-checked="{{t.on}}" onClick="{{t.onClick}}" style="flex:1;height:34px;border:0;border-radius:7px;background:{{t.bg}};box-shadow:{{t.shadow}};font-size:13px;font-weight:600;cursor:pointer">{{t.label}}</button></sc-for></div>
+      <a role="menuitem" href="Toquilla Trace.dc.html" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">help</span>Help</a>
+      <sc-if value="{{adminMobile}}">
+        <div style="padding:8px 10px 2px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);margin-top:4px">Admin tools</div>
+        <a role="menuitem" href="#runs" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">account_tree</span>Agent runs</a>
+        <a role="menuitem" href="#logs" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">receipt_long</span>Logs<span style="margin-left:auto;width:8px;height:8px;border-radius:4px;background:var(--err)" aria-label="New errors in the last hour"></span></a>
+      </sc-if>
+      <div style="padding:8px 10px 4px;border-top:1px dashed var(--line);margin-top:4px;font-size:11px;color:var(--muted)">Prototype only: view as</div>
+      <div role="radiogroup" aria-label="View as role" style="display:flex;margin:0 10px 6px;padding:3px;border:1px dashed var(--line);border-radius:10px;background:var(--bg)">
+        <sc-for list="{{roleOpts}}" as="r"><button role="radio" aria-checked="{{r.on}}" onClick="{{r.onClick}}" style="flex:1;height:32px;border:0;border-radius:7px;background:{{r.bg}};box-shadow:{{r.shadow}};font-size:13px;font-weight:600;cursor:pointer">{{r.label}}</button></sc-for>
+      </div>
+      <a role="menuitem" href="Auth.dc.html#loggedout" style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none" style-hover="background:var(--surface2)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">logout</span>Log out</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{dialog}}">
+    <div onClick="{{backdropClose}}" style="position:fixed;inset:0;z-index:70;background:var(--scrim);display:flex;align-items:{{dlgAlign}};justify-content:center;padding:{{dlgPad}}">
+      <div role="dialog" aria-modal="true" aria-label="{{dlgTitle}}" onClick="{{stop}}" style="width:100%;max-width:520px;background:var(--surface);border-radius:{{dlgRadius}};box-shadow:var(--shadow);display:flex;flex-direction:column;animation:tt-in 180ms ease both">
+        <sc-if value="{{mobile}}"><div style="display:flex;justify-content:center;padding-top:8px"><span style="width:40px;height:4px;border-radius:2px;background:var(--line)"></span></div></sc-if>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:20px 20px 4px"><h2 style="margin:0;flex:1;font-size:18px;font-weight:600">{{dlgTitle}}</h2><button onClick="{{closeDialog}}" aria-label="Close" style="width:36px;height:36px;margin:-6px -6px 0 0;border:0;border-radius:9px;background:transparent;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px">close</button></div>
+        <sc-if value="{{dPw}}">
+          <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Current password<input type="password" value="{{pw.cur}}" onChange="{{pwCur}}" style="height:44px;border:1px solid {{pwCurBorder}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"><sc-if value="{{pwCurErr}}"><span style="color:var(--err);font-weight:500">Current password is incorrect.</span></sc-if></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">New password<input type="password" value="{{pw.n1}}" onChange="{{pwN1}}" style="height:44px;border:1px solid {{pwN1Border}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"><span style="font-weight:400;color:{{pwHintColor}}">At least 8 characters</span></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Confirm new password<input type="password" value="{{pw.n2}}" onChange="{{pwN2}}" style="height:44px;border:1px solid {{pwN2Border}};border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"><sc-if value="{{pwMismatch}}"><span style="color:var(--err);font-weight:500">Passwords don't match.</span></sc-if></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{savePw}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer">Update password</button></div>
+        </sc-if>
+        <sc-if value="{{dDelete}}">
+          <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:12px">
+            <p style="margin:0;color:var(--muted)">This permanently deletes Taller Pillco, its weavers and unsold hats. It can't be undone.</p>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Type <span style="font-family:'JetBrains Mono',monospace;background:var(--surface2);padding:1px 6px;border-radius:4px;align-self:flex-start">Taller Pillco</span> to confirm<input value="{{delText}}" onChange="{{onDelText}}" style="height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-weight:400"></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Cancel</button><button onClick="{{doDelete}}" disabled="{{delDisabled}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600;cursor:pointer">Delete forever</button></div>
+        </sc-if>
+        <sc-if value="{{dUnsaved}}">
+          <p style="margin:0;padding:8px 20px 0;color:var(--muted)">You have unsaved changes on this tab.</p>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:20px"><button onClick="{{closeDialog}}" style="height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer">Keep editing</button><button onClick="{{discardSettings}}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--err);color:var(--surface);font-weight:600;cursor:pointer">Discard</button></div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <div aria-live="polite" style="position:fixed;z-index:90;display:flex;flex-direction:column;gap:8px;width:{{toastW}};left:{{toastLeft}};right:{{toastRight}};top:{{toastTop}};bottom:{{toastBottom}};transform:{{toastTx}};pointer-events:none">
+    <sc-for list="{{toasts}}" as="t"><div role="status" style="pointer-events:auto;display:flex;align-items:center;gap:10px;padding:12px 10px 12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);box-shadow:var(--shadow);animation:tt-in 180ms ease both"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--ok)">check_circle</span><span style="flex:1;font-weight:500">{{t.title}}</span><button onClick="{{t.onClose}}" aria-label="Dismiss notification" style="width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--bg);cursor:pointer;font-family:'Material Symbols Rounded';font-size:18px">close</button></div></sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;member&quot;,&quot;admin&quot;],&quot;default&quot;:&quot;admin&quot;,&quot;tsType&quot;:&quot;'member'|'admin'&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;initialScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;runs&quot;,&quot;logs&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;runs&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;runsState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;data&quot;,&quot;loading&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;data&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;States&quot;},&quot;logsState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;data&quot;,&quot;loading&quot;],&quot;default&quot;:&quot;data&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;States&quot;}}">
+const h = React.createElement;
+const NOTE = "Doña Rosa terminó 3 finos de 18 hileras. El TQ-7F3K2 ya está lavado, pasa a blanqueo. El TQ-2C5P0 ya está listo. Y el de Carmen dice superfino pero tiene 18 hileras.";
+const RUNS = [
+  { id: "run_8f2a91c4", agent: "Workshop agent", user: "Xavier", input: NOTE, status: "Partially approved", tools: 4, tin: 1840, tout: 312, lat: 2.1, cost: 0.004, mins: 4 },
+  { id: "run_7c11d0ab", agent: "Buyer concierge", user: "Anonymous buyer", input: "Will it fit a 58 cm head?", status: "Answered", tools: 1, tin: 620, tout: 88, lat: 1.2, cost: 0.001, mins: 22 },
+  { id: "run_3b90e7f2", agent: "Workshop agent", user: "Xavier", input: "Manuel entregó un superfino de 32 hileras", status: "Failed", tools: 1, tin: 410, tout: 0, lat: 8.4, cost: 0.001, mins: 48, failed: true },
+  { id: "run_5d2e8a10", agent: "Workshop agent", user: "Xavier", input: "TQ-7F3K2 ya está lavado", status: "Approved", tools: 2, tin: 980, tout: 140, lat: 1.8, cost: 0.003, mins: 95 },
+  { id: "run_19ac44e7", agent: "Buyer concierge", user: "Anonymous buyer", input: "Mark this as mine", status: "Answered", tools: 1, tin: 540, tout: 42, lat: 0.9, cost: 0.001, mins: 130 },
+  { id: "run_a07f3c92", agent: "Workshop agent", user: "Xavier", input: "Carmen trajo dos finos de 20 hileras para lavar", status: "Rejected", tools: 3, tin: 1320, tout: 260, lat: 2.6, cost: 0.004, mins: 300 },
+  { id: "run_c4b1e0d3", agent: "Workshop agent", user: "Xavier", input: "Pasar TQ-2C5P0 a terminado", status: "Proposed", tools: 2, tin: 760, tout: 118, lat: 1.5, cost: 0.002, mins: 420 },
+  { id: "run_e8d2f611", agent: "Workshop agent", user: "Xavier", input: "Doña Rosa empezó 2 sombreros nuevos", status: "Stopped", tools: 1, tin: 380, tout: 0, lat: 0.7, cost: 0.001, mins: 1500 },
+  { id: "run_0f9b7a25", agent: "Buyer concierge", user: "Anonymous buyer", input: "Is this hat real?", status: "Answered", tools: 1, tin: 590, tout: 104, lat: 1.1, cost: 0.001, mins: 2900 }
+];
+const ST = { "Proposed": ["var(--accent-tint)", "var(--accent)", "auto_awesome"], "Partially approved": ["var(--warn-tint)", "var(--warn)", "rule"], "Approved": ["var(--ok-tint)", "var(--ok)", "check_circle"], "Rejected": ["var(--surface2)", "var(--muted)", "block"], "Failed": ["var(--err-tint)", "var(--err)", "error"], "Stopped": ["var(--surface2)", "var(--muted)", "stop_circle"], "Answered": ["var(--info-tint)", "var(--info)", "forum"] };
+const LV = { debug: ["var(--surface2)", "var(--muted)", "bug_report", "Debug"], info: ["var(--info-tint)", "var(--info)", "info", "Info"], warn: ["var(--warn-tint)", "var(--warn)", "warning", "Warn"], error: ["var(--err-tint)", "var(--err)", "error", "Error"] };
+const ACTIONS = ["auth.login", "agent.run.start", "agent.tool.call", "rule.check", "proposal.approve", "hat.stage.advance", "hat.transfer", "concierge.message"];
+const SOURCES = ["Web app", "Edge function", "Workshop agent", "Buyer concierge", "Database"];
+function mkLogs() {
+  const base = Date.parse("2026-10-18T10:42:13.512Z");
+  const core = [
+    ["error", "Database", "hat.stage.advance", "Row was updated by another user", "Xavier", "req_8f2a91c4e2", 120, "TQ-7F3K2", "run_8f2a91c4", { hat_code: "TQ-7F3K2", from: "Washing", to: "Bleaching", expected_version: 7, actual_version: 8, proposal_id: "prop_02" }, { message: "PostgrestError: 0 rows updated (optimistic lock)", stack: "at advanceStage (app/api/hats/[code]/advance/route.ts:42:11)\nat async approveProposal (lib/proposals.ts:88:5)\nat async POST (app/api/proposals/approve/route.ts:19:3)\ncode: PGRST116 · hint: version mismatch on hats.version" }],
+    ["info", "Web app", "proposal.approve", "Approved: TQ-7F3K2 → Bleaching", "Xavier", "req_8f2a91c4e2", 64, "TQ-7F3K2", "run_8f2a91c4", { proposal_id: "prop_02", action: "advance_stage", approved_by: "xavier@tallerpillco.com", edited: false }],
+    ["warn", "Edge function", "rule.check", "Blocked: stage skip (Weaving → Finished)", "Assistant", "req_8f2a91c4e2", 4, "TQ-2C5P0", "run_8f2a91c4", { rule: "stage_order", hat_code: "TQ-2C5P0", from: "Weaving", requested: "Finished", allowed_next: "Washing", result: "blocked" }],
+    ["info", "Workshop agent", "agent.tool.call", "find_weaver · 2 matches", "Assistant", "req_8f2a91c4e2", 38, "", "run_8f2a91c4", { tool: "find_weaver", input: { name: "Rosa" }, output_count: 2 }],
+    ["info", "Workshop agent", "agent.run.start", "Run started from workshop note", "Xavier", "req_8f2a91c4e2", 2, "", "run_8f2a91c4", { run_id: "run_8f2a91c4", model: "claude-opus-5-5", note_length: NOTE.length }],
+    ["info", "Web app", "auth.login", "Xavier logged in", "Xavier", "req_1a77b03f9d", 84, "", "", { method: "password", ip_country: "EC" }]
+  ];
+  const fill = [["info", "Buyer concierge", "concierge.message", "Answered: Will it fit a 58 cm head?", "Anonymous", "TQ-9A1M8"], ["debug", "Edge function", "agent.tool.call", "get_hat_record · cache hit", "Assistant", "TQ-9A1M8"], ["info", "Web app", "hat.transfer", "Transfer recorded for ana@shop.com", "Xavier", "TQ-9A1M8"], ["warn", "Workshop agent", "rule.check", "Grade/weave mismatch flagged", "Assistant", "TQ-4K9D1"], ["info", "Database", "hat.stage.advance", "TQ-8B2N4 moved to Washing", "Xavier", "TQ-8B2N4"], ["error", "Buyer concierge", "concierge.message", "Model API error 529: overloaded", "Anonymous", "TQ-9A1M8"], ["warn", "Edge function", "rule.check", "Blocked: not current owner", "Assistant", "TQ-9A1M8"], ["info", "Web app", "auth.login", "Xavier logged in", "Xavier", ""], ["debug", "Database", "hat.stage.advance", "Version check ok", "System", "TQ-8B2N4"]];
+  const rows = core.map((c, i) => ({ level: c[0], source: c[1], action: c[2], msg: c[3], user: c[4], req: c[5], dur: c[6], hat: c[7], run: c[8], payload: c[9], err: c[10], at: base - [0, 140, 1360, 2290, 2470, 312000][i] }));
+  for (let i = 0; i < 42; i++) { const f = fill[i % fill.length]; rows.push({ level: f[0], source: f[1], action: f[2], msg: f[3], user: f[4], req: "req_" + (0x3c00ab + i * 7919).toString(16) + "e1", dur: 5 + (i * 37) % 180, hat: f[5], run: f[1] === "Buyer concierge" ? "run_7c11d0ab" : "", payload: { hat_code: f[5] || null, detail: f[3] }, err: f[0] === "error" ? { message: f[3], stack: "at callModel (lib/agent/model.ts:61:9)\nat async runConcierge (lib/agent/concierge.ts:33:14)\nstatus: 529 · retry_after: 2s" } : null, at: base - 330000 - i * 61000 }); }
+  return rows.map((r, i) => Object.assign({ id: "l" + i }, r));
+}
+function tokens(obj) {
+  const s = JSON.stringify(obj, null, 2); const out = []; let last = 0;
+  s.replace(/("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (m, _a, _b, colon, lit, off) => {
+    if (off > last) out.push({ t: s.slice(last, off), c: "var(--code-ink)" });
+    out.push({ t: m, c: colon ? "oklch(0.8 0.08 250)" : m[0] === '"' ? "oklch(0.82 0.1 140)" : lit ? "oklch(0.78 0.12 330)" : "oklch(0.83 0.11 70)" });
+    last = off + m.length; return m;
+  });
+  if (last < s.length) out.push({ t: s.slice(last), c: "var(--code-ink)" });
+  return out;
+}
+function steps(run) {
+  if (run.failed) return [
+    { kind: "Model call", icon: "neurology", meta: "410 in · 0 out · 8.2 s", text: "Request sent to the model." },
+    { kind: "Error", icon: "error", tone: "err", meta: "8.4 s", text: "Model API error 529: overloaded. The run was stopped and nothing was proposed.", blocks: [["Error", { type: "overloaded_error", status: 529, request_id: "req_3b90e7f2a1", retry_after_s: 2, at: "lib/agent/model.ts:61:9" }]] }
+  ];
+  return [
+    { kind: "Model call", icon: "neurology", meta: "1,120 in · 96 out · 640 ms", text: "I'll look up the weaver named Rosa, the two hats you named, and Carmen's open hats." },
+    { kind: "Tool call", name: "find_weaver", icon: "build", tag: "Read", tagTone: "info", meta: "38 ms", blocks: [["Input", { name: "Rosa" }], ["Output", { matches: [{ id: "w1", name: "Rosa Pillco", village: "Sígsig" }, { id: "w2", name: "Rosa Guamán", village: "Cuenca" }] }]] },
+    { kind: "Tool call", name: "list_open_hats", icon: "build", tag: "Read", tagTone: "info", meta: "52 ms", blocks: [["Input", { codes: ["TQ-7F3K2", "TQ-2C5P0"], weaver_names: ["Carmen"] }], ["Output", { hats: [{ code: "TQ-7F3K2", stage: "Washing" }, { code: "TQ-2C5P0", stage: "Weaving" }, { code: "TQ-4K9D1", weaver: "Carmen Quizhpi", grade: "Superfino", rows: 18, stage: "Blocking" }] }]] },
+    { kind: "Rule check", icon: "verified_user", tone: "ok", meta: "2 ms", text: "Allowed: TQ-7F3K2 Washing → Bleaching" },
+    { kind: "Rule check", icon: "lock", tone: "err", meta: "2 ms", text: "Blocked: stage skip (Weaving → Finished) on TQ-2C5P0" },
+    { kind: "Tool call", name: "propose_changes", icon: "build", tag: "Write: proposed only", tagTone: "warn", meta: "21 ms", blocks: [["Input", { proposals: [{ type: "create_hat", qty: 3, grade: "Fino", rows: 18, weaver: null }, { type: "advance_stage", code: "TQ-7F3K2", to: "Bleaching" }, { type: "advance_stage", code: "TQ-2C5P0", to: "Finished" }, { type: "flag", code: "TQ-4K9D1" }] }], ["Output", { saved: false, pending_review: 4 }]] },
+    { kind: "Model call", icon: "neurology", meta: "720 in · 216 out · 980 ms", text: "I understood: Rosa finished 3 Fino hats (18 rows per inch), TQ-7F3K2 is washed and goes to bleaching, TQ-2C5P0 is done, and Carmen's hat may be graded wrong. I prepared 4 actions for you to review." },
+    { kind: "Proposal", icon: "auto_awesome", meta: "4 cards", proposals: [["Create 3 hats · Fino · 18 rows/inch", "Needs answer", "warn"], ["Advance TQ-7F3K2 to Bleaching", "Pending", "accent"], ["Move TQ-2C5P0 to Finished", "Blocked", "err"], ["Flag TQ-4K9D1 · Grade mismatch", "Pending", "accent"]] },
+    { kind: "Human decision", icon: "how_to_reg", tone: "ok", meta: "10:42:13", text: "Approved by Xavier · 10:42:13", diff: [["weaver", "— (2 matches)", "Rosa Pillco (Sígsig)"], ["qty", "3", "3"]] }
+  ];
+}
+
+function readRole(propRole) {
+  try {
+    const q = new URLSearchParams(location.search).get("role");
+    if (q === "admin" || q === "member") { localStorage.setItem("tt-role", q); return q; }
+    const saved = localStorage.getItem("tt-role");
+    if (saved === "admin" || saved === "member") return saved;
+  } catch (e) {}
+  return propRole === "member" ? "member" : "admin";
+}
+
+class Component extends DCLogic {
+  state = { role: "admin", screen: "runs", mobile: false, vw: 1440, theme: "light", themeChoice: "light", collapsed: false, menu: false, toasts: [],
+    rq: "", rf: { Status: [], Agent: [] }, range: "7", runOpen: null, openSteps: {}, closedBlocks: {}, hatsMenu: false, runLoading: false,
+    logs: mkLogs(), lq: "", lf: { Level: [], Source: [], Action: [], User: [] }, tr: "24h", live: false, pending: [], flash: {}, sel: null, density: "compact", payloadFull: true, payCopied: false, scrolled: false,
+    openFilter: null, fpQ: "", tab: "profile", saved: { name: "Xavier Pillco", workshop: "Taller Pillco", city: "Cuenca", contact: "hola@tallerpillco.com", prices: false, theme: "light", density: "compact" }, sv: null, saving: false,
+    dialog: null, pw: { cur: "", n1: "", n2: "" }, pwTouched: false, delText: "" };
+  logScrollRef = React.createRef();
+  componentDidMount() {
+    const onResize = () => this.setState({ mobile: window.innerWidth < 768, vw: window.innerWidth });
+    onResize(); window.addEventListener("resize", onResize);
+    this.setState({ role: readRole(this.props.role) });
+    try { const t = localStorage.getItem("tt-theme"); if (t) this.setState({ themeChoice: t, theme: t === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t }); } catch (e) {}
+    this.setState(s => ({ sv: Object.assign({}, s.saved, { theme: s.themeChoice }) }));
+    this.readHash(); this.onHash = () => this.readHash(); window.addEventListener("hashchange", this.onHash);
+    this.onKey = e => { if (e.key === "Escape") this.setState({ menu: false, openFilter: null, runOpen: null, sel: null, hatsMenu: false, dialog: this.state.dialog === "delete" ? this.state.dialog : null }); if (this.state.sel && (e.key === "ArrowDown" || e.key === "ArrowUp") && e.target.tagName !== "INPUT") { e.preventDefault(); this.stepLog(e.key === "ArrowDown" ? 1 : -1); } };
+    window.addEventListener("keydown", this.onKey);
+    this.liveT = setInterval(() => this.tick(), 2600);
+    this.cleanup = () => { window.removeEventListener("resize", onResize); window.removeEventListener("hashchange", this.onHash); window.removeEventListener("keydown", this.onKey); clearInterval(this.liveT); };
+  }
+  componentWillUnmount() { this.cleanup && this.cleanup(); }
+  componentDidUpdate(pp) { if (pp.role !== this.props.role && this.props.role) this.setRole(this.props.role); }
+  setRole(r) { try { localStorage.setItem("tt-role", r); } catch (e) {} this.setState({ role: r, menu: false, sel: null, runOpen: null }); }
+  readHash() {
+    const hs = location.hash.slice(1) || this.props.initialScreen || "runs";
+    if (hs === "run") { this.setState({ screen: "runs" }); this.openRun(RUNS[0].id); }
+    else if (["runs", "logs", "settings"].includes(hs)) this.setState({ screen: hs });
+    else if (hs.startsWith("logs/")) this.setState({ screen: "logs", lq: hs.slice(5) });
+  }
+  go(screen) {
+    if (this.state.screen === "settings" && this.dirty()) return this.setState({ dialog: "unsaved", pendingNav: { screen } });
+    this.setState({ screen, sel: null, runOpen: null }); history.replaceState(null, "", "#" + screen); window.scrollTo(0, 0);
+  }
+  toast(title) { const id = Math.random().toString(36).slice(2); this.setState(s => ({ toasts: [...s.toasts, { id, title }].slice(-3) })); setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 5000); }
+  copy(t, msg) { navigator.clipboard && navigator.clipboard.writeText(t).catch(() => {}); if (msg) this.toast(msg); }
+  openRun(id) { this.setState({ runOpen: id, runLoading: true, openSteps: {}, closedBlocks: {}, hatsMenu: false }); setTimeout(() => this.setState({ runLoading: false }), 450); }
+  tick() {
+    if (!this.state.live || this.state.screen !== "logs") return;
+    const pool = [["info", "Buyer concierge", "concierge.message", "Answered: How do I care for it?", "Anonymous", "TQ-9A1M8"], ["debug", "Edge function", "agent.tool.call", "get_hat_record · 12 ms", "Assistant", "TQ-9A1M8"], ["info", "Web app", "auth.login", "Session refreshed", "Xavier", ""]];
+    const f = pool[Math.floor(Math.random() * pool.length)];
+    const row = { id: "n" + Date.now(), level: f[0], source: f[1], action: f[2], msg: f[3], user: f[4], hat: f[5], run: "", req: "req_" + Math.random().toString(16).slice(2, 12), dur: Math.floor(Math.random() * 90) + 3, payload: { detail: f[3] }, err: null, at: Date.now() };
+    if (this.state.scrolled) this.setState(s => ({ pending: [row, ...s.pending] }));
+    else { this.setState(s => ({ logs: [row, ...s.logs], flash: Object.assign({}, s.flash, { [row.id]: true }) })); setTimeout(() => this.setState(s => { const fl = Object.assign({}, s.flash); delete fl[row.id]; return { flash: fl }; }), 1600); }
+  }
+  filteredLogs() {
+    const st = this.state, q = st.lq.toLowerCase(), f = st.lf;
+    return st.logs.filter(r => !q || (r.msg + r.action + r.req + (r.run || "") + (r.hat || "")).toLowerCase().includes(q))
+      .filter(r => !f.Level.length || f.Level.includes(LV[r.level][3])).filter(r => !f.Source.length || f.Source.includes(r.source))
+      .filter(r => !f.Action.length || f.Action.includes(r.action)).filter(r => !f.User.length || f.User.includes(r.user));
+  }
+  stepLog(d) { const list = this.filteredLogs(); const i = list.findIndex(r => r.id === this.state.sel); const n = list[i + d]; if (n) this.setState({ sel: n.id }); }
+  dirty() { const a = this.state.sv, b = this.state.saved; return !!a && Object.keys(b).some(k => k !== "theme" && a[k] !== b[k]); }
+  fmtTime(at) { const d = new Date(at); return d.toISOString().slice(11, 23); }
+  renderVals() {
+    const st = this.state, mobile = st.mobile, scr = st.screen, expanded = !st.collapsed;
+    const navDefs = [["Workshop", "Workshop", "storefront", "Toquilla Trace.dc.html"], ["Hats", "Hats", "styler", "Hats.dc.html"], ["Weavers", "Weavers", "groups", "Hats.dc.html#weavers"]];
+    const isAdmin = st.role === "admin";
+    const adminNavDefs = isAdmin ? [["Agent runs", "Runs", "account_tree", "runs"], ["Logs", "Logs", "receipt_long", "logs"]] : [];
+    const cur = scr === "runs" ? "Agent runs" : scr === "logs" ? "Logs" : "";
+    const runsState = this.props.runsState || "data", logsState = this.props.logsState || "data";
+    const rq = st.rq.toLowerCase();
+    const runs = RUNS.filter(r => !rq || r.input.toLowerCase().includes(rq)).filter(r => !st.rf.Status.length || st.rf.Status.includes(r.status)).filter(r => !st.rf.Agent.length || st.rf.Agent.includes(r.agent)).filter(r => st.range !== "today" || r.mins < 1440);
+    const decRun = r => { const s = ST[r.status]; return Object.assign({}, r, { rel: r.mins < 60 ? r.mins + " min ago" : r.mins < 1440 ? Math.floor(r.mins / 60) + " h ago" : Math.floor(r.mins / 1440) + " d ago", abs: new Date(Date.now() - r.mins * 60000).toLocaleString(), stBg: s[0], stColor: s[1], stIcon: s[2], agentShort: r.agent === "Workshop agent" ? "Workshop" : "Concierge", agentIcon: r.agent === "Workshop agent" ? "storefront" : "forum", agentBg: r.agent === "Workshop agent" ? "var(--accent-tint)" : "var(--info-tint)", agentColor: r.agent === "Workshop agent" ? "var(--accent)" : "var(--info)", tokens: r.tin.toLocaleString() + " / " + r.tout, latency: r.lat.toFixed(1) + " s", cost: "$" + r.cost.toFixed(3), bg: st.runOpen === r.id ? "var(--accent-tint)" : "transparent", onOpen: () => this.openRun(r.id) }); };
+    const run = decRun(RUNS.find(r => r.id === st.runOpen) || RUNS[0]);
+    const stepList = steps(run);
+    const tone = { ok: ["var(--ok)", "var(--ok-tint)"], err: ["var(--err)", "var(--err-tint)"] };
+    const filterSets = { Status: Object.keys(ST), Agent: ["Workshop agent", "Buyer concierge"], Level: ["Debug", "Info", "Warn", "Error"], Source: SOURCES, Action: ACTIONS, User: ["Xavier", "Assistant", "Anonymous", "System"] };
+    const fk = st.openFilter, fGroup = fk && (fk === "Status" || fk === "Agent") ? "rf" : "lf";
+    const mkFilter = (group, k) => ({ label: k, count: st[group][k].length, active: st[group][k].length > 0, border: st[group][k].length ? "var(--accent)" : "var(--line)", bg: st[group][k].length ? "var(--accent-tint)" : "var(--surface)", onToggle: e => { const r = e.currentTarget.getBoundingClientRect(); this.setState({ openFilter: fk === k ? null : k, fpQ: "", fpRect: { left: Math.min(r.left, window.innerWidth - 280), top: r.bottom + 6 } }); } });
+    const logs = logsState === "data" ? this.filteredLogs() : [];
+    const all = st.logs;
+    const selIdx = logs.findIndex(r => r.id === st.sel); const lrRaw = logs[selIdx] || all.find(r => r.id === st.sel);
+    const decLog = r => { const l = LV[r.level]; return Object.assign({}, r, { t: this.fmtTime(r.at), full: new Date(r.at).toISOString().replace("T", " ").replace("Z", " UTC"), lvBg: l[0], lvColor: l[1], lvIcon: l[2], levelLabel: l[3], reqShort: r.req.slice(0, 10) + "…", hasHat: !!r.hat, hatHref: "Hats.dc.html#detail/" + r.hat, hasRun: !!r.run, isError: r.level === "error", errMsg: r.err ? r.err.message : "", stack: r.err ? r.err.stack : "", active: st.sel === r.id, selShadow: st.sel === r.id ? "inset 3px 0 0 var(--accent)" : "none", bg: st.sel === r.id ? "var(--accent-tint)" : r.level === "error" ? "var(--err-tint)" : "transparent", anim: st.flash[r.id] ? "tt-flash 1.6s ease-out" : "none", onOpen: () => this.setState({ sel: r.id, payloadFull: true, payCopied: false }), onCopyReq: e => { e.stopPropagation(); this.copy(r.req, "Request ID copied."); } }); };
+    const lr = lrRaw ? decLog(lrRaw) : null;
+    const counts = { error: all.filter(r => r.level === "error").length, warn: all.filter(r => r.level === "warn").length, info: all.filter(r => r.level === "info").length };
+    const sv = st.sv || st.saved; const dirty = this.dirty();
+    const pwN1Short = st.pwTouched && st.pw.n1.length < 8, pwMismatch = st.pwTouched && st.pw.n2 !== st.pw.n1, pwCurErr = st.pwTouched && st.pw.cur.length > 0 && st.pw.cur.length < 8;
+    const contactErr = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sv.contact || "");
+    const seg = (opts, curV, set) => opts.map(([v, label]) => ({ label, on: curV === v, bg: curV === v ? "var(--surface)" : "transparent", shadow: curV === v ? "0 1px 2px rgb(0 0 0 / .14)" : "none", onClick: () => set(v) }));
+    const setTheme = v => { try { localStorage.setItem("tt-theme", v); } catch (e) {} this.setState(s => ({ themeChoice: v, theme: v === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : v, sv: Object.assign({}, s.sv, { theme: v }) })); };
+    const panelInline = !mobile && st.vw >= 1180;
+
+    return {
+      theme: st.theme, mobile, desktop: !mobile, expanded, sideW: st.collapsed ? 72 : 240,
+      collapseLabel: st.collapsed ? "Expand sidebar" : "Collapse sidebar", collapseIcon: st.collapsed ? "left_panel_open" : "left_panel_close", toggleSidebar: () => this.setState({ collapsed: !st.collapsed }),
+      nav: navDefs.map(([label, short, icon, target]) => { const on = label === cur; return { label, short, icon, tip: st.collapsed ? label : "", current: on ? "page" : undefined, bg: on ? "var(--accent-tint)" : "transparent", weight: on ? 700 : 500, iconColor: on ? "var(--accent)" : "var(--muted)", tabColor: on ? "var(--accent)" : "var(--muted)", hasBadge: label === "Workshop", dot: label === "Logs" && counts.error > 0, badgePos: expanded && !mobile ? "static" : "absolute", onClick: () => target.includes(".") ? (location.href = target) : this.go(target) }; }),
+      adminNav: adminNavDefs.map(([label, short, icon, target]) => { const on = label === cur; return { label, short, icon, tip: st.collapsed ? label : "", current: on ? "page" : undefined, bg: on ? "var(--accent-tint)" : "transparent", weight: on ? 700 : 500, iconColor: on ? "var(--accent)" : "var(--muted)", tabColor: on ? "var(--accent)" : "var(--muted)", hasBadge: label === "Workshop", dot: label === "Logs" && counts.error > 0, badgePos: expanded && !mobile ? "static" : "absolute", onClick: () => target.includes(".") ? (location.href = target) : this.go(target) }; }),
+      isAdmin, isMember: !isAdmin, adminMobile: isAdmin && mobile, tabCols: navDefs.length,
+      roleOpts: seg([["member", "Member"], ["admin", "Admin"]], st.role, v => this.setRole(v)),
+      isDenied: (scr === "runs" || scr === "logs") && !isAdmin, deniedTitle: scr === "logs" ? "Logs" : "Agent runs",
+      viewAsAdmin: () => this.setRole("admin"),
+      mainPad: mobile ? "16px" : "28px 32px", stop: e => e.stopPropagation(), skel: [1, 2, 3, 4, 5, 6],
+      spinner: h("span", { style: { width: 14, height: 14, borderRadius: "50%", border: "2px solid currentColor", borderRightColor: "transparent", display: "inline-block", animation: "tt-spin 700ms linear infinite" } }),
+      menu: st.menu, toggleMenu: () => this.setState({ menu: !st.menu }), closeMenu: () => this.setState({ menu: false }), goSettings: () => { this.setState({ menu: false }); this.go("settings"); },
+      menuLeft: mobile ? "auto" : (st.collapsed ? 80 : 248) + "px", menuRight: mobile ? "12px" : "auto", menuTop: mobile ? "60px" : "auto", menuBottom: mobile ? "auto" : "16px",
+      themeOpts: seg([["light", "Light"], ["dark", "Dark"], ["system", "System"]], st.themeChoice, setTheme),
+
+      isRuns: scr === "runs" && isAdmin, isLogs: scr === "logs" && isAdmin, isSettings: scr === "settings",
+      rq: st.rq, onRq: e => this.setState({ rq: e.target.value }),
+      runFilters: ["Status", "Agent"].map(k => mkFilter("rf", k)), range: st.range, onRange: e => this.setState({ range: e.target.value }), rangeCustom: st.range === "custom",
+      runFiltersActive: !!(st.rq || st.rf.Status.length || st.rf.Agent.length || st.range !== "7"), clearRunFilters: () => this.setState({ rq: "", rf: { Status: [], Agent: [] }, range: "7" }),
+      summary: [["Runs", "42"], ["Success rate", "93%", "var(--ok)"], ["Avg latency", "2.4 s"], ["Avg cost", "$0.005"], ["Rule blocks", "6", "var(--err)"]].map(([label, value, color]) => ({ label, value, color: color || "var(--ink)" })),
+      runsLoading: runsState === "loading", runsEmpty: runsState === "empty" || (runsState === "data" && runs.length === 0),
+      runsTable: runsState === "data" && runs.length > 0 && !mobile, runsCards: runsState === "data" && runs.length > 0 && mobile,
+      runCols: "84px 104px 120px minmax(200px,1fr) 160px 48px 110px 68px 64px 20px", runRows: runs.map(decRun),
+      runOpen: !!st.runOpen, closeRun: () => { this.setState({ runOpen: null }); if (location.hash === "#run") history.replaceState(null, "", "#runs"); }, drawerW: mobile ? "100%" : "min(760px, 92vw)",
+      run, runDetailLoading: st.runLoading, runDetailReady: !st.runLoading,
+      copyRunId: () => this.copy(run.id, "Run ID copied."), copyRunJson: () => this.copy(JSON.stringify({ id: run.id, agent: run.agent, input: run.input, status: run.status, steps: stepList }, null, 2), "Run copied as JSON."),
+      hatsMenu: st.hatsMenu, toggleHatsMenu: () => this.setState({ hatsMenu: !st.hatsMenu }), relatedHats: ["TQ-7F3K2", "TQ-2C5P0", "TQ-4K9D1"].map(c => ({ code: c, href: "Hats.dc.html#detail/" + c })),
+      logsForRun: () => { this.setState({ runOpen: null, screen: "logs", lq: "req_8f2a91c4e2", sel: null }); history.replaceState(null, "", "#logs"); },
+      stepCount: stepList.length,
+      expandAll: () => { const o = {}; stepList.forEach((_, i) => o[i] = true); this.setState({ openSteps: o }); }, collapseAll: () => { const o = {}; stepList.forEach((_, i) => o[i] = false); this.setState({ openSteps: o }); },
+      steps: stepList.map((s, i) => { const open = st.openSteps[i] !== undefined ? st.openSteps[i] : (s.tone === "err" || i < 2); const tn = tone[s.tone]; const isProp = s.kind === "Proposal"; return {
+        n: i + 1, notLast: i < stepList.length - 1, kind: s.kind, name: s.name || "", hasName: !!s.name, icon: s.icon, iconColor: tn ? tn[0] : s.kind === "Tool call" ? "var(--info)" : isProp ? "var(--accent)" : "var(--muted)",
+        tag: s.tag || "", hasTag: !!s.tag, tagBg: s.tagTone === "warn" ? "var(--warn-tint)" : "var(--info-tint)", tagColor: s.tagTone === "warn" ? "var(--warn)" : "var(--info)", meta: s.meta,
+        dotBg: tn ? tn[1] : "var(--surface)", dotColor: tn ? tn[0] : "var(--ink)", dotBorder: tn ? tn[0] : isProp ? "var(--accent)" : "var(--line)", dotStyle: isProp ? "dashed" : "solid",
+        cardStyle: isProp ? "dashed" : "solid", cardBorder: tn ? tn[0] : isProp ? "var(--accent)" : "var(--line)", cardBg: tn ? tn[1] : isProp ? "var(--accent-tint)" : "var(--surface)",
+        open, chev: open ? "expand_less" : "expand_more", onToggle: () => this.setState(x => ({ openSteps: Object.assign({}, x.openSteps, { [i]: !open }) })),
+        hasText: !!s.text, text: s.text || "", textColor: tn ? tn[0] : "var(--ink)",
+        blocks: (s.blocks || []).map(([label, obj], j) => { const key = i + "-" + j, bo = !st.closedBlocks[key]; return { label, tokens: tokens(obj), open: bo, toggleLabel: bo ? "Collapse" : "Expand", onToggle: () => this.setState(x => ({ closedBlocks: Object.assign({}, x.closedBlocks, { [key]: bo }) })), onCopy: () => this.copy(JSON.stringify(obj, null, 2), label + " JSON copied.") }; }),
+        hasProposals: isProp, proposals: (s.proposals || []).map(([text, state, tnn]) => ({ text, state, border: tnn === "warn" ? "var(--warn)" : tnn === "err" ? "var(--err)" : "var(--accent)", bg: "var(--surface)", style: tnn === "accent" ? "dashed" : "solid", icon: tnn === "err" ? "lock" : tnn === "warn" ? "help" : "auto_awesome" })),
+        hasDiff: !!s.diff, diff: (s.diff || []).map(([f, a, b]) => ({ f, a, b })) }; }),
+
+      live: st.live, liveBorder: st.live ? "var(--ok)" : "var(--line)", liveBg: st.live ? "var(--ok-tint)" : "var(--surface)", liveDot: st.live ? "var(--ok)" : "var(--muted)", liveAnim: st.live ? "tt-pulse 1.2s ease-in-out infinite" : "none",
+      toggleLive: () => this.setState({ live: !st.live }),
+      exportJson: () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(logs.map(r => ({ time: new Date(r.at).toISOString(), level: r.level, source: r.source, action: r.action, message: r.msg, user: r.user, request_id: r.req, duration_ms: r.dur, payload: r.payload })), null, 2)], { type: "application/json" })); a.download = "toquilla-logs.json"; a.click(); this.toast("Exported " + logs.length + " rows."); },
+      lq: st.lq, hasLq: !!st.lq, onLq: e => this.setState({ lq: e.target.value }), clearLq: () => this.setState({ lq: "" }),
+      logFilters: ["Level", "Source", "Action", "User"].map(k => mkFilter("lf", k)), tr: st.tr, onTr: e => this.setState({ tr: e.target.value }),
+      logFiltersActive: !!(st.lq || Object.values(st.lf).some(a => a.length)), clearLogFilters: () => this.setState({ lq: "", lf: { Level: [], Source: [], Action: [], User: [] } }),
+      levelChips: [["Error", "Errors", counts.error, "error"], ["Warn", "Warnings", counts.warn, "warn"], ["Info", "Info", counts.info, "info"]].map(([k, label, n, lv]) => { const on = st.lf.Level.length === 1 && st.lf.Level[0] === k; return { label, n, on, icon: LV[lv][2], color: LV[lv][1], border: on ? LV[lv][1] : "var(--line)", bg: on ? LV[lv][0] : "var(--surface)", onClick: () => this.setState({ lf: Object.assign({}, st.lf, { Level: on ? [] : [k] }) }) }; }),
+      densityOpts: seg([["compact", "Compact"], ["comfortable", "Comfortable"]], st.density, v => this.setState({ density: v })), rowH: st.density === "compact" ? "36px" : "48px",
+      logsH: mobile ? "auto" : "calc(100vh - 290px)", logsDesktop: !mobile, logCols: "96px 72px 120px 160px minmax(220px,1fr) 90px 120px 44px",
+      logsLoading: logsState === "loading", logsNone: logsState === "data" && logs.length === 0,
+      logRows: logs.slice(0, 120).map(decLog), logScrollRef: this.logScrollRef,
+      onLogScroll: e => { const s = e.currentTarget.scrollTop > 8; if (s !== st.scrolled) this.setState({ scrolled: s }); },
+      pausedPill: st.live && st.pending.length > 0, pendingN: st.pending.length,
+      flushLive: () => { const el = this.logScrollRef.current; if (el) el.scrollTop = 0; this.setState(s => ({ logs: [...s.pending, ...s.logs], pending: [], scrolled: false })); },
+      logPanel: !!lr, lr: lr || {}, lpPos: panelInline ? "relative" : "fixed", lpInset: panelInline ? "auto" : "0 0 0 auto", lpW: mobile ? "100%" : panelInline ? "440px" : "min(480px, 92vw)",
+      closeLog: () => this.setState({ sel: null }), prevLog: () => this.stepLog(-1), nextLog: () => this.stepLog(1), noPrevLog: selIdx <= 0, noNextLog: selIdx < 0 || selIdx >= logs.length - 1,
+      copyReq: () => lr && this.copy(lr.req, "Request ID copied."), filterByReq: () => lr && this.setState({ lq: lr.req, lf: { Level: [], Source: [], Action: [], User: [] } }),
+      openRunFromLog: e => { e.preventDefault(); this.setState({ screen: "runs", sel: null }); history.replaceState(null, "", "#runs"); this.openRun("run_8f2a91c4"); },
+      payloadTokens: lr ? (st.payloadFull ? tokens(lr.payload) : [{ t: JSON.stringify(lr.payload).slice(0, 70) + "…", c: "var(--code-ink)" }]) : [],
+      payloadToggleLabel: st.payloadFull ? "Collapse" : "Expand all", togglePayload: () => this.setState({ payloadFull: !st.payloadFull }),
+      payloadCopyLabel: st.payCopied ? "Copied!" : "Copy", copyPayload: () => { lr && this.copy(JSON.stringify(lr.payload, null, 2)); this.setState({ payCopied: true }); setTimeout(() => this.setState({ payCopied: false }), 2000); },
+      copyPrompt: () => lr && this.copy(`I'm debugging Toquilla Trace (Next.js + Tailwind). This log row ${lr.level === "error" ? "failed" : "needs a look"}:\n\nAction: ${lr.action}\nLevel: ${lr.level}\nSource: ${lr.source}\nTime: ${lr.full}\nRequest ID: ${lr.req}${lr.hat ? "\nHat: " + lr.hat : ""}${lr.run ? "\nRun: " + lr.run : ""}\nDuration: ${lr.dur} ms\nMessage: ${lr.msg}\n\nPayload:\n${JSON.stringify(lr.payload, null, 2)}${lr.err ? "\n\nError: " + lr.err.message + "\n" + lr.err.stack : ""}\n\nExplain the most likely cause and propose a minimal fix.`, "Copied. Paste it into your AI assistant."),
+
+      filterOpen: !!fk, closeFilter: () => this.setState({ openFilter: null }), filterScrim: mobile ? "var(--scrim)" : "transparent", fpQ: st.fpQ, onFpQ: e => this.setState({ fpQ: e.target.value }),
+      fp: fk ? { label: fk, count: st[fGroup][fk].length, searchable: filterSets[fk].length > 7, onClear: () => this.setState({ [fGroup]: Object.assign({}, st[fGroup], { [fk]: [] }) }),
+        options: filterSets[fk].filter(o => !st.fpQ || o.toLowerCase().includes(st.fpQ.toLowerCase())).map(o => ({ label: o, font: fk === "Action" ? "'JetBrains Mono',monospace" : "inherit", on: st[fGroup][fk].includes(o), onChange: () => { const c = st[fGroup][fk]; this.setState({ [fGroup]: Object.assign({}, st[fGroup], { [fk]: c.includes(o) ? c.filter(x => x !== o) : [...c, o] }) }); } })) } : { label: "", options: [] },
+      fpLeft: mobile ? "0" : ((st.fpRect || {}).left || 0) + "px", fpRight: mobile ? "0" : "auto", fpTop: mobile ? "auto" : ((st.fpRect || {}).top || 0) + "px", fpBottom: mobile ? "0" : "auto", fpW: mobile ? "100%" : "270px", fpRadius: mobile ? "18px 18px 0 0" : "12px",
+
+      setTabs: [["profile", "Profile"], ["workshop", "Workshop"], ["appearance", "Appearance"]].map(([v, label]) => ({ label, on: st.tab === v, border: st.tab === v ? "var(--accent)" : "transparent", weight: st.tab === v ? 700 : 500, color: st.tab === v ? "var(--ink)" : "var(--muted)", onClick: () => dirty && v !== st.tab ? this.setState({ dialog: "unsaved", pendingNav: { tab: v } }) : this.setState({ tab: v }) })),
+      tProfile: st.tab === "profile", tWorkshop: st.tab === "workshop", tAppearance: st.tab === "appearance", sv,
+      sName: e => this.setSv({ name: e.target.value }), sWorkshop: e => this.setSv({ workshop: e.target.value }), sCity: e => this.setSv({ city: e.target.value }), sContact: e => this.setSv({ contact: e.target.value }), sPrices: e => this.setSv({ prices: e.target.checked }),
+      contactErr, contactBorder: contactErr ? "var(--err)" : "var(--line)",
+      svTheme: seg([["light", "Light"], ["dark", "Dark"], ["system", "System"]], st.themeChoice, setTheme),
+      svDensity: seg([["compact", "Compact"], ["comfortable", "Comfortable"]], sv.density, v => this.setSv({ density: v })),
+      setDirty: dirty, saveDisabled: !dirty || st.saving || contactErr, saving: st.saving, saveLabel: st.saving ? "Saving..." : "Save changes",
+      saveSettings: () => { this.setState({ saving: true }); setTimeout(() => { this.setState(s => ({ saving: false, saved: Object.assign({}, s.sv) })); this.toast("Saved."); }, 800); },
+      resetSettings: () => this.setState(s => ({ sv: Object.assign({}, s.saved, { theme: s.themeChoice }) })),
+      discardSettings: () => { const pn = st.pendingNav || {}; this.setState(s => ({ dialog: null, sv: Object.assign({}, s.saved, { theme: s.themeChoice }) })); if (pn.tab) this.setState({ tab: pn.tab }); if (pn.screen) setTimeout(() => this.go(pn.screen), 0); },
+      openPw: () => this.setState({ dialog: "pw", pw: { cur: "", n1: "", n2: "" }, pwTouched: false }), openDelete: () => this.setState({ dialog: "delete", delText: "" }),
+      dialog: !!st.dialog, dPw: st.dialog === "pw", dDelete: st.dialog === "delete", dUnsaved: st.dialog === "unsaved",
+      dlgTitle: { pw: "Change password", delete: "Delete account?", unsaved: "Discard unsaved changes?" }[st.dialog] || "",
+      dlgAlign: mobile ? "flex-end" : "center", dlgPad: mobile ? "0" : "24px", dlgRadius: mobile ? "18px 18px 0 0" : "16px",
+      closeDialog: () => this.setState({ dialog: null }), backdropClose: () => { if (st.dialog !== "delete" && st.dialog !== "unsaved") this.setState({ dialog: null }); },
+      pw: st.pw, pwCur: e => this.setState({ pw: Object.assign({}, st.pw, { cur: e.target.value }) }), pwN1: e => this.setState({ pw: Object.assign({}, st.pw, { n1: e.target.value }) }), pwN2: e => this.setState({ pw: Object.assign({}, st.pw, { n2: e.target.value }) }),
+      pwCurErr, pwCurBorder: pwCurErr ? "var(--err)" : "var(--line)", pwN1Border: pwN1Short ? "var(--err)" : "var(--line)", pwHintColor: pwN1Short ? "var(--err)" : "var(--muted)", pwMismatch, pwN2Border: pwMismatch ? "var(--err)" : "var(--line)",
+      savePw: () => { const p = st.pw; if (p.cur.length < 8 || p.n1.length < 8 || p.n1 !== p.n2) return this.setState({ pwTouched: true }); this.setState({ dialog: null }); this.toast("Password updated."); },
+      delText: st.delText, onDelText: e => this.setState({ delText: e.target.value }), delDisabled: st.delText.trim() !== "Taller Pillco", doDelete: () => (location.href = "Auth.dc.html#deleted"),
+
+      toasts: st.toasts.map(t => Object.assign({}, t, { onClose: () => this.setState(s => ({ toasts: s.toasts.filter(z => z.id !== t.id) })) })),
+      toastW: mobile ? "calc(100% - 24px)" : "380px", toastLeft: mobile ? "50%" : "auto", toastRight: mobile ? "auto" : "20px", toastTop: mobile ? "64px" : "auto", toastBottom: mobile ? "auto" : "20px", toastTx: mobile ? "translateX(-50%)" : "none"
+    };
+  }
+  setSv(p) { this.setState(s => ({ sv: Object.assign({}, s.sv, p) })); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+/* Design tokens from design_handoff_toquilla_trace/README.md ("Design tokens").
+   Light on :root, dark on [data-theme="dark"], and "system" follows the OS unless data-theme="light". */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --bg: oklch(0.965 0.014 85);
+  --surface: oklch(0.988 0.008 85);
+  --surface2: oklch(0.94 0.018 82);
+  --line: oklch(0.87 0.022 80);
+  --ink: oklch(0.24 0.012 60);
+  --muted: oklch(0.47 0.015 60);
+  --accent: oklch(0.42 0.085 162);
+  --accent-strong: oklch(0.35 0.08 162);
+  --accent-tint: oklch(0.945 0.025 162);
+  --on-accent: oklch(0.99 0.005 85);
+  --ok: oklch(0.46 0.11 150);
+  --ok-tint: oklch(0.95 0.035 150);
+  --warn: oklch(0.5 0.11 65);
+  --warn-tint: oklch(0.95 0.045 85);
+  --err: oklch(0.52 0.17 28);
+  --err-tint: oklch(0.955 0.03 28);
+  --info: oklch(0.48 0.11 250);
+  --info-tint: oklch(0.95 0.025 250);
+  --straw: oklch(0.85 0.055 85);
+  --cream: oklch(0.975 0.022 88);
+  --code: oklch(0.22 0.012 60);
+  --code-text: oklch(0.92 0.012 85);
+  --json-key: oklch(0.8 0.08 250);
+  --json-string: oklch(0.82 0.1 140);
+  --json-number: oklch(0.83 0.11 70);
+  --json-bool: oklch(0.78 0.12 330);
+  --scrim: rgb(30 24 12 / 0.38);
+  --shadow: 0 1px 2px rgb(40 30 10 / 0.06), 0 10px 30px rgb(40 30 10 / 0.1);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: oklch(0.2 0.01 70);
+  --surface: oklch(0.24 0.012 70);
+  --surface2: oklch(0.28 0.014 70);
+  --line: oklch(0.36 0.015 70);
+  --ink: oklch(0.94 0.012 85);
+  --muted: oklch(0.74 0.015 80);
+  --accent: oklch(0.74 0.11 162);
+  --accent-strong: oklch(0.8 0.1 162);
+  --accent-tint: oklch(0.3 0.04 162);
+  --on-accent: oklch(0.18 0.02 162);
+  --ok: oklch(0.76 0.13 150);
+  --ok-tint: oklch(0.29 0.05 150);
+  --warn: oklch(0.82 0.12 80);
+  --warn-tint: oklch(0.31 0.05 75);
+  --err: oklch(0.74 0.15 28);
+  --err-tint: oklch(0.3 0.06 28);
+  --info: oklch(0.76 0.1 245);
+  --info-tint: oklch(0.29 0.04 245);
+  --straw: oklch(0.42 0.04 85);
+  --cream: oklch(0.26 0.02 85);
+  --code: oklch(0.16 0.008 70);
+  --scrim: rgb(0 0 0 / 0.55);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: oklch(0.2 0.01 70);
+    --surface: oklch(0.24 0.012 70);
+    --surface2: oklch(0.28 0.014 70);
+    --line: oklch(0.36 0.015 70);
+    --ink: oklch(0.94 0.012 85);
+    --muted: oklch(0.74 0.015 80);
+    --accent: oklch(0.74 0.11 162);
+    --accent-strong: oklch(0.8 0.1 162);
+    --accent-tint: oklch(0.3 0.04 162);
+    --on-accent: oklch(0.18 0.02 162);
+    --ok: oklch(0.76 0.13 150);
+    --ok-tint: oklch(0.29 0.05 150);
+    --warn: oklch(0.82 0.12 80);
+    --warn-tint: oklch(0.31 0.05 75);
+    --err: oklch(0.74 0.15 28);
+    --err-tint: oklch(0.3 0.06 28);
+    --info: oklch(0.76 0.1 245);
+    --info-tint: oklch(0.29 0.04 245);
+    --straw: oklch(0.42 0.04 85);
+    --cream: oklch(0.26 0.02 85);
+    --code: oklch(0.16 0.008 70);
+    --scrim: rgb(0 0 0 / 0.55);
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px rgb(0 0 0 / 0.35);
+    color-scheme: dark;
+  }
+}
+
+/* Tailwind theme: utilities like bg-surface, text-muted, border-line, bg-accent-tint, font-serif. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-tint: var(--accent-tint);
+  --color-on-accent: var(--on-accent);
+  --color-ok: var(--ok);
+  --color-ok-tint: var(--ok-tint);
+  --color-warn: var(--warn);
+  --color-warn-tint: var(--warn-tint);
+  --color-err: var(--err);
+  --color-err-tint: var(--err-tint);
+  --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
+  --color-straw: var(--straw);
+  --color-cream: var(--cream);
+  --color-code: var(--code);
+  --color-code-text: var(--code-text);
+  --color-scrim: var(--scrim);
+
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --shadow-card: var(--shadow);
+
+  --radius-badge: 7px;
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-section: 18px;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Material Symbols Rounded (loaded in app/layout.tsx). */
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  user-select: none;
+}
+
+/* Woven crosshatch: accent only (certificate border, empty states, hero edge). Never behind text. */
+@utility woven {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 4px, var(--straw) 4px 6px),
+    repeating-linear-gradient(-45deg, transparent 0 4px, var(--straw) 4px 6px), var(--cream);
+}
+
+/* Logo mark crosshatch: white at 28% on the accent square. */
+@utility woven-logo {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 3px, rgb(255 255 255 / 0.28) 3px 5px),
+    repeating-linear-gradient(-45deg, transparent 0 3px, rgb(255 255 255 / 0.28) 3px 5px), var(--accent);
+}
+
+@keyframes tt-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tt-sheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes tt-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes tt-shimmer {
+  0% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+
+@utility animate-enter {
+  animation: tt-enter 180ms ease both;
+}
+
+@utility animate-sheet {
+  animation: tt-sheet 200ms ease both;
+}
+
+@utility animate-shimmer {
+  animation: tt-shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,9 @@
+.next/
+node_modules/
+coverage/
+package-lock.json
+design_handoff_toquilla_trace/
+*.md
+supabase/.temp/
+.claude/
+.github/

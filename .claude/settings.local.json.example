@@ -1,0 +1,6 @@
+{
+  "_note": "Copy to .claude/settings.local.json for per-machine overrides. It is gitignored.",
+  "permissions": {
+    "allow": []
+  }
+}
