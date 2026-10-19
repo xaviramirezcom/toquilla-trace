@@ -427,3 +427,43 @@ export function finalizeAnswer(out: ModelOut, record: ConciergeRecord): Final {
 export function guessLang(text: string): "en" | "es" {
   return /[¿¡ñáéíóú]|\b(que|qué|como|cómo|quien|quién|este|sombrero|precio|cuánto)\b/i.test(text) ? "es" : "en";
 }
+
+export interface ConciergeRunInput {
+  request_id: string;
+  hat_code: string;
+  status: "answered" | "refused" | "failed";
+  model: string;
+  tokens_in?: number | null;
+  tokens_out?: number | null;
+  latency_ms: number;
+  cost_usd?: number | null;
+  /** Short outcome label such as "answered (record)", never the question or the answer. */
+  summary?: string | null;
+  error?: { code: string; message: string } | null;
+}
+
+/**
+ * One agent_runs row per concierge answer (D3 statuses), written with the service role so the
+ * run shows on /runs and evals can read its cost. No user id, IP hash, question or answer: the
+ * visitor is anonymous and the question is free text that can hold personal data.
+ */
+export function conciergeRunRow(r: ConciergeRunInput): Record<string, unknown> {
+  return {
+    agent: "concierge",
+    user_id: null,
+    workshop_id: null,
+    hat_code: r.hat_code.slice(0, 16),
+    input: null,
+    input_mode: null,
+    status: r.status,
+    steps: [],
+    summary: r.summary ? r.summary.slice(0, 200) : null,
+    model: r.model,
+    tokens_in: r.tokens_in ?? null,
+    tokens_out: r.tokens_out ?? null,
+    latency_ms: Math.max(0, Math.round(r.latency_ms)),
+    cost_usd: r.cost_usd ?? null,
+    request_id: r.request_id,
+    error: r.error ? { code: r.error.code, message: r.error.message.slice(0, 300) } : null,
+  };
+}

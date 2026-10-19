@@ -6,6 +6,7 @@ import {
   type PassportJson,
   SYSTEM_PROMPT,
   buildUserContent,
+  conciergeRunRow,
   finalizeAnswer,
   guessLang,
   parseModelOut,
@@ -53,11 +54,32 @@ Deno.serve(async (req) => {
   const started = Date.now();
   let hash = "unknown";
   let turn = 0;
+  /** Set once the hat is loaded: from then on every outcome writes one agent_runs row. */
+  let runHat: string | null = null;
 
-  const fail = (status: number, code: string, message: string, level: "warn" | "error" = "warn", err?: unknown) => {
+  const saveRun = async (row: Parameters<typeof conciergeRunRow>[0]) => {
+    try {
+      const { error } = await serviceClient().from("agent_runs").insert(conciergeRunRow(row));
+      if (error) console.warn(`[concierge] run insert failed: ${error.message}`);
+    } catch {
+      // never break the answer because of the run row
+    }
+  };
+
+  const fail = async (status: number, code: string, message: string, level: "warn" | "error" = "warn", err?: unknown) => {
     const c = { message, duration_ms: Date.now() - started, payload: { code, ip_hash: hash, turn, latency_ms: Date.now() - started } };
     if (level === "error") log.error("concierge.error", err ?? new Error(message), c);
     else log.warn("concierge.error", c);
+    if (runHat) {
+      await saveRun({
+        request_id,
+        hat_code: runHat,
+        status: "failed",
+        model: modelName(),
+        latency_ms: Date.now() - started,
+        error: { code, message: err instanceof Error ? err.message : message },
+      });
+    }
     return errorResponse(req, status, code, message, request_id);
   };
 
@@ -90,7 +112,7 @@ Deno.serve(async (req) => {
 
     const record = toConciergeRecord(passport as PassportJson);
     const content = buildUserContent(record, v.messages.slice(0, -1), v.question);
-    const model = modelName();
+    runHat = v.code;
 
     let res;
     try {
@@ -102,6 +124,7 @@ Deno.serve(async (req) => {
         thinkingBudget: 0,
         temperature: 0.2,
         timeoutMs: 20_000,
+        deadlineAt: started + 25_000,
       });
     } catch (e) {
       const timeout = e instanceof LlmError && e.type === "timeout";
@@ -122,8 +145,19 @@ Deno.serve(async (req) => {
       finish_reason: res.finishReason,
     };
 
+    const runBase = {
+      request_id,
+      hat_code: v.code,
+      model: res.model,
+      tokens_in: res.usage.input_tokens,
+      tokens_out: res.usage.output_tokens,
+      latency_ms: latency,
+      cost_usd: base.cost_usd,
+    };
+
     if (isRefusal(res.finishReason) || res.finishReason === "NO_CANDIDATE") {
       const lang = guessLang(v.question);
+      await saveRun({ ...runBase, status: "refused", summary: "refused (model refusal)" });
       log.info("concierge.refused", {
         message: "Model refusal",
         duration_ms: latency,
@@ -147,7 +181,13 @@ Deno.serve(async (req) => {
       dropped_sources: out.sources.length - final.sources.length,
       lang: final.lang,
     };
-    if (final.kind === "change_request" || final.kind === "leak_guard") {
+    const refusedKind = final.kind === "change_request" || final.kind === "leak_guard";
+    await saveRun({
+      ...runBase,
+      status: refusedKind ? "refused" : "answered",
+      summary: `${refusedKind ? "refused" : "answered"} (${final.kind})`,
+    });
+    if (refusedKind) {
       log.info("concierge.refused", {
         message: final.kind === "leak_guard" ? "Leak guard replaced the answer" : "Change request refused",
         duration_ms: latency,
