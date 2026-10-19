@@ -1,0 +1,9 @@
+# Never upload local secrets or tool state to Vercel (defense in depth; .gitignore covers git).
+.env
+.env.*
+.db-password
+.claude
+supabase/.temp
+supabase/.branches
+.next
+node_modules
