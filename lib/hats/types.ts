@@ -60,6 +60,8 @@ export interface HatDetail {
   updated_at: string;
   events: HatEvent[];
   flags: HatFlag[];
+  /** True when the flags query failed: the page says so instead of showing "no flags". */
+  flagsFailed?: boolean;
 }
 
 export interface WeaverRow {

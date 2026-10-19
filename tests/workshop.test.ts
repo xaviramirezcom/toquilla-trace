@@ -12,7 +12,10 @@ import {
   editsForSubmit,
   fromRow,
   isComplete,
+  isOpen,
   mergeRun,
+  OPEN_DB_STATUSES,
+  OPEN_STATUSES,
   rejectAllSelection,
   ruleOf,
   savedToastText,
@@ -122,6 +125,20 @@ describe("cardView", () => {
     const v = cardView({ ...fromRow(blocked), status: "dismissed" });
     expect(v.tone).toBe("rejected");
     expect(v.statusLabel).toBe("Dismissed");
+  });
+
+  it("a pending card's status tag says Pending, not a second 'Proposed by AI' (E2E-2)", () => {
+    const v = cardView(fromRow(advance));
+    expect(v.tone).toBe("proposed");
+    expect(v.statusLabel).toBe("Pending");
+  });
+
+  it("open statuses: the database list plus editing and approving", () => {
+    expect(OPEN_DB_STATUSES).toEqual(["pending", "question", "blocked", "failed"]);
+    expect(OPEN_STATUSES).toEqual([...OPEN_DB_STATUSES, "editing", "approving"]);
+    expect(isOpen("approving")).toBe(true);
+    expect(isOpen("approved")).toBe(false);
+    expect(isOpen("dismissed")).toBe(false);
   });
 
   it("covers all 8 visual states with an icon and a label", () => {

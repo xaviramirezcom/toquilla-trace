@@ -1,6 +1,8 @@
 // `npm run logs` argument parsing, query building and output (lib/admin/logs-cli.ts), spec 09 section 6.7.
 import { describe, expect, it } from "vitest";
+import { RANGE_MS } from "@/lib/admin/logs";
 import {
+  CLI_SINCE,
   DEFAULT_ARGS,
   MAX_LIMIT,
   buildCostQuery,
@@ -134,5 +136,12 @@ describe("output", () => {
     });
     expect(out.split("\n")).toHaveLength(3);
     expect(out).toContain("BLOCKED stage_order: skip");
+  });
+});
+
+describe("--since ranges", () => {
+  it("are the Logs page ranges (one source)", () => {
+    expect(CLI_SINCE).toBe(RANGE_MS);
+    expect(CLI_SINCE["1h"]).toBe(3_600_000);
   });
 });

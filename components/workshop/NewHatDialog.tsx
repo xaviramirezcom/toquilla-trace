@@ -44,6 +44,7 @@ export function NewHatDialog({
   const toast = useToast();
   const router = useRouter();
   const [weavers, setWeavers] = useState<WeaverOption[] | null>(null);
+  const [weaversFailed, setWeaversFailed] = useState(false);
   const [weaverId, setWeaverId] = useState("");
   const [grade, setGrade] = useState<Grade>("Fino");
   const [rows, setRows] = useState("");
@@ -59,7 +60,9 @@ export function NewHatDialog({
     if (!open) return;
     let cancelled = false;
     void loadWeavers(workshopId).then((w) => {
-      if (!cancelled) setWeavers(w);
+      if (cancelled) return;
+      setWeavers(w ?? []);
+      setWeaversFailed(w === null);
     });
     return () => {
       cancelled = true;
@@ -170,7 +173,7 @@ export function NewHatDialog({
           <label htmlFor="newhat-weaver" className="text-[13px] font-semibold text-ink">
             Weaver
           </label>
-          {weavers !== null && weavers.length === 0 ? (
+          {weavers !== null && weavers.length === 0 && !weaversFailed ? (
             <p className="text-[13px] text-muted">
               <Link href="/weavers" className="font-semibold text-accent hover:underline">
                 Add a weaver first
@@ -186,7 +189,7 @@ export function NewHatDialog({
                 aria-invalid={show("weaver") ? true : undefined}
                 className="h-11 w-full appearance-none rounded-[10px] border border-line bg-surface pr-10 pl-3 text-ink outline-none focus:border-accent focus:ring-[3px] focus:ring-accent-tint"
               >
-                <option value="">{weavers === null ? "Loading weavers..." : "Pick a weaver"}</option>
+                <option value="">{weavers === null ? "Loading weavers..." : weaversFailed ? "Couldn't load weavers" : "Pick a weaver"}</option>
                 {(weavers ?? []).map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.village ? `${w.name} (${w.village})` : w.name}
@@ -196,6 +199,7 @@ export function NewHatDialog({
               <Icon name="expand_more" size={20} className="pointer-events-none absolute top-3 right-3 text-muted" />
             </div>
           )}
+          {weaversFailed && <p role="alert" className="text-[12px] text-err">Couldn&apos;t load weavers. Close this and try again.</p>}
           {show("weaver") && <p className="text-[12px] text-err">{errors.weaver}</p>}
           <Link href="/weavers" className="text-[13px] font-medium text-accent hover:underline">
             + Add new weaver

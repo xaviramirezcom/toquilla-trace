@@ -272,10 +272,12 @@ body {
 .doc-prose :not(pre) > code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface2); border: 1px solid var(--line); border-radius: 6px; padding: 0.1em 0.35em; }
 .doc-pre { background: var(--code); color: var(--code-text); border-radius: 12px; padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.55; }
 .doc-pre code { background: none; border: 0; padding: 0; font-size: inherit; white-space: pre; }
-.doc-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+.doc-table-wrap { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
 .doc-prose table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
 .doc-prose th { text-align: left; font-weight: 650; background: var(--surface2); }
 .doc-prose th, .doc-prose td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+/* Cells never break inside a word ("Stat us"); a table wider than the screen scrolls in .doc-table-wrap. */
+.doc-prose th, .doc-prose td { overflow-wrap: normal; word-break: normal; }
 .doc-prose tr:last-child td { border-bottom: 0; }
 .doc-prose input[type="checkbox"] { margin-right: 0.4em; }
 .doc-mermaid { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }

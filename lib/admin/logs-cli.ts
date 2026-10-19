@@ -1,9 +1,11 @@
 // Pure parts of `npm run logs` (spec 09 section 6.7): argument parsing, PostgREST query building and
 // table formatting. No network and no env here, so it is unit tested (tests/logs-script.test.ts).
 import { redact, type LogLevel } from "@domain/log-format";
+import { RANGE_MS } from "@/lib/admin/logs";
 
 export const CLI_LEVELS: readonly LogLevel[] = ["debug", "info", "warn", "error"];
-export const CLI_SINCE = { "15m": 15 * 60_000, "1h": 3_600_000, "24h": 86_400_000, "7d": 7 * 86_400_000 } as const;
+/** Same ranges as the Logs page filter. */
+export const CLI_SINCE = RANGE_MS;
 export type CliSince = keyof typeof CLI_SINCE;
 export const MAX_LIMIT = 500;
 

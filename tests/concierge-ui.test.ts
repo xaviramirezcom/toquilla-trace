@@ -5,10 +5,13 @@ import {
   classifyFailure,
   contactHref,
   counterText,
+  DEFAULT_RETRY_MS,
+  limitText,
   nextSuggestions,
   parseAnswer,
   pillLabel,
   pillsFor,
+  retryAfterMs,
   startSuggestions,
 } from "@/lib/passport/concierge";
 
@@ -94,5 +97,22 @@ describe("answers and failures", () => {
       "mailto:hola@tallerpillco.com?subject=Question%20about%20TQ-9A1M8",
     );
     expect(contactHref(null, "TQ-9A1M8")).toBeNull();
+  });
+});
+
+describe("rate limit banner", () => {
+  it("waits for Retry-After seconds, else one minute, clamped to 1 s .. 1 h", () => {
+    expect(retryAfterMs("30")).toBe(30_000);
+    expect(retryAfterMs(null)).toBe(DEFAULT_RETRY_MS);
+    expect(retryAfterMs("soon")).toBe(DEFAULT_RETRY_MS);
+    expect(retryAfterMs("0")).toBe(DEFAULT_RETRY_MS);
+    expect(retryAfterMs("0.2")).toBe(1000);
+    expect(retryAfterMs("999999")).toBe(3_600_000);
+  });
+
+  it("tells the truth about each limit", () => {
+    expect(limitText("chat", 0)).toBe("You've reached the limit for this chat. Start a new chat to ask more.");
+    expect(limitText("server", 30_000)).toBe("You've asked a lot of questions. Try again in a minute.");
+    expect(limitText("server", 150_000)).toBe("You've asked a lot of questions. Try again in 3 minutes.");
   });
 });

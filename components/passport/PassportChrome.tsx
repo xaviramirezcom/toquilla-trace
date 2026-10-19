@@ -4,7 +4,14 @@ import { Logo } from "@/components/shell/Logo";
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
-  return (parts.length ? parts.slice(0, 2).map((w) => w[0]!.toUpperCase()).join("") : "?").slice(0, 2);
+  return (
+    parts.length
+      ? parts
+          .slice(0, 2)
+          .map((w) => w[0]!.toUpperCase())
+          .join("")
+      : "?"
+  ).slice(0, 2);
 }
 
 /** 64px top bar: logo to the landing page; Log in (returns here) or the signed-in user's initials. */
@@ -37,25 +44,26 @@ export function PassportTopBar({ code, userName }: { code: string | null; userNa
 export function PassportFooter({ reportHref, padBottom }: { reportHref: string; padBottom?: boolean }) {
   return (
     <footer
-      className={`flex flex-wrap justify-between gap-3 border-t border-line px-4 py-5 text-[13px] text-muted md:px-8 ${
-        padBottom ? "pb-[96px] md:pb-5" : ""
+      className={`flex flex-wrap justify-between gap-3 border-t border-line px-4 py-2 text-[13px] text-muted md:px-8 ${
+        padBottom ? "pb-[96px] md:pb-2" : ""
       }`}
     >
       <span className="flex items-center gap-3">
         <span>Powered by Toquilla Trace</span>
-        <Link href="/docs" className="underline-offset-4 hover:text-ink hover:underline">
+        <Link
+          href="/docs"
+          className="inline-flex min-h-11 items-center underline-offset-4 hover:text-ink hover:underline"
+        >
           Docs
         </Link>
       </span>
-      <a href={reportHref} className="font-semibold text-ink underline-offset-4 hover:underline">
+      <a
+        href={reportHref}
+        {...(reportHref.startsWith("https:") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className="inline-flex min-h-11 items-center font-semibold text-ink underline-offset-4 hover:underline"
+      >
         Report a problem
       </a>
     </footer>
   );
-}
-
-/** mailto for Report a problem: the workshop's contact when known, otherwise a subject-only draft. */
-export function reportHref(code: string | null, contactEmail: string | null | undefined): string {
-  const subject = encodeURIComponent(code ? `Problem with hat passport ${code}` : "Problem with a hat passport");
-  return `mailto:${contactEmail ?? ""}?subject=${subject}`;
 }

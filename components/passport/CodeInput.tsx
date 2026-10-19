@@ -22,7 +22,14 @@ export interface CodeInputProps {
  * Hat code box shared by the landing Verify box and Not verified "Try another code" (spec 06).
  * Auto-uppercase, auto-hyphen after TQ, max 8 chars, "Codes look like TQ-7F3K2." after blur when invalid.
  */
-export function CodeInput({ via, label = "Have a hat code?", size = "lg", inputId, autoFocus, samples }: CodeInputProps) {
+export function CodeInput({
+  via,
+  label = "Have a hat code?",
+  size = "lg",
+  inputId,
+  autoFocus,
+  samples,
+}: CodeInputProps) {
   const router = useRouter();
   const autoId = useId();
   const id = inputId ?? autoId;
@@ -72,7 +79,7 @@ export function CodeInput({ via, label = "Have a hat code?", size = "lg", inputI
           aria-invalid={showError || undefined}
           aria-describedby={showError ? errId : undefined}
           className={cn(
-            "min-w-0 flex-1 rounded-[12px] border bg-bg px-4 font-mono tracking-[0.08em] outline-none placeholder:text-muted/70",
+            "w-0 min-w-0 flex-1 rounded-[12px] border bg-bg px-4 font-mono tracking-[0.08em] outline-none placeholder:text-muted/70",
             "focus:border-accent focus:ring-3 focus:ring-accent-tint",
             size === "lg" ? "text-[18px]" : "text-base",
             h,
@@ -108,7 +115,7 @@ export function CodeInput({ via, label = "Have a hat code?", size = "lg", inputI
               <button
                 type="button"
                 onClick={() => setValue(s)}
-                className="font-mono font-medium text-accent underline underline-offset-2"
+                className="inline-flex min-h-11 items-center px-1 font-mono font-medium text-accent underline underline-offset-2"
               >
                 {s}
               </button>

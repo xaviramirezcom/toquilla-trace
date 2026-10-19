@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Button, Dialog, Icon, useToast } from "@/components/ui";
 import { log } from "@/lib/log";
 import { newRequestId } from "@/lib/request-id";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { usePassport } from "./PassportProvider";
 
 type ClaimError = "email_unconfirmed" | "not_recipient" | "network" | null;
@@ -42,6 +41,8 @@ export function ClaimDialog() {
     setBusy(true);
     setError(null);
     try {
+      // Loaded on click, so buyers who only read the passport never download supabase-js.
+      const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
       const { data, error: rpcError } = await getSupabaseBrowserClient().rpc("claim_hat", {
         p_code: code,
         p_request_id: request_id,

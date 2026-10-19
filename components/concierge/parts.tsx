@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui";
 import { cn } from "@/lib/cn";
-import { counterText, MAX_QUESTION_CHARS, type Pill } from "@/lib/passport/concierge";
+import { counterText, limitText, MAX_QUESTION_CHARS, type LimitKind, type Pill } from "@/lib/passport/concierge";
 
 export function AssistantAvatar() {
   return (
@@ -55,7 +55,7 @@ export function Suggestions({ items, onPick }: { items: string[]; onPick: (q: st
           key={q}
           type="button"
           onClick={() => onPick(q)}
-          className="min-h-[34px] rounded-full border border-line bg-surface px-3 text-[13px] hover:border-accent hover:bg-accent-tint focus-visible:outline-2 focus-visible:outline-accent"
+          className="min-h-11 rounded-full border border-line bg-surface px-3 text-[13px] hover:border-accent hover:bg-accent-tint focus-visible:outline-2 focus-visible:outline-accent"
         >
           {q}
         </button>
@@ -64,11 +64,30 @@ export function Suggestions({ items, onPick }: { items: string[]; onPick: (q: st
   );
 }
 
-export function RateLimitBanner() {
+export interface RateLimitBannerProps {
+  kind: LimitKind;
+  waitMs: number;
+  onNewChat: () => void;
+}
+
+/** Per-chat cap: start a new chat. Server 429: wait (the panel clears the banner when the time is up). */
+export function RateLimitBanner({ kind, waitMs, onNewChat }: RateLimitBannerProps) {
   return (
-    <div role="status" className="mx-4 mb-2 flex items-center gap-2 rounded-[10px] border border-warn bg-warn-tint px-3 py-2.5 text-[13px]">
+    <div
+      role="status"
+      className="mx-4 mb-2 flex items-center gap-2 rounded-[10px] border border-warn bg-warn-tint px-3 py-2 text-[13px]"
+    >
       <Icon name="hourglass_top" size={18} className="text-warn" />
-      You&apos;ve asked a lot of questions. Try again in a minute.
+      <span className="flex-1">{limitText(kind, waitMs)}</span>
+      {kind === "chat" && (
+        <button
+          type="button"
+          onClick={onNewChat}
+          className="h-11 shrink-0 rounded-[10px] border border-line bg-surface px-3 font-semibold hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          New chat
+        </button>
+      )}
     </div>
   );
 }

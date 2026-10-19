@@ -284,7 +284,7 @@ export function ComposerCard({ c, isAdmin }: { c: ComposerApi; isAdmin: boolean 
                       c.edit(ex.text);
                       c.focusTextarea();
                     }}
-                    className="inline-flex h-9 items-center rounded-full border border-line bg-surface px-3 text-[13px] text-ink hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-accent"
+                    className="inline-flex h-11 items-center rounded-full border border-line bg-surface px-3 text-[13px] text-ink hover:bg-surface2 md:h-9 focus-visible:outline-2 focus-visible:outline-accent"
                   >
                     {ex.label}
                   </button>

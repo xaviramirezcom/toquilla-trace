@@ -5,6 +5,7 @@ import {
   advanceBlockReason,
   copyFor,
   daysBetween,
+  FINISHED_STAGE,
   filterHats,
   hasActiveFilters,
   hatCountLabel,
@@ -44,7 +45,11 @@ describe("advanceBlockReason", () => {
   });
   it("blocks a transferred hat", () => {
     expect(advanceBlockReason({ ...baseHat, owner_type: "buyer" }, member)).toBe("Only the current owner can change the stage.");
-    expect(advanceBlockReason({ ...baseHat, transfer_email: "b@x.com" }, member)).toBe("Only the current owner can change the stage.");
+  });
+  it("blocks a hat with a pending transfer (domain canAdvance rule)", () => {
+    expect(advanceBlockReason({ ...baseHat, transfer_email: "b@x.com" }, member)).toBe(
+      "TQ-7F3K2 has a pending transfer. Stages are locked until it is claimed.",
+    );
   });
   it("blocks an archived hat", () => {
     expect(advanceBlockReason({ ...baseHat, archived: true }, member)).toBe("This hat is archived.");
@@ -169,6 +174,12 @@ describe("hats list filters", () => {
   it("names the next stage", () => {
     expect(nextStageName(1)).toBe("Bleaching");
     expect(nextStageName(4)).toBeNull();
+    expect(nextStageName(-1)).toBeNull();
+    expect(nextStageName(0)).toBe("Washing");
+  });
+  it("names the last stage instead of a bare 4", () => {
+    expect(FINISHED_STAGE).toBe(4);
+    expect(nextStageName(FINISHED_STAGE)).toBeNull();
   });
 });
 

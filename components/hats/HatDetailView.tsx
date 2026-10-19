@@ -9,7 +9,7 @@ import { Badge, Button, Card, Icon, useToast } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { log } from "@/lib/log";
 import { newRequestId } from "@/lib/request-id";
-import { advanceBlockReason, nextStageName, openFlags, timelineSteps } from "@/lib/hats/format";
+import { FINISHED_STAGE, advanceBlockReason, nextStageName, openFlags, timelineSteps } from "@/lib/hats/format";
 import type { HatDetail } from "@/lib/hats/types";
 import { CopyButton } from "./CopyButton";
 import { FlagsPanel } from "./FlagsPanel";
@@ -151,11 +151,11 @@ export function HatDetailView({
         <div>
           <div className="flex items-center gap-1">
             <h1 className="font-mono text-[28px] font-semibold tracking-tight text-ink md:text-[36px]">{hat.code}</h1>
-            <CopyButton text={hat.code} toastMessage="Code copied." label={`Copy ${hat.code}`} size={20} className="h-10 w-10" />
+            <CopyButton text={hat.code} toastMessage="Code copied." label={`Copy ${hat.code}`} size={20} boxClass="h-11 w-11 md:h-10 md:w-10" />
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <GradeBadge grade={hat.grade} />
-            <Badge tone={stage === 4 ? "ok" : "accent"}>{STAGES[stage]}</Badge>
+            <Badge tone={stage === FINISHED_STAGE ? "ok" : "accent"}>{STAGES[stage]}</Badge>
             <Badge tone="ok" icon="verified">
               Verified
             </Badge>
@@ -171,7 +171,12 @@ export function HatDetailView({
         {/* Desktop actions */}
         <div className="hidden items-center gap-2 md:flex">
           <span title={blockReason ?? undefined}>
-            <Button onClick={() => setDialog("advance")} disabled={Boolean(blockReason) || busy} icon="arrow_forward">
+            <Button
+              onClick={() => setDialog("advance")}
+              disabled={Boolean(blockReason) || busy}
+              icon="arrow_forward"
+              aria-describedby={blockReason ? "advance-reason" : undefined}
+            >
               {advanceLabel}
             </Button>
           </span>
@@ -194,11 +199,15 @@ export function HatDetailView({
           />
         </div>
       </div>
-      {blockReason && <p className="mt-2 hidden text-[13px] text-muted md:block">{blockReason}</p>}
+      {blockReason && (
+        <p id="advance-reason" className="mt-2 hidden text-[13px] text-muted md:block">
+          {blockReason}
+        </p>
+      )}
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex min-w-0 flex-col gap-4">
-          <FlagsPanel code={hat.code} flags={hat.flags} canReview={canWrite} />
+          <FlagsPanel code={hat.code} flags={hat.flags} canReview={canWrite} failed={hat.flagsFailed} />
           <Timeline steps={steps} nowIso={nowIso} isAdmin={isAdmin} />
           <Card padding="lg">
             <div role="tablist" aria-label="Hat history" className="flex gap-1 border-b border-line">

@@ -29,7 +29,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "inline-flex h-8 items-center gap-1 rounded-full border px-3 text-[13px] font-medium whitespace-nowrap",
+        // 44px tall on touch screens (handoff minimum target), compact 32px on desktop.
+        "inline-flex h-11 items-center gap-1 rounded-full border px-3 text-[13px] font-medium whitespace-nowrap md:h-8",
         "focus-visible:outline-2 focus-visible:outline-accent",
         active ? "border-accent bg-accent-tint text-accent" : "border-line bg-surface text-ink hover:bg-surface2",
       )}
@@ -104,7 +105,7 @@ export function HatsList({ rows, nowIso, initialFlagged }: { rows: HatListRow[];
               type="button"
               aria-label="Clear search"
               onClick={() => setQuery("")}
-              className="absolute top-1/2 right-2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-[8px] text-muted hover:bg-surface2"
+              className="absolute top-0 right-0 grid h-11 w-11 place-items-center rounded-[10px] text-muted hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-accent"
             >
               <Icon name="close" size={18} />
             </button>

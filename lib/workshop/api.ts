@@ -4,11 +4,12 @@
 // restore RPC (D4) and read-only selects under RLS. Every call carries an x-request-id.
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { getSupabaseEnv } from "@/lib/env";
+import { log } from "@/lib/log";
 import { tryGetSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { AgentRequest } from "@/lib/voice/reducer";
 import { SEND_TIMEOUT_MS } from "@/lib/voice/reducer";
 import type { AgentMeta } from "./format";
-import type { ApplyResult, Edits, ProposalRow } from "./proposals";
+import { OPEN_DB_STATUSES, type ApplyResult, type Edits, type ProposalRow } from "./proposals";
 
 export interface AgentResponse {
   run_id: string;
@@ -137,42 +138,30 @@ export function flushApplyKeepalive(decisions: Decision[], requestId: string, ac
   }
 }
 
-/** Restore a rejected or dismissed card (D4). Tries the spec 04 two-argument form, then `(p_id)` only. */
+/** Restore a rejected or dismissed card (D4): `restore_proposal(p_id, p_status)` from migration 3. */
 export async function restoreProposal(id: string, status: string): Promise<{ ok: boolean; message?: string }> {
   const supabase = tryGetSupabaseBrowserClient();
   if (!supabase) return { ok: false, message: "Supabase is not configured." };
-  const first = await supabase.rpc("restore_proposal", { p_id: id, p_status: status });
-  if (!first.error) return { ok: true };
-  if (first.error.code === "PGRST202") {
-    const second = await supabase.rpc("restore_proposal", { p_id: id });
-    if (!second.error) return { ok: true };
-    return { ok: false, message: second.error.message };
-  }
-  return { ok: false, message: first.error.message };
+  const { error } = await supabase.rpc("restore_proposal", { p_id: id, p_status: status });
+  return error ? { ok: false, message: error.message } : { ok: true };
 }
 
 const PROPOSAL_COLUMNS = "id, run_id, type, status, payload, why, quote, confidence, rule_result, edited, edits, created_at";
 
 export async function loadOpenProposals(workshopId: string | null): Promise<CallResult<ProposalRow[]>> {
   const supabase = tryGetSupabaseBrowserClient();
-  const requestId = "";
-  if (!supabase) return { ok: false, error: { code: "not_configured", message: "Supabase is not configured.", requestId } };
-  const run = async (columns: string) => {
-    let q = supabase
-      .from("proposals")
-      .select(columns)
-      .in("status", ["pending", "question", "blocked", "failed"])
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (workshopId) q = q.eq("workshop_id", workshopId);
-    const { data, error } = await q;
-    return { data: data as unknown, error };
-  };
-  let res = await run(PROPOSAL_COLUMNS);
-  // The `edits` column (spec 04 migration) may not exist yet.
-  if (res.error && /edits/.test(res.error.message)) res = await run(PROPOSAL_COLUMNS.replace(", edits", ""));
-  if (res.error) return { ok: false, error: { code: res.error.code ?? "db_error", message: res.error.message, requestId } };
-  return { ok: true, data: (Array.isArray(res.data) ? res.data : []) as ProposalRow[] };
+  // A plain select has no x-request-id, so errors carry an empty one.
+  if (!supabase) return { ok: false, error: { code: "not_configured", message: "Supabase is not configured.", requestId: "" } };
+  let q = supabase
+    .from("proposals")
+    .select(PROPOSAL_COLUMNS)
+    .in("status", OPEN_DB_STATUSES)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (workshopId) q = q.eq("workshop_id", workshopId);
+  const { data, error } = await q;
+  if (error) return { ok: false, error: { code: error.code ?? "db_error", message: error.message, requestId: "" } };
+  return { ok: true, data: (data ?? []) as unknown as ProposalRow[] };
 }
 
 /** Fresh rule results for proposals that came back blocked from apply-proposals (for the fix button). */
@@ -180,7 +169,9 @@ export async function loadRuleResults(ids: string[]): Promise<Map<string, Record
   const out = new Map<string, Record<string, unknown> | null>();
   const supabase = tryGetSupabaseBrowserClient();
   if (!supabase || ids.length === 0) return out;
-  const { data } = await supabase.from("proposals").select("id, rule_result").in("id", ids);
+  const { data, error } = await supabase.from("proposals").select("id, rule_result").in("id", ids);
+  // Without the rule result the card stays blocked with its message, just without the fix button.
+  if (error) log.warn("ui.error", { payload: { where: "proposals.rule_results", code: error.code } });
   for (const r of (data ?? []) as { id: string; rule_result: Record<string, unknown> | null }[]) out.set(r.id, r.rule_result);
   return out;
 }
@@ -211,11 +202,16 @@ export interface WeaverOption {
   village: string | null;
 }
 
-export async function loadWeavers(workshopId: string | null): Promise<WeaverOption[]> {
+/** Weavers for the edit form's select. `null` means the load failed (the form says so). */
+export async function loadWeavers(workshopId: string | null): Promise<WeaverOption[] | null> {
   const supabase = tryGetSupabaseBrowserClient();
-  if (!supabase) return [];
+  if (!supabase) return null;
   let q = supabase.from("weavers").select("id, name, village").order("name");
   if (workshopId) q = q.eq("workshop_id", workshopId);
-  const { data } = await q;
+  const { data, error } = await q;
+  if (error) {
+    log.warn("ui.error", { payload: { where: "weavers.load", code: error.code } });
+    return null;
+  }
   return (data ?? []) as WeaverOption[];
 }

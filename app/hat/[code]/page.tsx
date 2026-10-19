@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { after } from "next/server";
 import { NotVerified } from "@/components/passport/NotVerified";
-import { PassportFooter, PassportTopBar, reportHref } from "@/components/passport/PassportChrome";
+import { PassportFooter, PassportTopBar } from "@/components/passport/PassportChrome";
+import { reportHref } from "@/lib/passport/report";
 import { PassportProvider } from "@/components/passport/PassportProvider";
 import {
   ArchivedBanner,

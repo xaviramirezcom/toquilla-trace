@@ -1,6 +1,6 @@
 // Open proposals for the shell badge and the logout guard (AppShell pendingCount).
 // "Open" in the database means waiting for a person: pending, question, blocked or failed.
-export const OPEN_PROPOSAL_DB_STATUSES = ["pending", "question", "blocked", "failed"] as const;
+import { OPEN_DB_STATUSES } from "./proposals";
 
 interface CountQuery {
   eq(column: string, value: string): CountQuery;
@@ -18,7 +18,7 @@ export async function countOpenProposals(client: ProposalCountClient | null, wor
       .from("proposals")
       .select("id", { count: "exact", head: true })
       .eq("workshop_id", workshopId)
-      .in("status", OPEN_PROPOSAL_DB_STATUSES);
+      .in("status", OPEN_DB_STATUSES);
     return error ? 0 : (count ?? 0);
   } catch {
     return 0;

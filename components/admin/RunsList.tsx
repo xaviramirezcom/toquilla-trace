@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Badge, Button, Card, EmptyState, Icon } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -23,7 +22,6 @@ const AGENT_LABEL: Record<string, string> = { workshop: "Workshop agent", concie
 const STATUSES = ["Proposed", "Partially approved", "Approved", "Rejected", "Failed", "Stopped", "Answered", "Refused"];
 
 export function RunsList({ runs, nowIso, hat }: { runs: RunListItem[]; nowIso: string; hat: string | null }) {
-  const router = useRouter();
   const [agent, setAgent] = useState("");
   const [status, setStatus] = useState("");
   const [range, setRange] = useState<RunDateRange>("30d");
@@ -143,9 +141,17 @@ export function RunsList({ runs, nowIso, hat }: { runs: RunListItem[]; nowIso: s
                 {shown.map((r) => {
                   const ds = displayStatus(r.status, r.proposal_statuses);
                   return (
-                    <tr key={r.id} onClick={() => router.push(`/runs/${r.id}`)} className="cursor-pointer border-t border-line hover:bg-surface2/60">
+                    // The first cell's link is stretched over the whole row (after:inset-0), so the row
+                    // is one keyboard-focusable link that a screen reader announces as such.
+                    <tr key={r.id} className="relative border-t border-line focus-within:bg-surface2/60 hover:bg-surface2/60">
                       <td className="px-3 py-2 whitespace-nowrap text-muted" title={logTimestamp(r.created_at)}>
-                        {relativeTime(r.created_at, nowIso)}
+                        <Link
+                          href={`/runs/${r.id}`}
+                          className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-accent"
+                        >
+                          {relativeTime(r.created_at, nowIso)}
+                          <span className="sr-only">, open run details</span>
+                        </Link>
                       </td>
                       <td className="px-3 py-2">
                         <Badge tone={r.agent === "workshop" ? "accent" : "info"}>{AGENT_LABEL[r.agent] ?? r.agent}</Badge>

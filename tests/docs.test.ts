@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   GITHUB_BLOB,
   GITHUB_TREE,
+  READING_ORDER,
   buildRegistry,
   createSlugger,
   normalizePath,
@@ -65,9 +66,29 @@ describe("rewriteHref", () => {
 describe("createSlugger", () => {
   it("matches GitHub heading ids and numbers repeats", () => {
     const slug = createSlugger();
-    expect(slug("11. Known limitations and what we would do next")).toBe("11-known-limitations-and-what-we-would-do-next");
+    expect(slug("11. Known limitations and what we would do next")).toBe(
+      "11-known-limitations-and-what-we-would-do-next",
+    );
     expect(slug("13. Not implemented yet (planned)")).toBe("13-not-implemented-yet-planned");
     expect(slug("Files")).toBe("files");
     expect(slug("Files")).toBe("files-1");
+  });
+});
+
+describe("docs index reading order", () => {
+  const full = buildRegistry(["00-conventions.md"]);
+  it("points only at registered docs, in the order an evaluator should read them", () => {
+    const slugs = new Set(full.map((d) => d.slug));
+    for (const step of READING_ORDER) for (const s of step.slugs) expect(slugs.has(s)).toBe(true);
+    expect(READING_ORDER[0].slugs).toEqual(["overview", "handoff", "security", "architecture", "ai"]);
+    expect(READING_ORDER[1].slugs).toEqual(["engineering", "evals", "specs"]);
+  });
+
+  it("registers the docs guide and evals, and files specs and design under the planning archive", () => {
+    expect(full.find((d) => d.slug === "guide")?.path).toBe("docs/README.md");
+    expect(full.find((d) => d.slug === "evals")?.path).toBe("docs/EVALS.md");
+    for (const slug of ["specs", "specs-00-conventions", "design"]) {
+      expect(full.find((d) => d.slug === slug)?.group).toBe("Planning archive (pre-build)");
+    }
   });
 });

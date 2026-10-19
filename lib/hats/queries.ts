@@ -62,8 +62,10 @@ export async function getHatDetail(code: string): Promise<HatDetail | null> {
       .order("created_at", { ascending: true }),
   ]);
   if (eventsRes.error) throw new Error(`hat events: ${eventsRes.error.message}`);
-  // Flags are a Nice panel: a missing join or column should not break the page.
-  const rawFlags = flagsRes.error ? [] : ((flagsRes.data ?? []) as unknown as RawFlag[]);
+  // Flags failing should not break the page, but must not look like "no flags" either (a safety
+  // signal), so the detail page shows a "couldn't load flags" note.
+  const flagsFailed = Boolean(flagsRes.error);
+  const rawFlags = flagsFailed ? [] : ((flagsRes.data ?? []) as unknown as RawFlag[]);
 
   const rawEvents = (eventsRes.data ?? []) as unknown as RawEvent[];
 
@@ -87,7 +89,7 @@ export async function getHatDetail(code: string): Promise<HatDetail | null> {
   }));
 
   const { weaver, workshop, ...rest } = hat;
-  return { ...rest, weaver: one(weaver), workshop_name: one(workshop)?.name ?? null, events, flags };
+  return { ...rest, weaver: one(weaver), workshop_name: one(workshop)?.name ?? null, events, flags, flagsFailed };
 }
 
 export async function listWeavers(): Promise<WeaverRow[]> {

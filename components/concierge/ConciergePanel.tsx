@@ -7,6 +7,7 @@ import {
   answerKind,
   buildRequestMessages,
   contactHref as mailto,
+  DEFAULT_RETRY_MS,
   MAX_USER_TURNS,
   nextSuggestions,
   pillsFor,
@@ -37,7 +38,8 @@ export interface ConciergePanelProps {
   onClaim: () => void;
 }
 
-const FOCUSABLE = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 const ERROR_TEXT = "I couldn't answer that.";
 
 let seq = 0;
@@ -87,7 +89,8 @@ function useSheetBox(active: boolean): React.CSSProperties | undefined {
 export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, claim, onClaim }: ConciergePanelProps) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [busy, setBusy] = useState(false);
-  const [serverLimited, setServerLimited] = useState(false);
+  /** Server 429: how long to wait (ms), or null. Cleared by a timer, so the composer comes back. */
+  const [serverWaitMs, setServerWaitMs] = useState<number | null>(null);
   const panelRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -101,7 +104,8 @@ export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, clai
 
   const all = useMemo(() => startSuggestions(sizeCm), [sizeCm]);
   const answered = msgs.filter((m) => m.role === "user" && m.status === "ok").length;
-  const limited = serverLimited || answered >= MAX_USER_TURNS;
+  const chatFull = answered >= MAX_USER_TURNS;
+  const limited = chatFull || serverWaitMs !== null;
   const asked = msgs.filter((m): m is UserMsg => m.role === "user").map((m) => m.text);
   const hasUser = asked.length > 0;
   const suggestions = busy || limited ? [] : hasUser ? nextSuggestions(all, asked) : all;
@@ -112,7 +116,10 @@ export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, clai
   useEffect(() => {
     if (!open) return;
     const previously = document.activeElement as HTMLElement | null;
-    const t = setTimeout(() => (inputRef.current && !inputRef.current.disabled ? inputRef.current : panelRef.current)?.focus(), 30);
+    const t = setTimeout(
+      () => (inputRef.current && !inputRef.current.disabled ? inputRef.current : panelRef.current)?.focus(),
+      30,
+    );
     const overflow = document.body.style.overflow;
     if (mobile) document.body.style.overflow = "hidden";
     function onKey(e: KeyboardEvent) {
@@ -144,6 +151,13 @@ export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, clai
       previously?.focus?.();
     };
   }, [open, mobile]);
+
+  // The server limit is a time window: unlock the composer when it has passed.
+  useEffect(() => {
+    if (serverWaitMs === null) return;
+    const t = setTimeout(() => setServerWaitMs(null), serverWaitMs);
+    return () => clearTimeout(t);
+  }, [serverWaitMs]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -191,7 +205,7 @@ export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, clai
         if (res.failure === "rate_limited") return marked;
         return [...marked, { id: nextId(), role: "assistant", kind: "error", text: ERROR_TEXT, pills: [] }];
       });
-      if (!res.ok && res.failure === "rate_limited") setServerLimited(true);
+      if (!res.ok && res.failure === "rate_limited") setServerWaitMs(res.retryAfterMs ?? DEFAULT_RETRY_MS);
     },
     [code, history],
   );
@@ -221,13 +235,16 @@ export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, clai
     chatGen.current += 1;
     setMsgs([]);
     setBusy(false);
-    setServerLimited(false);
-    inputRef.current?.focus();
+    setServerWaitMs(null);
+    // The composer is still disabled during this render; focus once it is enabled again.
+    setTimeout(() => inputRef.current?.focus(), 0);
   }
 
   return (
     <>
-      {open && mobile && <div className="fixed inset-0 z-[44] bg-scrim animate-enter md:hidden" aria-hidden onClick={onClose} />}
+      {open && mobile && (
+        <div className="fixed inset-0 z-[44] bg-scrim animate-enter md:hidden" aria-hidden onClick={onClose} />
+      )}
       <aside
         ref={panelRef}
         role="dialog"
@@ -254,11 +271,10 @@ export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, clai
           <button
             type="button"
             onClick={newChat}
-            aria-label="New chat"
-            title="New chat"
-            className="grid h-11 w-10 place-items-center rounded-[10px] hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-accent"
+            className="inline-flex h-11 items-center gap-1.5 rounded-[10px] px-2.5 text-[13px] font-semibold hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-accent"
           >
-            <Icon name="edit_square" />
+            <Icon name="edit_square" size={18} />
+            New chat
           </button>
           <button
             type="button"
@@ -270,39 +286,44 @@ export function ConciergePanel({ open, onClose, code, sizeCm, contactEmail, clai
           </button>
         </div>
 
-        <div ref={listRef} className="flex flex-1 flex-col gap-3.5 overflow-y-auto p-4" aria-live="polite" aria-relevant="additions">
-          <div className="flex max-w-[90%] gap-2">
-            <AssistantAvatar />
-            <div className="rounded-[4px_14px_14px_14px] border border-line bg-surface px-3 py-2.5">
-              Hi! I can answer questions about this hat using its verified record. What would you like to know?
-            </div>
-          </div>
-          {msgs.map((m) =>
-            m.role === "user" ? (
-              <div
-                key={m.id}
-                className="max-w-[82%] self-end rounded-[14px_14px_4px_14px] bg-accent px-3 py-2.5 break-words whitespace-pre-wrap text-on-accent animate-enter"
-              >
-                {m.text}
+        <div ref={listRef} className="flex flex-1 flex-col gap-3.5 overflow-y-auto p-4">
+          {/* Only new messages are announced; suggestions and the typing status live outside this region. */}
+          <div className="flex flex-col gap-3.5" aria-live="polite" aria-relevant="additions">
+            <div className="flex max-w-[90%] gap-2">
+              <AssistantAvatar />
+              <div className="rounded-[4px_14px_14px_14px] border border-line bg-surface px-3 py-2.5">
+                Hi! I can answer questions about this hat using its verified record. What would you like to know?
               </div>
-            ) : (
-              <AssistantBubble
-                key={m.id}
-                msg={m}
-                code={code}
-                contactHref={contact}
-                showClaim={showClaim}
-                onClaim={onClaim}
-                onRetry={() => retry(m.id)}
-                retryDisabled={busy || limited}
-              />
-            ),
-          )}
+            </div>
+            {msgs.map((m) =>
+              m.role === "user" ? (
+                <div
+                  key={m.id}
+                  className="max-w-[82%] self-end rounded-[14px_14px_4px_14px] bg-accent px-3 py-2.5 break-words whitespace-pre-wrap text-on-accent animate-enter"
+                >
+                  {m.text}
+                </div>
+              ) : (
+                <AssistantBubble
+                  key={m.id}
+                  msg={m}
+                  code={code}
+                  contactHref={contact}
+                  showClaim={showClaim}
+                  onClaim={onClaim}
+                  onRetry={() => retry(m.id)}
+                  retryDisabled={busy || limited}
+                />
+              ),
+            )}
+          </div>
           {busy && <TypingIndicator />}
           <Suggestions items={suggestions} onPick={ask} />
         </div>
 
-        {limited && <RateLimitBanner />}
+        {limited && (
+          <RateLimitBanner kind={chatFull ? "chat" : "server"} waitMs={serverWaitMs ?? 0} onNewChat={newChat} />
+        )}
         <Composer disabled={limited} busy={busy} onSend={ask} inputRef={inputRef} />
       </aside>
     </>

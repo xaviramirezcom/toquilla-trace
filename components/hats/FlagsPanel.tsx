@@ -8,8 +8,30 @@ import { newRequestId } from "@/lib/request-id";
 import { validateReason } from "@/lib/hats/format";
 import type { HatFlag } from "@/lib/hats/types";
 
-/** Warn card listing the hat's flags, with "Mark as reviewed" (reason required). Shown only when flags exist. */
-export function FlagsPanel({ code, flags, canReview }: { code: string; flags: HatFlag[]; canReview: boolean }) {
+/**
+ * Warn card listing the hat's flags, with "Mark as reviewed" (reason required). Shown only when
+ * flags exist, or when they failed to load (so a load error never reads as "no flags").
+ */
+export function FlagsPanel({
+  code,
+  flags,
+  canReview,
+  failed = false,
+}: {
+  code: string;
+  flags: HatFlag[];
+  canReview: boolean;
+  failed?: boolean;
+}) {
+  if (failed) {
+    return (
+      <Card padding="lg" className="border-warn/40 bg-warn-tint">
+        <p role="alert" className="flex items-center gap-2 text-[14px] text-ink">
+          <Icon name="warning" size={20} className="text-warn" /> Couldn&apos;t load this hat&apos;s flags. Refresh the page to try again.
+        </p>
+      </Card>
+    );
+  }
   if (flags.length === 0) return null;
   return (
     <Card padding="lg" className="border-warn/40 bg-warn-tint">

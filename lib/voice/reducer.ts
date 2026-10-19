@@ -1,11 +1,11 @@
 // Voice composer state machine (spec 02 section 6). Pure: `transition(state, event)` returns the next
 // state plus a list of side effects. The hook runs the effects synchronously inside the user's
 // gesture (iOS only starts recognition from a gesture), so they are data here, not callbacks.
-import { isValidCode } from "@domain/domain";
+import { NOTE_MAX, isValidCode } from "@domain/domain";
 import type { LogAction } from "@domain/log-format";
 import { lowWordsOf, wordsToText, type Word } from "./words";
 
-export const NOTE_MAX = 1000;
+export { NOTE_MAX };
 export const NOTE_WARN = 900;
 export const MAX_RECORDING_MS = 120_000;
 export const RECORDING_AMBER_MS = 110_000;

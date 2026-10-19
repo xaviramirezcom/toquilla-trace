@@ -2,6 +2,8 @@
 // Batches, retries once, never throws, never awaited in user flows.
 // Signed in: insert into app_logs WITHOUT .select() (members have no select policy).
 // Signed out: allowlisted actions go to the log_public() RPC (D6); everything else is dropped.
+// The Supabase client is imported lazily on the first flush, so public pages that only import the
+// logger (the root error boundary ships with every route) don't download supabase-js up front.
 import {
   PUBLIC_LOG_ACTIONS,
   capPayload,
@@ -11,7 +13,6 @@ import {
   type LogLevel,
   type LogRow,
 } from "@domain/log-format";
-import { tryGetSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export type { LogAction, LogLevel, LogRow };
 
@@ -42,7 +43,8 @@ export interface LogTransport {
 }
 
 export interface LoggerOptions {
-  getTransport: () => LogTransport | null;
+  /** May be async (the app lazy-loads the Supabase client). */
+  getTransport: () => LogTransport | null | Promise<LogTransport | null>;
   isDev?: boolean;
   batchSize?: number;
   flushDelayMs?: number;
@@ -73,6 +75,8 @@ export function createLogger(opts: LoggerOptions): Logger {
   let queue: LogRow[] = [];
   let dropped = 0;
   let timer: ReturnType<typeof setTimeout> | null = null;
+  /** Flushes run one after another, so `await flush()` also waits for a send already in progress. */
+  let inFlight: Promise<void> = Promise.resolve();
 
   function devWarn(...args: unknown[]) {
     if (isDev) console.warn("[log]", ...args);
@@ -105,7 +109,12 @@ export function createLogger(opts: LoggerOptions): Logger {
     }
   }
 
-  async function flush(): Promise<void> {
+  function flush(): Promise<void> {
+    inFlight = inFlight.then(flushNow);
+    return inFlight;
+  }
+
+  async function flushNow(): Promise<void> {
     try {
       if (timer) {
         clearTimeout(timer);
@@ -114,7 +123,7 @@ export function createLogger(opts: LoggerOptions): Logger {
       if (queue.length === 0) return;
       const rows = queue;
       queue = [];
-      const transport = opts.getTransport();
+      const transport = await opts.getTransport();
       if (!transport) {
         devWarn("no Supabase client, dropped", rows.length);
         return;
@@ -181,7 +190,8 @@ export function createLogger(opts: LoggerOptions): Logger {
 }
 
 /** Wraps the browser Supabase client. Insert has no .select(): members cannot read app_logs. */
-function supabaseTransport(): LogTransport | null {
+async function supabaseTransport(): Promise<LogTransport | null> {
+  const { tryGetSupabaseBrowserClient } = await import("@/lib/supabase/client");
   const client = tryGetSupabaseBrowserClient();
   if (!client) return null;
   return {
@@ -196,13 +206,19 @@ function supabaseTransport(): LogTransport | null {
   };
 }
 
-let transport: LogTransport | null = null;
+let transport: Promise<LogTransport | null> | null = null;
 
 /** The app-wide logger. Safe to import anywhere; it only sends from the browser. */
 export const log: Logger = createLogger({
   getTransport: () => {
     if (typeof window === "undefined") return null;
-    if (!transport) transport = supabaseTransport();
+    // A failed chunk load or a missing client is not cached: the next flush tries again.
+    transport ??= supabaseTransport()
+      .catch(() => null)
+      .then((t) => {
+        if (!t) transport = null;
+        return t;
+      });
     return transport;
   },
   isDev: process.env.NODE_ENV === "development",

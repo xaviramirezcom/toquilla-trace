@@ -124,3 +124,22 @@ describe("client logger", () => {
     expect(rows[1]).toMatchObject({ action: "hat.create", payload: { dropped: 1 } });
   });
 });
+
+describe("logger with an async transport (lazy Supabase import)", () => {
+  it("waits for the transport and delivers each row once when flushes overlap", async () => {
+    const mem = memoryTransport();
+    const log = createLogger({ ...opts, batchSize: 2, getTransport: async () => mem.transport });
+    log.setContext({ user_id: "u1", workshop_id: null });
+    log.info("hat.edit");
+    log.info("hat.edit"); // batch size reached: an automatic flush starts
+    await log.flush(); // must wait for that flush, not return early
+    expect(mem.inserted.flat()).toHaveLength(2);
+    expect(mem.inserted).toHaveLength(1);
+  });
+
+  it("drops rows without throwing when the async transport resolves to null", async () => {
+    const log = createLogger({ ...opts, getTransport: async () => null });
+    log.info("passport.view");
+    await expect(log.flush()).resolves.toBeUndefined();
+  });
+});

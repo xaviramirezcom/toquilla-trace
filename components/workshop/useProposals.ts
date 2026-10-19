@@ -28,6 +28,7 @@ import {
   editsForSubmit,
   fromRow,
   isComplete,
+  isOpen,
   mergeRun,
   rejectAllSelection,
   savedToastText,
@@ -50,7 +51,11 @@ export function useProposals(workshopId: string | null) {
   const [queuedIds, setQueuedIds] = useState<ReadonlySet<string>>(new Set());
   const tokenRef = useRef<string | null>(null);
   const savedThisRound = useRef(0);
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Why a ref mirror of `cards`: callbacks (approve, reject, timers) need the latest list
+  // synchronously, without being re-created on every change. Every write goes through setCards,
+  // so the ref and the state never drift. queueRef works the same way for the decision queue.
   const setCards = useCallback((update: (prev: Card[]) => Card[]) => {
     const next = update(cardsRef.current);
     cardsRef.current = next;
@@ -68,6 +73,25 @@ export function useProposals(workshopId: string | null) {
       setCards((prev) => prev.map((c) => (set.has(c.row.id) ? fn(c) : c)));
     },
     [setCards],
+  );
+
+  /**
+   * Re-render the server parts (the shell's pending badge) after a decision is saved. Debounced so
+   * a burst of decisions refreshes once. During the 10 s undo window nothing is saved yet, so the
+   * badge still counts those proposals until the commit lands (the database is the source).
+   */
+  const refreshServer = useCallback(() => {
+    if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(() => {
+      refreshTimer.current = null;
+      router.refresh();
+    }, 300);
+  }, [router]);
+  useEffect(
+    () => () => {
+      if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    },
+    [],
   );
 
   const applyLoad = useCallback(
@@ -136,10 +160,10 @@ export function useProposals(workshopId: string | null) {
         return applyResult(c, r, requestId);
       });
       savedThisRound.current += approved;
-      router.refresh();
+      refreshServer();
       await refreshBlocked(res.data.results.filter((r) => r.status === "blocked").map((r) => r.proposal_id));
     },
-    [patch, router, refreshBlocked],
+    [patch, refreshServer, refreshBlocked],
   );
 
   const flushIds = useCallback(
@@ -153,6 +177,9 @@ export function useProposals(workshopId: string | null) {
   );
 
   // Every second: send what is due, and tick `now` so Undo links disappear on time.
+  // This interval is the normal sender. The toast's onExpire (below) only sends early when the
+  // toast closes first (closed by hand or pushed out by newer toasts); a decision is sent once
+  // because takeDue/takeIds remove it from the queue.
   useEffect(() => {
     const id = setInterval(() => {
       const t = Date.now();
@@ -260,8 +287,9 @@ export function useProposals(workshopId: string | null) {
         if (!r || r.status === "rejected" || r.status === "dismissed") return r ? { ...c, status: r.status } : c;
         return prev.get(c.row.id) ?? c;
       });
+      refreshServer();
     },
-    [patch, toast],
+    [patch, refreshServer, toast],
   );
 
   const reject = useCallback((id: string) => void rejectMany([id]), [rejectMany]);
@@ -280,8 +308,9 @@ export function useProposals(workshopId: string | null) {
         return;
       }
       log.info("proposal.undo", { payload: { proposal_ids: [id], kind: "restore" } });
+      refreshServer();
     },
-    [patch, toast],
+    [patch, refreshServer, toast],
   );
 
   const answer = useCallback(
@@ -353,10 +382,10 @@ export function useProposals(workshopId: string | null) {
       const r = res.data.results.find((x) => x.proposal_id === id) ?? { proposal_id: id, status: "failed" as const };
       if (r.status === "approved") savedThisRound.current += 1;
       patch([id], (c) => applyResult(c, r, requestId));
-      router.refresh();
+      refreshServer();
       if (r.status === "blocked") await refreshBlocked([id]);
     },
-    [patch, router, refreshBlocked],
+    [patch, refreshServer, refreshBlocked],
   );
 
   const addRun = useCallback(
@@ -365,9 +394,10 @@ export function useProposals(workshopId: string | null) {
       const saved = rows.filter((r) => typeof r.id === "string" && r.id.length > 0);
       const { cards: merged, earlierOpen } = mergeRun(cardsRef.current, saved, Date.now(), new Set(queueRef.current.map((q) => q.proposal_id)));
       setCards(() => merged);
+      if (saved.length > 0) refreshServer();
       if (earlierOpen && saved.length > 0) toast.info("New proposals added. Earlier ones are still waiting below.");
     },
-    [setCards, toast],
+    [refreshServer, setCards, toast],
   );
 
   const clearResolved = useCallback(() => {
@@ -375,10 +405,7 @@ export function useProposals(workshopId: string | null) {
     setCards((prev) => prev.filter((c) => c.status !== "approved" && c.status !== "rejected" && c.status !== "dismissed"));
   }, [flushIds, setCards]);
 
-  const openCount = useMemo(
-    () => cards.filter((c) => ["pending", "question", "blocked", "failed", "editing", "approving"].includes(c.status)).length,
-    [cards],
-  );
+  const openCount = useMemo(() => cards.filter((c) => isOpen(c.status)).length, [cards]);
 
   return {
     cards,

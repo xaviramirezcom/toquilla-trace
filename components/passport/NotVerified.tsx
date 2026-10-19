@@ -21,7 +21,9 @@ export function NotVerified({ code, reportHref }: { code: string; reportHref: st
             <Icon name="gpp_bad" size={28} />
           </span>
           <div>
-            <h1 className="font-serif text-[28px] leading-[1.15] font-medium md:text-[32px]">We can&apos;t verify this hat</h1>
+            <h1 className="font-serif text-[28px] leading-[1.15] font-medium md:text-[32px]">
+              We can&apos;t verify this hat
+            </h1>
             <p className="mt-2 max-w-[560px] text-[15px]">
               The code <span className="font-mono font-medium break-all">{code || "(empty)"}</span> isn&apos;t in our
               records. It may be mistyped, or the hat may not be genuine.
@@ -39,6 +41,7 @@ export function NotVerified({ code, reportHref }: { code: string; reportHref: st
           </button>
           <a
             href={reportHref}
+            {...(reportHref.startsWith("https:") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
             className="inline-flex h-11 items-center rounded-[11px] border border-line bg-surface px-[18px] font-semibold hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Report a problem

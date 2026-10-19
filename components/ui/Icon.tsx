@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 
 export interface IconProps {
-  /** Material Symbols Rounded ligature name, e.g. "auto_awesome", "lock", "mic". */
+  /** Material Symbols Rounded ligature name, e.g. "auto_awesome". Must be listed in icon-names.ts. */
   name: string;
   /** Pixel size (default 20). */
   size?: number;
@@ -14,7 +14,7 @@ export interface IconProps {
 export function Icon({ name, size = 20, filled = false, className, label }: IconProps) {
   return (
     <span
-      className={cn("material-symbols-rounded shrink-0", className)}
+      className={cn("material-symbols-rounded shrink-0 overflow-hidden", className)}
       style={{
         fontSize: size,
         width: size,

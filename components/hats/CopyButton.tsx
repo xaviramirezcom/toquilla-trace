@@ -10,12 +10,15 @@ export function CopyButton({
   label,
   className,
   size = 16,
+  boxClass = "h-11 w-11 md:h-8 md:w-8",
 }: {
   text: string;
   toastMessage: string;
   label: string;
   className?: string;
   size?: number;
+  /** Button box size: 44px on touch screens (handoff minimum), compact on desktop. */
+  boxClass?: string;
 }) {
   const toast = useToast();
   return (
@@ -24,7 +27,8 @@ export function CopyButton({
       aria-label={label}
       title={label}
       className={cn(
-        "inline-grid h-8 w-8 place-items-center rounded-[8px] text-muted hover:bg-surface2 hover:text-ink",
+        "inline-grid place-items-center rounded-[8px] text-muted hover:bg-surface2 hover:text-ink",
+        boxClass,
         "focus-visible:outline-2 focus-visible:outline-accent",
         className,
       )}

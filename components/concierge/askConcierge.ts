@@ -1,14 +1,21 @@
 "use client";
 
 import { log } from "@/lib/log";
-import { CLIENT_TIMEOUT_MS, classifyFailure, parseAnswer } from "@/lib/passport/concierge";
+import { CLIENT_TIMEOUT_MS, classifyFailure, parseAnswer, retryAfterMs } from "@/lib/passport/concierge";
 import type { ChatTurn, ConciergeAnswer } from "@/lib/passport/types";
 import { newRequestId } from "@/lib/request-id";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export type ConciergeResult =
   | { ok: true; answer: ConciergeAnswer }
-  | { ok: false; failure: "rate_limited" | "error"; code: string | null; requestId: string };
+  | {
+      ok: false;
+      failure: "rate_limited" | "error";
+      code: string | null;
+      requestId: string;
+      /** Rate limited only: how long to wait before asking again. */
+      retryAfterMs?: number;
+    };
 
 /**
  * Calls the concierge Edge Function (conventions section 4):
@@ -26,9 +33,11 @@ export async function askConcierge(code: string, messages: ChatTurn[]): Promise<
     if (error) {
       let status: number | null = null;
       let errCode: string | null = null;
+      let retryHeader: string | null = null;
       const ctx = (error as { context?: unknown }).context;
       if (ctx instanceof Response) {
         status = ctx.status;
+        retryHeader = ctx.headers.get("Retry-After");
         try {
           const body = (await ctx.clone().json()) as { error?: { code?: string } };
           errCode = body?.error?.code ?? null;
@@ -36,7 +45,14 @@ export async function askConcierge(code: string, messages: ChatTurn[]): Promise<
           // Non-JSON body (gateway error page).
         }
       }
-      return { ok: false, failure: classifyFailure(status, errCode), code: errCode, requestId };
+      const failure = classifyFailure(status, errCode);
+      return {
+        ok: false,
+        failure,
+        code: errCode,
+        requestId,
+        ...(failure === "rate_limited" ? { retryAfterMs: retryAfterMs(retryHeader) } : {}),
+      };
     }
     const answer = parseAnswer(data);
     if (!answer) {

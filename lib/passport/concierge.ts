@@ -95,6 +95,28 @@ export function classifyFailure(status: number | null, code: string | null | und
   return "error";
 }
 
+export const DEFAULT_RETRY_MS = 60_000;
+
+/**
+ * How long the server rate-limit banner stays: the Retry-After header (seconds) when the server sends
+ * one, otherwise one minute (the server's per-minute window). Clamped to 1 s to 1 h.
+ */
+export function retryAfterMs(header: string | null | undefined): number {
+  const secs = header ? Number(header) : NaN;
+  if (!Number.isFinite(secs) || secs <= 0) return DEFAULT_RETRY_MS;
+  return Math.min(Math.max(Math.round(secs * 1000), 1000), 3_600_000);
+}
+
+export type LimitKind = "chat" | "server";
+
+/** Banner copy. "chat" = this conversation used its 8 questions; "server" = the server said 429. */
+export function limitText(kind: LimitKind, waitMs: number): string {
+  if (kind === "chat") return "You've reached the limit for this chat. Start a new chat to ask more.";
+  const secs = Math.ceil(waitMs / 1000);
+  const wait = secs <= 60 ? "a minute" : `${Math.ceil(secs / 60)} minutes`;
+  return `You've asked a lot of questions. Try again in ${wait}.`;
+}
+
 /** Validates the success payload so a malformed response becomes an error bubble, not a crash. */
 export function parseAnswer(data: unknown): ConciergeAnswer | null {
   if (!data || typeof data !== "object") return null;
@@ -103,7 +125,9 @@ export function parseAnswer(data: unknown): ConciergeAnswer | null {
   const sources = Array.isArray(d.sources)
     ? d.sources.filter(
         (s): s is ConciergeSource =>
-          !!s && typeof s === "object" && ((s as ConciergeSource).kind === "record" || (s as ConciergeSource).kind === "general"),
+          !!s &&
+          typeof s === "object" &&
+          ((s as ConciergeSource).kind === "record" || (s as ConciergeSource).kind === "general"),
       )
     : [];
   return { answer: d.answer, sources, refused: d.refused === true };

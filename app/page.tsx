@@ -110,20 +110,24 @@ export default async function LandingPage() {
           id="verify"
           className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center gap-8 px-4 py-9 md:px-10 md:py-[72px]"
         >
-          <div className="flex-[1_1_320px]">
+          <div className="min-w-0 flex-[1_1_320px]">
             <h2 className="font-serif text-[34px] leading-[1.1] font-medium">Bought a hat? Check it here.</h2>
             <p className="mt-2.5 max-w-[440px] text-muted">
               The code is printed on the tag inside the crown. Scanning the QR opens the passport directly.
             </p>
           </div>
-          <div className="flex-[1_1_360px] rounded-[18px] border border-line bg-surface p-[22px]">
+          {/* min-w-0 lets the card shrink below the input's intrinsic width (no sideways scroll at 390px). */}
+          <div className="min-w-0 flex-[1_1_320px] rounded-[18px] border border-line bg-surface p-4 md:p-[22px]">
             <CodeInput via="verify_box" inputId={VERIFY_INPUT_ID} samples={["TQ-9A1M8", "TQ-ZZZZZ"]} />
           </div>
         </section>
 
         <section className="mx-auto grid w-full max-w-[1120px] grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3.5 px-4 pb-10 md:px-10 md:pb-[88px]">
           {FEATURES.map((f) => (
-            <article key={f.icon} className="flex flex-col gap-2.5 rounded-[18px] border border-line bg-surface p-[22px]">
+            <article
+              key={f.icon}
+              className="flex flex-col gap-2.5 rounded-[18px] border border-line bg-surface p-[22px]"
+            >
               <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-accent-tint text-accent">
                 <Icon name={f.icon} size={24} />
               </span>
@@ -134,12 +138,17 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      <footer className="flex flex-wrap items-center gap-4 border-t border-line px-4 pt-[22px] pb-24 text-sm text-muted md:px-10 md:pb-[22px]">
+      <footer className="flex flex-wrap items-center gap-4 border-t border-line px-4 pt-3 pb-24 text-sm text-muted md:px-10 md:pb-3">
         <span className="mr-auto">Made in Cuenca, Ecuador</span>
-        <Link href="/docs" className="hover:text-ink hover:underline">
+        <Link href="/docs" className="inline-flex min-h-11 items-center hover:text-ink hover:underline">
           Docs
         </Link>
-        <a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer" className="hover:text-ink hover:underline">
+        <a
+          href={GITHUB_REPO}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-11 items-center hover:text-ink hover:underline"
+        >
           GitHub
         </a>
       </footer>

@@ -1,6 +1,9 @@
 // Pure helpers for the hats and weavers pages (no React, no Supabase). Tested in tests/hats.test.ts.
-import { STAGES, canAdvance, foldText, stageName, type Actor, type StageIndex } from "@domain/domain";
+import { FINISHED_STAGE, GRADES, STAGES, canAdvance, foldText, stageName, type Actor } from "@domain/domain";
 import type { HatDetail, HatEvent, HatFlag, HatListRow } from "./types";
+
+/** The last stage (Finished), from the shared domain rules. */
+export { FINISHED_STAGE };
 
 // ---------------------------------------------------------------------------
 // Dates
@@ -114,12 +117,11 @@ export type AdvanceHatFields = Pick<
 
 /**
  * Why the Advance button is disabled, or null when it can be pressed.
- * Uses the shared domain rule, plus the RPC's extra check that a pending transfer also blocks.
+ * Uses the shared domain rule (canAdvance), which also blocks a hat with a pending transfer.
  */
 export function advanceBlockReason(hat: AdvanceHatFields, actor: Actor): string | null {
   if (hat.archived) return COPY.archived;
-  if (hat.stage >= 4) return COPY.finished;
-  if (hat.transfer_email) return COPY.not_owner;
+  if (hat.stage >= FINISHED_STAGE) return COPY.finished;
   const rule = canAdvance(hat, hat.stage + 1, actor);
   if (rule.allowed) return null;
   if (rule.code === "archived") return COPY.archived;
@@ -129,7 +131,7 @@ export function advanceBlockReason(hat: AdvanceHatFields, actor: Actor): string 
 }
 
 export function nextStageName(stage: number): string | null {
-  return stage >= 0 && stage < 4 ? STAGES[(stage + 1) as StageIndex] : null;
+  return stageName(stage) === null ? null : stageName(stage + 1);
 }
 
 // ---------------------------------------------------------------------------
@@ -313,7 +315,7 @@ export function validateWeaver(w: WeaverInput, currentYear: number): Record<stri
   if (!village) errors.village = "Enter the village.";
   else if (village.length > 60) errors.village = "Keep the village under 60 characters.";
   if (!(PROVINCES as readonly string[]).includes(w.province)) errors.province = "Pick a province.";
-  if (w.specialty.some((s) => !["Standard", "Fino", "Superfino"].includes(s))) errors.specialty = "Pick valid grades.";
+  if (w.specialty.some((s) => !(GRADES as readonly string[]).includes(s))) errors.specialty = "Pick valid grades.";
   if (w.weavingSince !== null) {
     if (!Number.isInteger(w.weavingSince) || w.weavingSince < 1940 || w.weavingSince > currentYear) {
       errors.weavingSince = `Use a year between 1940 and ${currentYear}.`;

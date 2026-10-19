@@ -1,5 +1,6 @@
 import { STAGES } from "@domain/domain";
 import { cn } from "@/lib/cn";
+import { FINISHED_STAGE } from "@/lib/hats/format";
 
 /** Five dots for the five stages: done filled, current ringed, upcoming hollow. */
 export function MiniStepper({ stage, showLabel = true, className }: { stage: number; showLabel?: boolean; className?: string }) {
@@ -13,7 +14,7 @@ export function MiniStepper({ stage, showLabel = true, className }: { stage: num
             className={cn(
               "block h-2 w-2 rounded-full",
               i < stage && "bg-ok",
-              i === stage && (stage === 4 ? "bg-ok" : "bg-accent ring-2 ring-accent/30"),
+              i === stage && (stage === FINISHED_STAGE ? "bg-ok" : "bg-accent ring-2 ring-accent/30"),
               i > stage && "border border-line bg-transparent",
             )}
           />

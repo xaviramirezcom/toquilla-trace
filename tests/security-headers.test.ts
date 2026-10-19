@@ -36,3 +36,13 @@ describe("security headers", () => {
     expect(h["Permissions-Policy"]).toContain("camera=()");
   });
 });
+
+describe("next.config", () => {
+  it("hides X-Powered-By and sends the security headers on every route", async () => {
+    const { default: config } = await import("../next.config");
+    expect(config.poweredByHeader).toBe(false);
+    const routes = await config.headers!();
+    const all = routes.find((r) => r.source === "/:path*");
+    expect(all?.headers.map((h) => h.key)).toContain("Content-Security-Policy");
+  });
+});

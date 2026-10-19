@@ -1,6 +1,7 @@
 "use server";
-// Hat mutations (spec 08 section 6). User session, so RLS applies; every write goes through a
-// security invoker SQL function (D9). The client logs the outcome with its request id.
+// Hat mutations (spec 08 section 6). User session; every write goes through a security definer
+// SQL function that checks the caller itself (migration 6), never a direct table write.
+// The client logs the outcome with its request id.
 import { revalidatePath } from "next/cache";
 import { isValidCode } from "@domain/domain";
 import { tryGetSupabaseServerClient } from "@/lib/supabase/server";

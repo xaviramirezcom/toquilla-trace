@@ -30,7 +30,9 @@ export function Certificate({ p }: { p: Passport }) {
         <Seal />
         <div className="flex min-w-[220px] flex-1 flex-col gap-1">
           <span className="text-xs font-bold tracking-[0.14em] text-ok uppercase">Verified authentic</span>
-          <span className="font-serif text-[22px] font-medium">Recorded by {recordedBy || "a registered workshop"}</span>
+          <span className="font-serif text-[22px] font-medium">
+            Recorded by {recordedBy || "a registered workshop"}
+          </span>
           <span className="text-muted">{certificateStatus(p)}</span>
         </div>
         <div className="flex flex-col items-start gap-0.5">
@@ -68,15 +70,15 @@ function wovenBy(p: Passport) {
 export function Hero({ p }: { p: Passport }) {
   return (
     <section className="flex flex-wrap items-stretch gap-7">
+      {/* No hat photos yet: a decorative woven-straw panel. On mobile it sits below the grade, so the
+          first thing a buyer sees is the grade and the weaver, not an empty frame. */}
       <div
-        className="grid aspect-[4/3] min-w-0 flex-[1_1_380px] place-items-center rounded-[18px] border border-line bg-[repeating-linear-gradient(135deg,var(--straw)_0_10px,var(--cream)_10px_20px)]"
-        role="img"
-        aria-label="Hat photo placeholder"
+        aria-hidden
+        className="woven order-last grid aspect-[16/9] min-w-0 flex-[1_1_380px] place-items-center rounded-[18px] border border-straw md:order-none md:aspect-[4/3]"
       >
-        <div className="flex flex-col items-center gap-1.5 rounded-[10px] bg-cream px-4 py-3">
-          <Icon name="photo_camera" size={36} className="text-muted" />
-          <span className="font-mono text-xs text-muted">hat photo · 4:3</span>
-        </div>
+        <span className="grid h-20 w-20 place-items-center rounded-full border border-straw bg-cream text-accent shadow-card">
+          <Icon name="styler" size={40} />
+        </span>
       </div>
       <div className="flex min-w-0 flex-[1_1_340px] flex-col justify-center gap-4">
         <span className="text-xs font-bold tracking-[0.14em] text-muted uppercase">Grade</span>
@@ -127,7 +129,10 @@ export function SpecsStrip({ p }: { p: Passport }) {
 
 export function StoryTimeline({ steps }: { steps: StoryStep[] }) {
   return (
-    <section aria-label="Story" className="min-w-0 flex-[3_1_420px] rounded-[18px] border border-line bg-surface p-5 md:p-6">
+    <section
+      aria-label="Story"
+      className="min-w-0 flex-[3_1_420px] rounded-[18px] border border-line bg-surface p-5 md:p-6"
+    >
       <h2 className="mb-[18px] font-serif text-[26px] font-medium">The story of this hat</h2>
       <ol className="flex flex-col">
         {steps.map((s, i) => (
@@ -190,13 +195,17 @@ export function WeaverCard({ p }: { p: Passport }) {
           {w.name ? initials(w.name) : <Icon name="person" size={26} />}
         </span>
         <div>
-          <div className="font-serif text-[21px] font-medium">{w.name ?? (w.village ? `A weaver from ${w.village}` : "A weaver")}</div>
+          <div className="font-serif text-[21px] font-medium">
+            {w.name ?? (w.village ? `A weaver from ${w.village}` : "A weaver")}
+          </div>
           {meta && <div className="text-[13px] text-muted">{meta}</div>}
         </div>
       </div>
       {w.name && w.bio && <p className="text-[15px] text-pretty">{w.bio}</p>}
       {others > 0 && (
-        <p className="text-[13px] font-semibold">{first ? `Other hats by ${first}: ${others}` : `Other hats by this weaver: ${others}`}</p>
+        <p className="text-[13px] font-semibold">
+          {first ? `Other hats by ${first}: ${others}` : `Other hats by this weaver: ${others}`}
+        </p>
       )}
     </section>
   );
@@ -205,7 +214,10 @@ export function WeaverCard({ p }: { p: Passport }) {
 export function OwnershipCard({ p, view }: { p: Passport; view: OwnershipView }) {
   const chain = ownershipChain(p.ownership?.owner_type);
   return (
-    <section aria-label="Ownership" className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-[22px]">
+    <section
+      aria-label="Ownership"
+      className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-[22px]"
+    >
       <h2 className="text-[15px] font-semibold">Ownership</h2>
       <ol className="flex flex-wrap items-center gap-1.5" aria-label="Ownership chain">
         {chain.map((c, i) => (

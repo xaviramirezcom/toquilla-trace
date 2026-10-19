@@ -4,17 +4,16 @@
 // or `next_stage`, `question.choices` or `weaver_candidates`).
 import {
   GRADES,
-  QUANTITY_MAX,
-  QUANTITY_MIN,
   STAGES,
   gradeFor,
   gradeMismatchMessage,
   stageName,
   validateHatFields,
   type Grade,
+  type ProposalType,
 } from "@domain/domain";
 
-export type ProposalType = "create_hat" | "advance_stage" | "flag_issue";
+export type { ProposalType };
 export type ServerStatus = "pending" | "question" | "blocked" | "approved" | "rejected" | "dismissed" | "failed";
 export type CardStatus = ServerStatus | "editing" | "approving";
 export type OpenStatus = "pending" | "question" | "blocked" | "failed";
@@ -69,7 +68,10 @@ export const TYPE_LABEL: Record<ProposalType, string> = {
   flag_issue: "Flag issue",
 };
 
-export const OPEN_STATUSES: readonly CardStatus[] = ["pending", "question", "blocked", "failed", "editing", "approving"];
+/** Open in the database: waiting for a person. Used by the panel query and the shell badge. */
+export const OPEN_DB_STATUSES: readonly OpenStatus[] = ["pending", "question", "blocked", "failed"];
+/** Open on screen: the database ones plus the two local states. */
+export const OPEN_STATUSES: readonly CardStatus[] = [...OPEN_DB_STATUSES, "editing", "approving"];
 
 export function isOpen(status: CardStatus): boolean {
   return OPEN_STATUSES.includes(status);
@@ -202,10 +204,6 @@ export interface CardView {
 
 export const FAILED_MESSAGE = "Couldn't save this change. Someone may have updated this hat.";
 
-export function hatCodeOf(card: Card): string | null {
-  return str(effectivePayload(card).hat_code);
-}
-
 export function summaryOf(card: Card, tone?: CardTone): string {
   const p = effectivePayload(card);
   const code = str(p.hat_code) ?? "this hat";
@@ -253,7 +251,8 @@ function chipsOf(card: Card): { label: string; value: string }[] {
 }
 
 const STATUS_META: Record<CardTone, { label: string; icon: string }> = {
-  proposed: { label: "Proposed by AI", icon: "auto_awesome" },
+  // "Proposed by AI" is already the sparkle label in the card's top row (handoff card anatomy).
+  proposed: { label: "Pending", icon: "hourglass_top" },
   editing: { label: "Editing", icon: "edit" },
   approved: { label: "Approved", icon: "check_circle" },
   rejected: { label: "Rejected", icon: "close" },
@@ -508,5 +507,3 @@ export function checkDraft(type: ProposalType, values: Record<string, unknown>):
   }
   return { errors, mismatch, ok: Object.keys(errors).length === 0 && mismatch === null };
 }
-
-export const QUANTITY_RANGE = [QUANTITY_MIN, QUANTITY_MAX] as const;

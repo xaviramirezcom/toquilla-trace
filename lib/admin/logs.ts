@@ -17,7 +17,8 @@ export const TIME_RANGES = { "15m": "15 min", "1h": "1 h", "24h": "24 h", "7d": 
 export type TimeRange = keyof typeof TIME_RANGES;
 export const DEFAULT_RANGE: TimeRange = "24h";
 
-const RANGE_MS: Record<TimeRange, number> = {
+/** Range length in ms. Shared with `npm run logs --since` (lib/admin/logs-cli.ts). */
+export const RANGE_MS: Record<TimeRange, number> = {
   "15m": 15 * 60_000,
   "1h": 3_600_000,
   "24h": 86_400_000,

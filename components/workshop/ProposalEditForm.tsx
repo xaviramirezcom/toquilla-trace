@@ -69,12 +69,15 @@ export function ProposalEditForm({
   const [toStage, setToStage] = useState<number>(Number(p.to_stage ?? Number(p.from_stage ?? 0) + 1));
   const [message, setMessage] = useState<string>(typeof p.message === "string" ? p.message : "");
   const [weavers, setWeavers] = useState<WeaverOption[] | null>(null);
+  const [weaversFailed, setWeaversFailed] = useState(false);
 
   useEffect(() => {
     if (type !== "create_hat") return;
     let cancelled = false;
     void loadWeavers(workshopId).then((w) => {
-      if (!cancelled) setWeavers(w);
+      if (cancelled) return;
+      setWeavers(w ?? []);
+      setWeaversFailed(w === null);
     });
     return () => {
       cancelled = true;
@@ -165,7 +168,7 @@ export function ProposalEditForm({
                 onChange={(e) => setWeaverId(e.target.value)}
                 aria-invalid={check.errors.weaver_id ? true : undefined}
               >
-                <option value="">{weavers === null ? "Loading weavers..." : "Pick a weaver"}</option>
+                <option value="">{weavers === null ? "Loading weavers..." : weaversFailed ? "Couldn't load weavers" : "Pick a weaver"}</option>
                 {(weavers ?? []).map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.village ? `${w.name} (${w.village})` : w.name}
@@ -174,6 +177,7 @@ export function ProposalEditForm({
               </select>
               <Icon name="expand_more" size={20} className="pointer-events-none absolute top-3 right-3 text-muted" />
             </div>
+            {weaversFailed && <p role="alert" className="text-[12px] text-err">Couldn&apos;t load weavers. Cancel and try again.</p>}
             <Link href="/weavers" className="text-[13px] font-medium text-accent hover:underline">
               + Add new weaver
             </Link>

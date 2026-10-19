@@ -2,14 +2,21 @@
 
 import dynamic from "next/dynamic";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Spinner } from "@/components/ui/Spinner";
 import { log } from "@/lib/log";
 import type { ClaimMode } from "@/lib/passport/types";
 import { ClaimDialog } from "./ClaimDialog";
 import { ConciergeFab } from "@/components/concierge/ConciergeFab";
 
 // The chat panel is loaded on first open so it adds nothing to the passport's first load (spec 07).
+// While the chunk downloads, an empty panel with a spinner shows that Ask worked.
 const ConciergePanel = dynamic(() => import("@/components/concierge/ConciergePanel").then((m) => m.ConciergePanel), {
   ssr: false,
+  loading: () => (
+    <div className="fixed inset-x-0 bottom-0 z-[45] grid h-[92vh] place-items-center rounded-t-[18px] bg-bg shadow-card md:inset-x-auto md:top-0 md:right-0 md:h-auto md:w-[400px] md:rounded-none md:border-l md:border-line">
+      <Spinner size={24} className="text-muted" label="Loading chat" />
+    </div>
+  ),
 });
 
 export interface PassportClientInfo {
@@ -87,7 +94,19 @@ export function PassportProvider({ info, children }: { info: PassportClientInfo;
       openConcierge,
       closeConcierge,
     }),
-    [info, claim, claimOpen, openClaim, closeClaim, justClaimed, markClaimed, stampKey, conciergeOpen, openConcierge, closeConcierge],
+    [
+      info,
+      claim,
+      claimOpen,
+      openClaim,
+      closeClaim,
+      justClaimed,
+      markClaimed,
+      stampKey,
+      conciergeOpen,
+      openConcierge,
+      closeConcierge,
+    ],
   );
 
   return (

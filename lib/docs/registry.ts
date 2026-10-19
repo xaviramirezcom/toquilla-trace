@@ -5,7 +5,7 @@ export const GITHUB_REPO = "https://github.com/xaviramirezcom/toquilla-trace";
 export const GITHUB_BLOB = "https://github.com/xaviramirezcom/toquilla-trace/blob/main/";
 export const GITHUB_TREE = "https://github.com/xaviramirezcom/toquilla-trace/tree/main/";
 
-export type DocGroup = "Start here" | "Engineering" | "Specs" | "Design";
+export type DocGroup = "Start here" | "Engineering" | "Planning archive (pre-build)";
 
 export interface DocEntry {
   slug: string;
@@ -18,13 +18,26 @@ export interface DocEntry {
 const FIXED: DocEntry[] = [
   { slug: "overview", path: "README.md", title: "Overview", group: "Start here" },
   { slug: "handoff", path: "HANDOFF.md", title: "Handoff note", group: "Start here" },
+  { slug: "guide", path: "docs/README.md", title: "Docs guide", group: "Start here" },
   { slug: "architecture", path: "docs/ARCHITECTURE.md", title: "Architecture", group: "Engineering" },
   { slug: "ai", path: "docs/AI.md", title: "AI design", group: "Engineering" },
   { slug: "security", path: "docs/SECURITY.md", title: "Security", group: "Engineering" },
   { slug: "engineering", path: "docs/ENGINEERING.md", title: "Engineering practices", group: "Engineering" },
   { slug: "evals", path: "docs/EVALS.md", title: "Eval results", group: "Engineering" },
-  { slug: "specs", path: "docs/specs/README.md", title: "Specs index", group: "Specs" },
-  { slug: "design", path: "design_handoff_toquilla_trace/README.md", title: "Design handoff", group: "Design" },
+  // Written before the build started: the plan, not a description of the final code.
+  { slug: "specs", path: "docs/specs/README.md", title: "Specs index", group: "Planning archive (pre-build)" },
+  {
+    slug: "design",
+    path: "design_handoff_toquilla_trace/README.md",
+    title: "Design handoff",
+    group: "Planning archive (pre-build)",
+  },
+];
+
+/** Suggested reading order on the /docs index, for an evaluator short on time. Slugs from the registry. */
+export const READING_ORDER: { label: string; slugs: string[] }[] = [
+  { label: "10 minutes", slugs: ["overview", "handoff", "security", "architecture", "ai"] },
+  { label: "45 minutes: the above, plus", slugs: ["engineering", "evals", "specs"] },
 ];
 
 const SPEC_FILE_RE = /^(\d{2})-([a-z0-9-]+)\.md$/;
@@ -48,7 +61,12 @@ export function buildRegistry(specFiles: readonly string[]): DocEntry[] {
   const specs = [...specFiles]
     .filter((f) => specSlug(f) !== null)
     .sort()
-    .map((f): DocEntry => ({ slug: specSlug(f) as string, path: `docs/specs/${f}`, title: specTitle(f), group: "Specs" }));
+    .map((f): DocEntry => ({
+      slug: specSlug(f) as string,
+      path: `docs/specs/${f}`,
+      title: specTitle(f),
+      group: "Planning archive (pre-build)",
+    }));
   const out = [...FIXED];
   const at = out.findIndex((d) => d.slug === "specs") + 1;
   out.splice(at, 0, ...specs);

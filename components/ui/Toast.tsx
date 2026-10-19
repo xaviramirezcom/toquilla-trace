@@ -148,9 +148,15 @@ function ToastView({ toast, onDone }: { toast: ToastItem; onDone: (id: string) =
   const icon = kindIcon[toast.kind];
   return (
     <div
-      role={toast.kind === "error" ? "alert" : "status"}
+      // The container is the polite live region; only errors add role="alert" (no double announcement).
+      role={toast.kind === "error" ? "alert" : undefined}
+      // Pause while pointed at or while focus is inside (keyboard users tabbing to a button).
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setPaused(false);
+      }}
       className="pointer-events-auto relative flex w-full max-w-[380px] items-center gap-3 overflow-hidden rounded-[12px] bg-ink py-3 pr-2 pl-4 text-bg shadow-card animate-enter"
     >
       <Icon name={icon.name} size={20} className={icon.color} />

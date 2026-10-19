@@ -3,6 +3,7 @@ import { canonicalHatCode, displayCode, formatCodeInput, isBot, isVerifiable, pa
 import { daysBetween, formatDate, humanDuration } from "@/lib/passport/format";
 import { gradeTip, passportMeta } from "@/lib/passport/meta";
 import { ownershipChain, ownershipView, showsClaim } from "@/lib/passport/ownership";
+import { reportHref } from "@/lib/passport/report";
 import { buildStory, certificateStatus } from "@/lib/passport/story";
 import type { Passport } from "@/lib/passport/types";
 
@@ -190,5 +191,20 @@ describe("meta and grade tip", () => {
   it("hidden weaver name falls back to the village", () => {
     const m = passportMeta({ ...seed, weaver: { ...seed.weaver!, name: null } });
     expect(m.title).toBe("Verified Superfino by a weaver from Pile · Toquilla Trace");
+  });
+});
+
+describe("report a problem link", () => {
+  it("emails the workshop when it has a contact address", () => {
+    expect(reportHref("TQ-9A1M8", "hola@tallerpillco.com")).toBe(
+      "mailto:hola@tallerpillco.com?subject=Problem%20with%20hat%20passport%20TQ-9A1M8",
+    );
+  });
+
+  it("opens a GitHub issue instead of an email with no recipient", () => {
+    expect(reportHref("TQ-ZZZZZ", null)).toBe(
+      "https://github.com/xaviramirezcom/toquilla-trace/issues/new?title=Problem%20with%20hat%20passport%20TQ-ZZZZZ",
+    );
+    expect(reportHref(null, "")).toMatch(/issues\/new\?title=Problem%20with%20a%20hat%20passport$/);
   });
 });

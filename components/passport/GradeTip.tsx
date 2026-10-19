@@ -32,7 +32,7 @@ export function GradeTip({ text }: { text: string }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-describedby={open ? id : undefined}
-        className="inline-flex min-h-8 items-center gap-1 rounded-[6px] py-1 text-[13px] font-semibold text-accent focus-visible:outline-2 focus-visible:outline-accent"
+        className="inline-flex min-h-11 items-center gap-1 rounded-[6px] py-1 text-[13px] font-semibold text-accent focus-visible:outline-2 focus-visible:outline-accent"
       >
         <Icon name="info" size={16} />
         What does this mean?

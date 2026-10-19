@@ -60,7 +60,7 @@ export function LangChip({ lang, disabled, onToggle }: { lang: Lang; disabled?: 
       onClick={onToggle}
       disabled={disabled}
       aria-label={`Language: ${lang === "es-EC" ? "Español (Ecuador)" : "English"}. Switch language`}
-      className="inline-flex h-9 min-h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[13px] font-medium text-ink hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45"
+      className="inline-flex h-11 items-center gap-1.5 rounded-full md:h-9 border border-line bg-surface px-3 text-[13px] font-medium text-ink hover:bg-surface2 focus-visible:outline-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45"
     >
       <Icon name="translate" size={16} className="text-muted" />
       {lang === "es-EC" ? "Español (Ecuador)" : "English"}
@@ -126,7 +126,7 @@ export function UnsureChips({ words, onPick }: { words: string[]; onPick: (w: st
           key={w}
           type="button"
           onClick={() => onPick(w)}
-          className="inline-flex h-9 items-center rounded-full border border-warn/50 bg-warn-tint px-3 text-[13px] font-medium text-warn focus-visible:outline-2 focus-visible:outline-accent"
+          className="inline-flex h-11 items-center rounded-full border border-warn/50 md:h-9 bg-warn-tint px-3 text-[13px] font-medium text-warn focus-visible:outline-2 focus-visible:outline-accent"
         >
           {w}
         </button>
