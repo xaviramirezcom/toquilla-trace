@@ -12,6 +12,7 @@ import { capPayload, redact, type LogAction, type LogLevel, type LogRow } from "
 import {
   emailDomain,
   mapAuthError,
+  pendingSignupLogPayload,
   validateLogin,
   validateSignup,
   type AuthErrorCode,
@@ -163,8 +164,14 @@ export async function signup(form: SignupForm): Promise<AuthResult> {
   }
 
   if (!hasSession) {
-    // D11: email confirmation is on, so there is no session until the link is clicked. log_public
-    // only accepts failed sign-ups, so this success is not logged; the first auth.login row follows.
+    // D11: email confirmation is on, so there is no session until the link is clicked. The
+    // pending sign-up is logged anonymously through log_public (migration 7 allows ok: true).
+    await logPublic(
+      supabase,
+      "auth.signup",
+      "info",
+      pendingSignupLogPayload({ email, city, requestId, durationMs: duration_ms }),
+    );
     return { ok: true, redirectTo: "/login", needsConfirmation: true, userId };
   }
 

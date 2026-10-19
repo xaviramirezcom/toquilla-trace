@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { authErrorCopy, emailDomain, mapAuthError, validateLogin, validateSignup } from "@/components/auth/rules";
+import {
+  authErrorCopy,
+  emailDomain,
+  mapAuthError,
+  pendingSignupLogPayload,
+  validateLogin,
+  validateSignup,
+} from "@/components/auth/rules";
 import { safeNext } from "@/lib/safe-next";
 
 const goodSignup = {
@@ -80,5 +87,20 @@ describe("copy and helpers", () => {
     expect(safeNext("https://evil.com")).toBe("/workshop");
     expect(safeNext(null)).toBe("/workshop");
     expect(safeNext("/\\evil.com")).toBe("/workshop");
+  });
+});
+
+describe("pendingSignupLogPayload", () => {
+  it("logs a pending sign-up with the email domain only", () => {
+    const p = pendingSignupLogPayload({ email: "Rosa@Taller.EC", city: "Cuenca", requestId: "req_0123456789ab", durationMs: 12 });
+    expect(p).toEqual({
+      ok: true,
+      pending_confirmation: true,
+      city: "Cuenca",
+      email_domain: "taller.ec",
+      request_id: "req_0123456789ab",
+      duration_ms: 12,
+    });
+    expect(JSON.stringify(p)).not.toContain("Rosa@");
   });
 });

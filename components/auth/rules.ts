@@ -110,3 +110,23 @@ export function emailDomain(email: string): string {
   const at = email.lastIndexOf("@");
   return at >= 0 ? email.slice(at + 1).trim().toLowerCase() : "";
 }
+
+/**
+ * log_public payload for a sign-up that is waiting for email confirmation (no session yet).
+ * Domain only, never the address (D6).
+ */
+export function pendingSignupLogPayload(input: {
+  email: string;
+  city: string;
+  requestId: string;
+  durationMs: number;
+}): Record<string, unknown> {
+  return {
+    ok: true,
+    pending_confirmation: true,
+    city: input.city,
+    email_domain: emailDomain(input.email),
+    request_id: input.requestId,
+    duration_ms: input.durationMs,
+  };
+}
