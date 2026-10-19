@@ -46,6 +46,8 @@ export interface GenerateArgs {
   thinkingBudget?: number;
   temperature?: number;
   timeoutMs?: number;
+  /** Epoch ms when the whole run must be over. Every attempt (and the one retry) fits before it. */
+  deadlineAt?: number;
   signal?: AbortSignal;
 }
 
@@ -87,5 +89,42 @@ export class LlmError extends Error {
   ) {
     super(message);
     this.name = "LlmError";
+  }
+}
+
+/** HTTP statuses worth one retry: rate limit and server-side errors. */
+export const RETRY_STATUSES = new Set([429, 500, 502, 503, 504]);
+export const MIN_ATTEMPT_MS = 1500;
+export const RETRY_DELAY_MS = 500;
+
+export interface RetryOptions {
+  /** Per-attempt timeout before the deadline is applied. */
+  timeoutMs: number;
+  deadlineAt?: number;
+  now?: () => number;
+  sleep?: (ms: number) => Promise<void>;
+  signal?: AbortSignal;
+}
+
+/**
+ * Runs one model call with at most one retry, and only on 429 or 5xx. Each attempt gets
+ * min(timeoutMs, time left before deadlineAt); no attempt starts with less than 1.5 s left, so
+ * retries can never push a run past its budget. `attempt` must throw LlmError.
+ */
+export async function callWithRetry<T>(attempt: (timeoutMs: number) => Promise<T>, opts: RetryOptions): Promise<T> {
+  const now = opts.now ?? Date.now;
+  const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
+  const left = () => (opts.deadlineAt === undefined ? Infinity : opts.deadlineAt - now());
+  for (let i = 1; ; i++) {
+    const remaining = left();
+    if (remaining < MIN_ATTEMPT_MS) throw new LlmError("Run budget exhausted before the model call.", "timeout");
+    try {
+      return await attempt(Math.floor(Math.min(opts.timeoutMs, remaining)));
+    } catch (err) {
+      const retryable =
+        err instanceof LlmError && err.type === "api_error" && err.status !== undefined && RETRY_STATUSES.has(err.status);
+      if (i >= 2 || !retryable || opts.signal?.aborted || left() - RETRY_DELAY_MS < MIN_ATTEMPT_MS) throw err;
+      await sleep(RETRY_DELAY_MS);
+    }
   }
 }

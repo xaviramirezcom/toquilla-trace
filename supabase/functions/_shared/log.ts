@@ -109,8 +109,7 @@ export function createLogger(
 /** Runs the flush after the response when the runtime supports it (no added latency). */
 export function flushInBackground(log: Logger): Promise<void> | void {
   const p = log.flush();
-  // deno-lint-ignore no-explicit-any
-  const rt = (globalThis as any).EdgeRuntime;
+  const rt = (globalThis as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime;
   if (rt && typeof rt.waitUntil === "function") {
     rt.waitUntil(p);
     return;

@@ -4,16 +4,24 @@
 //   config: systemInstruction, tools[{ functionDeclarations[{ name, description, parametersJsonSchema }] }],
 //           toolConfig.functionCallingConfig.mode ("AUTO"), responseMimeType + responseJsonSchema,
 //           maxOutputTokens, thinkingConfig.thinkingBudget, temperature, abortSignal,
-//           httpOptions { timeout (ms), retryOptions { attempts, initialDelay (s) } }
+//           httpOptions { timeout (ms) } (SDK retries are not used: callWithRetry does one retry)
 //   response: candidates[0].content / finishReason, usageMetadata, modelVersion, promptFeedback.blockReason
-import { ApiError, GoogleGenAI } from "npm:@google/genai@2.27.0";
+import {
+  ApiError,
+  FunctionCallingConfigMode,
+  type GenerateContentConfig,
+  type GenerateContentResponse,
+  GoogleGenAI,
+} from "npm:@google/genai@2.27.0";
 import { DEFAULT_MODEL, usageFromGemini } from "./pricing.ts";
 import {
+  callWithRetry,
   type GenerateArgs,
   type GenerateResult,
   type LlmContent,
   LlmError,
   type LlmFunctionCall,
+  type LlmPart,
 } from "./llm-types.ts";
 
 let client: GoogleGenAI | null = null;
@@ -33,42 +41,48 @@ export function modelName(): string {
 export async function generate(args: GenerateArgs): Promise<GenerateResult> {
   const ai = getClient();
   const model = modelName();
-  // deno-lint-ignore no-explicit-any
-  const config: Record<string, any> = {
+  const baseConfig: GenerateContentConfig = {
     systemInstruction: args.system,
     maxOutputTokens: args.maxOutputTokens ?? 2048,
     temperature: args.temperature ?? 0,
-    httpOptions: {
-      timeout: args.timeoutMs ?? 25_000,
-      retryOptions: { attempts: 3, initialDelay: 0.5, maxDelay: 4 },
-    },
   };
-  if (args.signal) config.abortSignal = args.signal;
+  if (args.signal) baseConfig.abortSignal = args.signal;
   if (args.tools && args.tools.length > 0) {
-    config.tools = [{ functionDeclarations: args.tools }];
-    config.toolConfig = { functionCallingConfig: { mode: "AUTO" } };
+    baseConfig.tools = [{ functionDeclarations: args.tools }];
+    baseConfig.toolConfig = { functionCallingConfig: { mode: FunctionCallingConfigMode.AUTO } };
   }
   if (args.jsonSchema) {
-    config.responseMimeType = "application/json";
-    config.responseJsonSchema = args.jsonSchema;
+    baseConfig.responseMimeType = "application/json";
+    baseConfig.responseJsonSchema = args.jsonSchema;
   }
-  if (args.thinkingBudget !== undefined) config.thinkingConfig = { thinkingBudget: args.thinkingBudget };
+  if (args.thinkingBudget !== undefined) baseConfig.thinkingConfig = { thinkingBudget: args.thinkingBudget };
 
-  // deno-lint-ignore no-explicit-any
-  let res: any;
-  try {
-    res = await ai.models.generateContent({ model, contents: args.contents, config });
-  } catch (err) {
-    if (args.signal?.aborted) throw new LlmError("Request aborted by the client.", "aborted");
-    if (err instanceof ApiError) throw new LlmError(err.message.slice(0, 500), "api_error", err.status);
-    const msg = err instanceof Error ? err.message : String(err);
-    if (/abort|timeout|timed out/i.test(msg)) throw new LlmError("Model call timed out.", "timeout");
-    throw new LlmError(msg.slice(0, 500), "api_error");
-  }
+  // One attempt per call: no SDK retries (none are configured), our own single retry on 429/5xx
+  // inside the run deadline (callWithRetry).
+  const once = async (timeoutMs: number): Promise<GenerateContentResponse> => {
+    try {
+      return await ai.models.generateContent({
+        model,
+        contents: args.contents,
+        config: { ...baseConfig, httpOptions: { timeout: timeoutMs } },
+      });
+    } catch (err) {
+      if (args.signal?.aborted) throw new LlmError("Request aborted by the client.", "aborted");
+      if (err instanceof ApiError) throw new LlmError(err.message.slice(0, 500), "api_error", err.status);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/abort|timeout|timed out/i.test(msg)) throw new LlmError("Model call timed out.", "timeout");
+      throw new LlmError(msg.slice(0, 500), "api_error");
+    }
+  };
+  const res = await callWithRetry(once, {
+    timeoutMs: args.timeoutMs ?? 25_000,
+    deadlineAt: args.deadlineAt,
+    signal: args.signal,
+  });
 
   const cand = res?.candidates?.[0];
   const content: LlmContent | null = cand?.content
-    ? { role: "model", parts: Array.isArray(cand.content.parts) ? cand.content.parts : [] }
+    ? { role: "model", parts: (Array.isArray(cand.content.parts) ? cand.content.parts : []) as LlmPart[] }
     : null;
   const parts = content?.parts ?? [];
   const textParts = parts.filter((p) => typeof p.text === "string" && !p.thought).map((p) => p.text as string);
