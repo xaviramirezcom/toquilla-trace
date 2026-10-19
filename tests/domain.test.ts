@@ -217,6 +217,14 @@ describe("hat codes", () => {
     expect(normalizeCode(input)).toBe(expected);
   });
 
+  it.each(["\u2010", "\u2011", "\u2012", "\u2013", "\u2014", "\u2212"])(
+    "normalizeCode maps the Unicode dash %j to a hyphen",
+    (dash) => {
+      expect(normalizeCode(`TQ${dash}7F3K2`)).toBe("TQ-7F3K2");
+      expect(normalizeCode(`tq ${dash} 7f3k2`)).toBe("TQ-7F3K2");
+    },
+  );
+
   it("rule 9: normalizeCode is idempotent", () => {
     for (const input of ["tq 7f3k2", "7f3k2", "TQ-2C5PO"]) {
       const once = normalizeCode(input);

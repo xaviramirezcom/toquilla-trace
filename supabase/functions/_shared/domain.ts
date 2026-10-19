@@ -207,6 +207,9 @@ export function normalizeCode(input: string): string | null {
   const s = input
     .trim()
     .toUpperCase()
+    // Unicode dashes (hyphen, non-breaking hyphen, figure dash, en dash, em dash, minus) become "-"
+    // first, so a code pasted from a document or typed on a phone keyboard still matches.
+    .replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g, "-")
     .replace(/[\s\-._'"‘’“”]/g, "");
   let body: string | null = null;
   if (s.startsWith("TQ") && s.length === 7) body = s.slice(2);
