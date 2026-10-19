@@ -507,3 +507,74 @@ describe("prompt injection (eval 8)", () => {
     expect(ctx.proposals).toHaveLength(0);
   });
 });
+
+describe("hats described only by weaver", () => {
+  it("'todos los de Rosa pasan a lavado' is a question, not one advance per hat", async () => {
+    const ctx = ctxFor("todos los de Rosa pasan a lavado");
+    await call(ctx, "find_hats", { weaver_name: "Rosa" });
+    const adv = await call(ctx, "propose_advance_stage", {
+      hat_code: "TQ-7F3K2",
+      to_stage: "Bleaching",
+      quote: "todos los de Rosa pasan a lavado",
+      why: "Rosa's hats move on.",
+      confidence: "high",
+    });
+    expect(adv.isError).toBe(true);
+    expect(adv.out).toMatchObject({ ok: false, error_code: "ambiguous_hats", candidates: ["TQ-2C5P0", "TQ-7F3K2"] });
+    const q = await call(ctx, "ask_question", {
+      proposal_type: "advance_stage",
+      question: "Rosa has 2 open hats. Which one moved?",
+      choices: [
+        { label: "TQ-7F3K2", hat_code: "TQ-7F3K2" },
+        { label: "TQ-2C5P0", hat_code: "TQ-2C5P0" },
+      ],
+      draft: { to_stage: "Washing" },
+      quote: "todos los de Rosa pasan a lavado",
+      why: "The note names a weaver with several hats.",
+    });
+    expect(q.out.status).toBe("question");
+    expect(ctx.proposals.map((p) => p.status)).toEqual(["question"]);
+  });
+
+  it("a weaver with a single matching hat can still be acted on", async () => {
+    const ctx = ctxFor("el de Rosa Pillco pasa a blanqueo");
+    await call(ctx, "find_hats", { weaver_name: "Rosa Pillco" });
+    const adv = await call(ctx, "propose_advance_stage", {
+      hat_code: "TQ-7F3K2",
+      to_stage: "Bleaching",
+      quote: "el de Rosa Pillco pasa a blanqueo",
+      why: "x",
+      confidence: "high",
+    });
+    expect(adv.out.status).toBe("pending");
+  });
+
+  it("a flag via a weaver needs the record to confirm it, otherwise it is ambiguous", async () => {
+    const ctx = ctxFor("el de Carmen dice superfino pero tiene 18 hileras");
+    await call(ctx, "find_hats", { weaver_name: "Carmen" });
+    const wrong = await call(ctx, "propose_flag", {
+      hat_code: "TQ-8B2N4",
+      kind: "grade_mismatch",
+      message: "Grade does not match rows.",
+      quote: "el de Carmen dice superfino pero tiene 18 hileras",
+      why: "x",
+      confidence: "high",
+    });
+    expect(wrong.out).toMatchObject({ ok: false, error_code: "ambiguous_hats" });
+    const right = await call(ctx, "propose_flag", {
+      hat_code: "TQ-4K9D1",
+      kind: "grade_mismatch",
+      message: "Grade does not match rows.",
+      quote: "el de Carmen dice superfino pero tiene 18 hileras",
+      why: "x",
+      confidence: "high",
+    });
+    expect(right.out.status).toBe("pending");
+  });
+
+  it("find_hats record_issues never claims too_fast (it has no events to check)", async () => {
+    const { out } = await call(ctxFor("Carmen Rosa Manuel"), "find_hats", { weaver_name: "Rosa", open_only: false });
+    for (const h of out.hats as R[]) expect(h.record_issues).not.toContain("too_fast");
+  });
+});
+

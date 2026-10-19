@@ -31,7 +31,7 @@ HOW TO WORK
 3. For each event, call exactly one propose function:
    - new hats from a weaver: propose_create_hats
    - a hat moved to another stage: propose_advance_stage, with the stage the note says, even if you expect the rules to block it
-   - something looks wrong in a record (grade does not match rows, weaver missing, too fast): propose_flag. When the note describes a hat by its weaver, flag the hat whose record_issues confirm the problem.
+   - something looks wrong in a record (grade does not match rows, weaver missing, too fast): propose_flag. When the note describes a hat by its weaver, flag the hat whose record_issues confirm the problem. record_issues only shows problems visible in the record (grade vs rows); call get_hat to see timing problems such as too fast.
    - you cannot tell which weaver or hat is meant, or a required fact (like rows per inch for new hats) is missing: ask_question
 4. Then write the summary.
 
@@ -41,6 +41,7 @@ RULES FOR EVERY PROPOSAL
 - confidence: "high" only when the note is clear and each lookup returned exactly one exact match. Otherwise "check".
 - Never invent weavers, hats, codes, quantities, grades or rows per inch. Use only ids and codes returned by functions. Never assume a weaver exists because a name is mentioned.
 - If a lookup returns more than one candidate, call ask_question with those candidates as choices and put what you know (quantity, grade, rows per inch, stage) in draft. Do not pick one.
+- A weaver name is not a hat. If the note describes hats only by weaver ("los de Rosa", "el de Carmen") and that weaver has more than one matching hat, call ask_question with those hats as choices. Never propose the same change for every hat of a weaver.
 - If a weaver is not found, call ask_question with no choices. Do not create a weaver.
 - If find_hats returns a close match ("match": "confusable" or "fuzzy"), you may use it with confidence "check" and say in why that the code was heard differently.
 - Only propose things that already happened. If the note talks about the future ("mañana", "next week"), do not propose it; mention it in the summary.
@@ -106,6 +107,19 @@ export interface LoopOptions {
   budgetMs?: number;
 }
 
+/** Sentence count: ".", "!" or "?" followed by a space or the end, plus an unterminated tail. */
+export function sentenceCount(text: string): number {
+  const t = text.trim();
+  if (!t) return 0;
+  const ends = t.match(/[.!?]+(?=\s|$)/g)?.length ?? 0;
+  return /[.!?]$/.test(t) ? ends : ends + 1;
+}
+
+/** The summary contract from the system prompt, checked in code: "I understood: ..." in 1 or 2 sentences. */
+export function isValidSummary(text: string): boolean {
+  return text.startsWith("I understood:") && sentenceCount(text) <= 2;
+}
+
 function cleanSummary(text: string | null): string | null {
   if (!text) return null;
   const t = text.replace(/[*_`#>]/g, "").replace(/\s+/g, " ").trim();
@@ -164,6 +178,8 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
         maxOutputTokens: MAX_OUTPUT_TOKENS,
         temperature: 0,
         timeoutMs: Math.max(1000, Math.min(CALL_TIMEOUT_MS, budget - elapsed)),
+        // Wall-clock deadline for this call and its one retry (llm-types callWithRetry).
+        deadlineAt: Date.now() + Math.max(0, budget - elapsed),
         signal: opts.signal,
       });
     } catch (e) {
@@ -271,7 +287,7 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
         parts: [
           {
             text: empty
-              ? "Continue: call the propose functions for each event in the note (or ask_question), then write the summary."
+              ? "If the note describes events, call the propose functions for each event; otherwise reply with a short summary."
               : "Some calls failed because the lookup was missing. Call find_hats or find_weaver first, then propose again with the codes and ids they return, then write the summary.",
           },
         ],
@@ -279,8 +295,9 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
       continue;
     }
     summary = cleanSummary(res.text);
-    if (!summary) {
-      // The model finished its calls but wrote no summary: describe the result in code.
+    if (!summary || !isValidSummary(summary)) {
+      // No summary, or one that breaks the format (not "I understood:", more than 2 sentences):
+      // describe the result in code instead.
       summary = plainSummary(ctx);
       usedFallback = true;
     }

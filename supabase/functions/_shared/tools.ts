@@ -166,6 +166,8 @@ interface SeenHat {
   /** How the hat was found; hats found only by stage can't be acted on (bulk injection guard). */
   via: "code" | "weaver" | "stage" | "tag";
   grounded: boolean;
+  /** For via "weaver": every hat that weaver lookup returned. More than one means "which one?". */
+  group?: string[];
 }
 
 export interface RunContext {
@@ -384,10 +386,16 @@ export const READ_TOOLS = new Set(["find_weaver", "find_hats", "get_hat"]);
 
 type Args = Record<string, unknown>;
 
-class ToolError extends Error {}
+class ToolError extends Error {
+  readonly extra: Record<string, unknown>;
+  constructor(message: string, extra: Record<string, unknown> = {}) {
+    super(message);
+    this.extra = extra;
+  }
+}
 
-function fail(message: string): never {
-  throw new ToolError(message);
+function fail(message: string, extra?: Record<string, unknown>): never {
+  throw new ToolError(message, extra);
 }
 
 function optStr(v: unknown): string | null {
@@ -566,7 +574,11 @@ async function findWeaver(ctx: RunContext, args: Args) {
 
 function hatOut(h: HatRow, weavers: WeaverRow[], extra: Record<string, unknown>) {
   const w = h.weaver_id ? weavers.find((x) => x.id === h.weaver_id) : undefined;
-  const issues = detectAnomalies(h, []).map((a) => a.kind);
+  // Only problems visible in the record itself (grade vs rows). Timing problems such as too_fast
+  // need the hat's events: get_hat reports those as anomalies.
+  const issues = detectAnomalies(h, [])
+    .map((a) => a.kind)
+    .filter((k) => k !== "too_fast");
   return {
     code: h.code,
     ...extra,
@@ -644,6 +656,7 @@ async function findHats(ctx: RunContext, args: Args) {
     if (stageFilter !== null) pool = pool.filter((h) => h.stage === stageFilter);
     if (openOnly) pool = pool.filter(isOpen);
     const grounded = weaverName ? nameInNote(ctx.note, weaverName) : false;
+    const group = pool.map((h) => h.code).sort();
     for (const hat of pool) {
       if (found.has(hat.code)) continue;
       rememberHat(ctx, {
@@ -652,6 +665,7 @@ async function findHats(ctx: RunContext, args: Args) {
         heard: hat.code,
         via: weaverName ? "weaver" : "stage",
         grounded,
+        group,
       });
       found.set(hat.code, { hat, out: hatOut(hat, weavers, { match: weaverName ? "by_weaver" : "by_stage" }) });
     }
@@ -695,6 +709,20 @@ async function getHat(ctx: RunContext, args: Args) {
 // Propose handlers
 // ---------------------------------------------------------------------------
 
+/** True when the hat was found only through a weaver who has several matching hats. */
+function ambiguousByWeaver(seen: SeenHat): boolean {
+  return seen.via === "weaver" && (seen.group?.length ?? 0) > 1;
+}
+
+function failAmbiguous(seen: SeenHat): never {
+  const candidates = (seen.group ?? []).slice(0, 4);
+  fail(
+    `The note names a weaver, not a hat, and that weaver has ${seen.group?.length ?? 0} matching hats (${candidates.join(", ")}). ` +
+      "Do not pick one or change them all: call ask_question with these hats as choices.",
+    { error_code: "ambiguous_hats", candidates },
+  );
+}
+
 function requireActionableHat(ctx: RunContext, code: unknown): SeenHat {
   const seen = seenHat(ctx, code);
   if (!seen) {
@@ -711,7 +739,7 @@ function requireActionableHat(ctx: RunContext, code: unknown): SeenHat {
   return seen;
 }
 
-async function proposeCreateHats(ctx: RunContext, args: Args) {
+function proposeCreateHats(ctx: RunContext, args: Args) {
   const quote = requireQuote(ctx, args.quote);
   const why = requireWhy(args.why);
   const weaverId = typeof args.weaver_id === "string" ? args.weaver_id : "";
@@ -801,6 +829,8 @@ async function proposeAdvanceStage(ctx: RunContext, args: Args) {
   const to = stageIndex(toName);
   if (to === null) fail("to_stage must be one of Weaving, Washing, Bleaching, Blocking, Finished.");
   const seen = requireActionableHat(ctx, args.hat_code);
+  // "Todos los de Rosa pasan a lavado": a weaver name is not a hat. Several candidates -> ask.
+  if (ambiguousByWeaver(seen)) failAmbiguous(seen);
   const code = seen.hat.code;
   if (ctx.proposals.some((p) => p.type === "advance_stage" && p.payload.hat_code === code)) {
     fail(`You already proposed a stage change for ${code} in this note.`);
@@ -904,6 +934,9 @@ async function proposeFlag(ctx: RunContext, args: Args) {
   const events = await ctx.data.getEvents(hat.id);
   const anomalies = detectAnomalies(hat, events, ctx.now());
   const confirmed = anomalies.some((a) => a.kind === kind);
+  // A hat described by its weaver can be flagged only when its own record shows the problem
+  // ("el de Carmen dice superfino pero tiene 18 hileras"); otherwise ask which hat is meant.
+  if (ambiguousByWeaver(seen) && !confirmed) failAmbiguous(seen);
   const warnings = confirmed ? [] : ["not_confirmed_by_record"];
   const rule = nowRule(ctx, {
     allowed: true,
@@ -934,7 +967,7 @@ async function proposeFlag(ctx: RunContext, args: Args) {
   return { proposal_id: p.temp_id, status: "pending", rule_result: rule };
 }
 
-async function askQuestion(ctx: RunContext, args: Args) {
+function askQuestion(ctx: RunContext, args: Args) {
   const quote = requireQuote(ctx, args.quote);
   const why = requireWhy(args.why);
   const type = args.proposal_type;
@@ -1043,7 +1076,7 @@ async function askQuestion(ctx: RunContext, args: Args) {
 // Dispatcher
 // ---------------------------------------------------------------------------
 
-const HANDLERS: Record<string, (ctx: RunContext, args: Args) => Promise<Record<string, unknown>>> = {
+const HANDLERS: Record<string, (ctx: RunContext, args: Args) => Promise<Record<string, unknown>> | Record<string, unknown>> = {
   find_weaver: findWeaver,
   find_hats: findHats,
   get_hat: getHat,
@@ -1090,7 +1123,7 @@ export async function runTool(ctx: RunContext, name: string, rawArgs: unknown): 
     } catch (e) {
       isError = true;
       if (e instanceof ToolError) {
-        response = { ok: false, error: e.message };
+        response = { ok: false, error: e.message, ...e.extra };
       } else {
         thrown = e;
         response = { ok: false, error: "The tool failed. Skip this event and mention it in the summary." };

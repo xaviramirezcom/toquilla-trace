@@ -10,7 +10,7 @@ import {
   type PassportJson,
 } from "@domain/concierge";
 import { EditError, mergeEdits, validateApproval } from "@domain/apply";
-import { MAX_ITERATIONS, buildUserMessage, runAgentLoop } from "@domain/agent";
+import { MAX_ITERATIONS, SYSTEM_PROMPT, buildUserMessage, isValidSummary, runAgentLoop, sentenceCount } from "@domain/agent";
 import type { GenerateArgs, GenerateResult } from "@domain/llm-types";
 import { MEMBER, SAMPLE_NOTE, WS, ctxFor } from "./tools-fixtures";
 
@@ -353,4 +353,56 @@ describe("agent loop", () => {
     const out = await runAgentLoop(ctxFor("x"), { ...loopOpts, generate, signal: ac.signal });
     expect(out.status).toBe("stopped");
   });
+
+  it("an empty reply gets one nudge, and a note with nothing to record ends with 0 proposals", async () => {
+    const ctx = ctxFor("eh... ya, ok, gracias");
+    const { generate, seen } = scripted([reply({ text: null }), reply({ text: "I understood: nothing to record." })]);
+    const out = await runAgentLoop(ctx, { ...loopOpts, generate });
+    expect(out).toMatchObject({ status: "proposed", summary: "I understood: nothing to record." });
+    expect(ctx.proposals).toHaveLength(0);
+    const nudge = seen[1].contents.at(-1)?.parts[0].text;
+    expect(nudge).toBe(
+      "If the note describes events, call the propose functions for each event; otherwise reply with a short summary.",
+    );
+  });
+
+  it("a summary that breaks the format is replaced by the code summary", async () => {
+    const ctx = ctxFor("x");
+    const { generate } = scripted([reply({ text: "Sure! Here is what I did. One. Two. Three." })]);
+    const out = await runAgentLoop(ctx, { ...loopOpts, generate });
+    expect(out).toMatchObject({
+      status: "proposed",
+      usedFallback: true,
+      summary: "I understood: there was nothing I could prepare from this note.",
+    });
+    const long = scripted([reply({ text: "I understood: a. b. c." })]);
+    const out2 = await runAgentLoop(ctxFor("x"), { ...loopOpts, generate: long.generate });
+    expect(out2).toMatchObject({ usedFallback: true });
+  });
+
+  it("passes the run deadline to every model call", async () => {
+    const { generate, seen } = scripted([reply({ text: "I understood: nothing." })]);
+    const before = Date.now();
+    await runAgentLoop(ctxFor("x"), { ...loopOpts, generate, budgetMs: 45_000 });
+    const deadline = seen[0].deadlineAt ?? 0;
+    expect(deadline).toBeGreaterThanOrEqual(before + 44_000);
+    expect(deadline).toBeLessThanOrEqual(Date.now() + 45_000);
+  });
+
+  it("the prompt tells the model a weaver name is not a hat and where timing issues come from", () => {
+    expect(SYSTEM_PROMPT).toMatch(/A weaver name is not a hat/);
+    expect(SYSTEM_PROMPT).toMatch(/call get_hat to see timing problems/);
+  });
 });
+
+describe("summary format", () => {
+  it("counts sentences and checks the I understood: prefix", () => {
+    expect(sentenceCount("I understood: one. Two.")).toBe(2);
+    expect(sentenceCount("I understood: no full stop")).toBe(1);
+    expect(sentenceCount("I understood: TQ-7F3K2 to Bleaching. 1 action for review.")).toBe(2);
+    expect(isValidSummary("I understood: one. Two.")).toBe(true);
+    expect(isValidSummary("I understood: one. Two. Three.")).toBe(false);
+    expect(isValidSummary("Done. One action.")).toBe(false);
+  });
+});
+
