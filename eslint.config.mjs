@@ -12,8 +12,8 @@ const eslintConfig = defineConfig([
     "coverage/**",
     "next-env.d.ts",
     "design_handoff_toquilla_trace/**",
-    // Deno code is checked by Deno, not by the Next.js lint. The pure shared
-    // files (zero imports) are linted because Node code imports them.
+    // Deno code is checked by Deno (deno check + deno lint in CI), not by the Next.js lint. The
+    // shared files that Node code and tests import (zero npm imports) are linted here too.
     "supabase/functions/*",
     "!supabase/functions/_shared/",
     "supabase/functions/_shared/*",
@@ -21,6 +21,10 @@ const eslintConfig = defineConfig([
     "!supabase/functions/_shared/log-format.ts",
     "!supabase/functions/_shared/pricing.ts",
     "!supabase/functions/_shared/tools.ts",
+    "!supabase/functions/_shared/agent.ts",
+    "!supabase/functions/_shared/apply.ts",
+    "!supabase/functions/_shared/concierge.ts",
+    "!supabase/functions/_shared/llm-types.ts",
   ]),
 ]);
 
