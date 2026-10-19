@@ -147,7 +147,7 @@ Run as the demo member against Taller Pillco (proposals were rejected afterwards
 ## Known limitations
 
 - **Flash-Lite and tool use:** it sometimes skips lookups or stops with an empty reply; the code refuses the bad calls and one nudge recovers most runs. Summaries that break the format are replaced by the code summary, which is plainer (it does not repeat what the model said it ignored).
-- **Duplicate flags:** the agent never proposes a flag that already exists open, so the canonical eval's fourth card depends on the seed (see "Changes needed").
+- **Duplicate flags:** the agent never proposes a flag that already exists open. Migration 8 marks the Eval Workshop's seeded flag on TQ-E4K9D as reviewed, so the canonical eval can produce its flag card; the demo hat TQ-4K9D1 keeps its open flag.
 - **Approve path** was not exercised against live data in the smoke test (demo data must stay clean). The Eval Workshop user (`scripts/seed-users.mjs`) now exists for evals. It is covered by unit tests of `mergeEdits` / `validateApproval` and by the SQL function's own checks.
 - **No prompt caching:** the system prompt and tools are stable and first, so Gemini implicit caching can apply, but nothing is configured; cost is tiny anyway (about $0.001 per sample run).
 - **Gateway 401:** requests with no `Authorization` header to the two JWT functions are rejected by the Supabase gateway with its own body (`UNAUTHORIZED_NO_AUTH_HEADER`), not our error shape.

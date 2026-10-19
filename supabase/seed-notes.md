@@ -11,6 +11,9 @@ Supabase project ref `mflvsnpyckuwhicvgnsr`. Specs: `docs/specs/00-conventions.m
 | `20261019000003_functions.sql` | All RPCs and their execute grants |
 | `20261019000004_demo_seed.sql` | Idempotent demo data (fixed UUIDs, `on conflict do nothing`) |
 | `20261019000005_fix_conflict_errcode.sql` | Fix-up: `version_conflict` no longer uses SQLSTATE 40001 (see Deviations) |
+| `20261019000006_definer_hat_writes.sql` | Security: members lose direct insert on `hats`/`hat_events` and update of stage, archive and transfer columns; the five write RPCs become security definer with explicit workshop checks |
+| `20261019000007_log_public_v2.sql` | `log_public` accepts pending sign-ups and `concierge.feedback`, strips identifying keys at every depth |
+| `20261019000008_eval_flag_reviewed.sql` | Eval Workshop only: reviews the seeded flag on TQ-E4K9D |
 
 ## Tables
 
@@ -35,8 +38,8 @@ Triggers:
 | workshops | read/update own (name, city, contact_email, show_prices) | read all | none |
 | profiles | read self + same workshop; update own `name` only | read all | none |
 | weavers | read/insert/update own workshop | read all | none |
-| hats | read own; insert own (Weaving only); update while workshop-owned and no transfer pending | read all | none |
-| hat_events | read via hat; insert as yourself on own hats; never update/delete | read all | none |
+| hats | read own; no direct insert (create_hat); update of descriptive columns while workshop-owned and no transfer pending (stage, archive, transfer only via RPCs) | read all | none |
+| hat_events | read via hat; no direct insert (RPCs only); never update/delete | read all | none |
 | hat_flags | read via hat; review once (review columns only) | read all | none |
 | agent_runs | none | read all | none |
 | proposals | read own workshop | read all | none |
@@ -56,11 +59,11 @@ Admins write only inside their own workshop (Toquilla Trace HQ), so they have no
 | `log_passport_view(p_code text, p_via text = 'link', p_is_bot boolean = false, p_request_id text = null) returns void` | definer | anon, authenticated | Writes `passport.view` or `passport.verify_failed` (spec 06) |
 | `log_public(action text, level text, payload jsonb = '{}') returns void` | definer | anon, authenticated | D6 allowlist: `auth.login_failed`, `auth.signup` (failures only), `passport.view`, `passport.verify_failed`, `ui.error`. Lifts `message`, `request_id`, `hat_code`, `error` from payload into columns; strips email/user id/IP/token keys; payload capped at 2 KB |
 | `claim_hat(p_code text, p_request_id text = null) returns jsonb` | definer | authenticated | D11: confirmed email must match `transfer_email` (case-insensitive). One conditional update, `claimed` event, `hat.claim` log. Returns `{ ok, result, claimed_at }`, result in `claimed, already_owner, not_recipient, email_unconfirmed, not_authenticated` |
-| `advance_hat(p_code text, p_expected_version int, p_note text = null) returns table(code text, stage smallint, version int)` | invoker (RLS) | authenticated | Next stage only. Errors: `not_found`, `archived`, `not_owner`, `finished`, `version_conflict` |
-| `create_hat(p_weaver_id uuid, p_grade text, p_rows int, p_straw text = 'Natural', p_size int = null, p_price numeric = null, p_note text = null) returns table(id uuid, code text)` | invoker (RLS) | authenticated | Generates the code (5 tries on collision), stage Weaving. Errors: `no_workshop`, `weaver_not_found`, `grade_mismatch` |
-| `transfer_hat(p_code text, p_expected_version int, p_to text, p_email text, p_message text = null) returns jsonb` | invoker (RLS) | authenticated | Spec 08. Errors: `invalid_target`, `invalid_email`, `version_conflict` |
-| `archive_hat(p_code text, p_expected_version int, p_note text = null) returns jsonb` | invoker (RLS) | authenticated | Spec 08. Error: `version_conflict` |
-| `mark_flag_reviewed(p_flag_id uuid, p_reason text = null) returns jsonb` | invoker (RLS) | authenticated | Reviews once and adds a `flag_reviewed` event. Error: `not_found_or_reviewed` |
+| `advance_hat(p_code text, p_expected_version int, p_note text = null) returns table(code text, stage smallint, version int)` | definer (migration 6, explicit workshop checks) | authenticated | Next stage only. Errors: `not_found`, `archived`, `not_owner`, `finished`, `version_conflict` |
+| `create_hat(p_weaver_id uuid, p_grade text, p_rows int, p_straw text = 'Natural', p_size int = null, p_price numeric = null, p_note text = null) returns table(id uuid, code text)` | definer (migration 6, explicit workshop checks) | authenticated | Generates the code (5 tries on collision), stage Weaving. Errors: `no_workshop`, `weaver_not_found`, `grade_mismatch` |
+| `transfer_hat(p_code text, p_expected_version int, p_to text, p_email text, p_message text = null) returns jsonb` | definer (migration 6, explicit workshop checks) | authenticated | Spec 08. Errors: `invalid_target`, `invalid_email`, `version_conflict` |
+| `archive_hat(p_code text, p_expected_version int, p_note text = null) returns jsonb` | definer (migration 6, explicit workshop checks) | authenticated | Spec 08. Error: `version_conflict` |
+| `mark_flag_reviewed(p_flag_id uuid, p_reason text = null) returns jsonb` | definer (migration 6, explicit workshop checks) | authenticated | Reviews once and adds a `flag_reviewed` event. Error: `not_found_or_reviewed` |
 | `restore_proposal(p_id uuid, p_status text = null) returns jsonb` | definer | authenticated | D4. Own workshop, only from `rejected`/`dismissed`. Without `p_status`: dismissed -> blocked, rejected -> question (if payload has `question`) or pending |
 | `apply_proposal(p_proposal_id uuid, p_actor uuid, p_payload jsonb, p_edits jsonb = null, p_codes text[] = null) returns jsonb` | definer | **service_role only** | Spec 04. Idempotent on approved. `p_codes` null means codes are generated in SQL. Advance accepts `expected_version` or `hat_version` in the payload. Errors: `not_found`, `not_open`, `quantity_range`, `weaver_not_found`, `version_conflict`, `hat_unavailable` |
 | `save_agent_run(p_run_id uuid, p_status text, p_summary text, p_steps jsonb, p_proposals jsonb, p_tokens_in int, p_tokens_out int, p_latency_ms int, p_cost_usd numeric, p_model text, p_error jsonb = null) returns jsonb` | definer | **service_role only** | Spec 03. Updates the run row (inserted earlier by the Edge Function) and inserts its proposals in one transaction. Returns `[{ id, temp_id, type, status }]` in input order |
@@ -118,7 +121,7 @@ The script is idempotent: it creates or updates the 3 users (password and `email
 15. **TQ-8B2N4 moved to Washing on 2026-10-18** (spec 08 says Oct 16), so the seeded agent run, its version conflict and its logs fall inside "the last day".
 16. **Extra functions not in the task list**: `log_passport_view` (spec 06), `transfer_hat` and `archive_hat` (spec 08), `generate_hat_code`, `seed_backfill_actors`. `hat_events.run_id` has a foreign key to `agent_runs`.
 17. **Email confirmation (D11)** is a Supabase Auth dashboard setting, not SQL. `claim_hat` checks `email_confirmed_at` either way; demo users are created confirmed.
-18. **No eval user** is created: `.env` has no `EVAL_EMAIL`. Create one in the dashboard and set its `profiles.workshop_id` to the Eval Workshop id above.
+18. **Eval user** (`EVAL_EMAIL`, default `eval@test.com`; password `EVAL_PASSWORD` or `DEMO_PASSWORD`) is created confirmed by `scripts/seed-users.mjs` in the Eval Workshop. Migration 8 reviews the Eval Workshop's seeded `grade_mismatch` flag on TQ-E4K9D so the canonical eval can raise it again.
 
 ## Known limits
 
