@@ -1,5 +1,8 @@
 # 01. Auth and roles
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](00-conventions.md#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](00-conventions.md#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 ## 1. Summary
 
 Email and password login with Supabase Auth. Signing up creates a workshop and a `member` profile in one database trigger. Two roles (`member`, `admin`) are enforced by row-level security (RLS) on every table, not by hidden links.

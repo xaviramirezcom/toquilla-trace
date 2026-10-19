@@ -10,6 +10,7 @@ The main docs also render inside the app at [/docs](https://toquilla-trace.verce
 |---|---|
 | [/docs/overview](https://toquilla-trace.vercel.app/docs/overview) | [README.md](../README.md) |
 | [/docs/handoff](https://toquilla-trace.vercel.app/docs/handoff) | [HANDOFF.md](../HANDOFF.md) |
+| [/docs/guide](https://toquilla-trace.vercel.app/docs/guide) | this file |
 | [/docs/architecture](https://toquilla-trace.vercel.app/docs/architecture) | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | [/docs/ai](https://toquilla-trace.vercel.app/docs/ai) | [AI.md](AI.md) |
 | [/docs/security](https://toquilla-trace.vercel.app/docs/security) | [SECURITY.md](SECURITY.md) |
@@ -22,21 +23,20 @@ The rest (EDGE, FOUNDATION, the UI docs, seed notes) are only in the repo.
 
 ## Suggested reading order
 
+Same order as the [/docs](https://toquilla-trace.vercel.app/docs) index in the app.
+
 **10 minutes:**
-1. [README.md](../README.md): the problem, the product and the decision log.
-2. [HANDOFF.md](../HANDOFF.md): live link, demo accounts, what works, what is missing, how to run it.
-3. [ARCHITECTURE.md](ARCHITECTURE.md): how the pieces fit and where each rule lives.
-4. [EVALS.md](EVALS.md): the measured agent score (29 of 32) and why three cases failed.
-5. [ENGINEERING.md](ENGINEERING.md) sections 4, 5 and 11: tests, quality gates, known gaps.
+1. [README.md](../README.md): start with "For reviewers" (demo accounts, 3-minute tour, the 8 core files), then the problem and the decision log.
+2. [HANDOFF.md](../HANDOFF.md): what works, what is missing, how to run it, AI-use note.
+3. [SECURITY.md](SECURITY.md): the demo-password note at the top, then the TL;DR.
+4. [ARCHITECTURE.md](ARCHITECTURE.md): how the pieces fit and where each rule lives.
+5. [AI.md](AI.md): where AI is used, how it is boxed in, and the model choice.
 
 **45 minutes:** the 10-minute list, then:
-1. [AI.md](AI.md): where AI is used, how it is boxed in, and the model choice.
-2. [SECURITY.md](SECURITY.md): auth, row-level security, secrets, headers and prompt injection.
-3. The rest of [ENGINEERING.md](ENGINEERING.md): conventions, logging, delivery and how AI was used to build it.
-4. [EDGE.md](EDGE.md): the three Edge Functions and the recorded smoke test.
-5. [specs/00-conventions.md](specs/00-conventions.md) sections 8 and 9: the decisions (D1 to D26) that override every spec.
-6. [specs/05-domain-rules.md](specs/05-domain-rules.md): the business rules and their numbered test cases.
-7. Skim one UI doc for the area you want to walk through: [UI-WORKSHOP.md](UI-WORKSHOP.md), [UI-PUBLIC.md](UI-PUBLIC.md) or [UI-HATS-ADMIN.md](UI-HATS-ADMIN.md).
+1. [ENGINEERING.md](ENGINEERING.md): tests, quality gates, logging, delivery, known gaps. The current test and build numbers live only there.
+2. [EVALS.md](EVALS.md): the measured agent score and why cases failed. Eval numbers live only there.
+3. [specs/README.md](specs/README.md) and [specs/00-conventions.md](specs/00-conventions.md) sections 8 and 9: the decisions (D1 to D26) that override the pre-build plan.
+4. Optional: [EDGE.md](EDGE.md) for the Edge Function contracts, [specs/05-domain-rules.md](specs/05-domain-rules.md) for the numbered rule cases.
 
 ## All documents
 
@@ -57,10 +57,10 @@ The rest (EDGE, FOUNDATION, the UI docs, seed notes) are only in the repo.
 | [SECURITY.md](SECURITY.md) | Authentication, authorization (RLS), data safety, AI safety, secrets, security headers |
 | [ENGINEERING.md](ENGINEERING.md) | Engineering practices: conventions, types, tests, quality gates, logging, delivery, AI-assisted workflow, gaps |
 | [EDGE.md](EDGE.md) | The `workshop-agent`, `apply-proposals` and `concierge` Edge Functions: contracts, env, deploy, smoke test |
-| [FOUNDATION.md](FOUNDATION.md) | Scaffold guide for feature builders: versions, file map, aliases, components, logging, deviations from the specs |
+| [FOUNDATION.md](FOUNDATION.md) | Build notes: the scaffold guide given to feature agents (versions, file map at scaffold time, aliases, deviations from the specs) |
 | [../supabase/seed-notes.md](../supabase/seed-notes.md) | Database notes: migrations, triggers, SQL functions, demo seed and users |
 
-### UI
+### UI (build notes written during implementation; may be outdated)
 
 | Doc | What it is |
 |---|---|

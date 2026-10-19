@@ -1,5 +1,8 @@
 # 06. Public passport and claim
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](00-conventions.md#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](00-conventions.md#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 ## 1. Summary
 
 `/hat/[code]` is the public, logged-out page a buyer reaches by scanning a tag, following a link or typing a code on the landing page. It shows a Verified certificate, the hat's story built from `hat_events`, specs, the weaver, and an ownership line that changes with who is looking. The transfer recipient can claim the hat in one tap.

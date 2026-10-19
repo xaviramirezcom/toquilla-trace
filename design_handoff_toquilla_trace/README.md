@@ -1,5 +1,7 @@
 # Handoff: Toquilla Trace
 
+> **Implementation notes (added after the build).** This is the pre-build design spec (revision 2). Two facts changed: the model is Google Gemini `gemini-2.5-flash-lite` (decision D26), not `claude-opus-5-5`, so run details and logs show the Gemini model; and the app uses its own Tailwind components in `components/ui`, not Radix or shadcn. Current status: [HANDOFF.md](../HANDOFF.md).
+
 ## Overview
 Toquilla Trace is a responsive web app that gives every genuine Ecuadorian toquilla straw ("Panama") hat a digital passport, from the weaver to the buyer.
 
@@ -145,7 +147,7 @@ Define the colours as CSS variables on `:root` and `[data-theme="dark"]`, then m
 ### Typography
 | Role | Font | Usage |
 |---|---|---|
-| Serif | **Newsreader** (Google Fonts; opsz 6–72, 400/500/600, italic 400) | Landing and passport headings, certificate, weaver names, auth card titles, logo wordmark (600) |
+| Serif | **Newsreader** (Google Fonts; opsz 6 to 72, 400/500/600, italic 400) | Landing and passport headings, certificate, weaver names, auth card titles, logo wordmark (600) |
 | Sans | **Instrument Sans** (400/500/600/700) | All app UI |
 | Mono | **JetBrains Mono** (400/500) | Hat codes, IDs, JSON, log times, counters, kbd |
 | Icons | **Material Symbols Rounded** (variable, FILL 0) | Every icon. Lucide is an acceptable swap if mapped one to one. |
@@ -154,11 +156,11 @@ Define the colours as CSS variables on `:root` and `[data-theme="dark"]`, then m
 | Element | Size |
 |---|---|
 | App body | 14, line-height 1.45 |
-| Auth / landing body | 15–16 |
-| Small / meta | 12–13 |
-| Table header | 11–12, uppercase, tracking .04em, 700 |
+| Auth / landing body | 15 to 16 |
+| Small / meta | 12 to 13 |
+| Table header | 11 to 12, uppercase, tracking .04em, 700 |
 | Page title (app) | 28 / 600 / tracking -0.015em |
-| Card title | 15–18 / 600 |
+| Card title | 15 to 18 / 600 |
 | Landing H1 | 80 desktop / 44 mobile; Newsreader 500, line-height 1.04, tracking -0.025em; second sentence in italic `--accent` |
 | Passport grade ("Superfino") | 84 desktop / 56 mobile; Newsreader 500, line-height 1 |
 | Hat detail code | 36 / 28, mono 500 |
@@ -170,15 +172,15 @@ Define the colours as CSS variables on `:root` and `[data-theme="dark"]`, then m
 
   | Element | Radius |
   |---|---|
-  | Small badges | 6–7 |
-  | Inputs / buttons | 10 (mobile bars 12–14; round 24/36) |
-  | Cards | 14–16 |
+  | Small badges | 6 to 7 |
+  | Inputs / buttons | 10 (mobile bars 12 to 14; round 24/36) |
+  | Cards | 14 to 16 |
   | Large sections | 18 |
   | Dialogs | 16 (sheet top corners 18) |
   | Pills / chips | 999 |
 
-- **Spacing:** 4-pt based, mostly 6, 8, 10, 12, 14, 16, 18, 20, 24 and 32. Page padding is 32–36 desktop and 16 mobile. Card padding is 16–20.
-- **Hit targets:** buttons are 44px tall (desktop compact controls 36–40). Mobile bottom-bar buttons are 48–52px. The voice mic is **72px**. FABs are 56–64px.
+- **Spacing:** 4-pt based, mostly 6, 8, 10, 12, 14, 16, 18, 20, 24 and 32. Page padding is 32 to 36 desktop and 16 mobile. Card padding is 16 to 20.
+- **Hit targets:** buttons are 44px tall (desktop compact controls 36 to 40). Mobile bottom-bar buttons are 48 to 52px. The voice mic is **72px**. FABs are 56 to 64px.
 - **Sidebar:** 240px, collapses to 72px. Mobile top bar is 56px; bottom tab bar is 64px.
 - **Dialogs:** max 520px (help and manual create 560px).
 - **Side panels:** concierge 400px; log detail 440px (inline at ≥1180px, overlay below); run drawer `min(760px, 92vw)`.
@@ -197,9 +199,9 @@ background:
 **Logo mark:** a 28px rounded square (radius 7) in `--accent`. It carries the same crosshatch in `rgb(255 255 255/.28)` (3px/5px), next to the "Toquilla Trace" wordmark in Newsreader 600, 20px.
 
 ### Motion
-- **Standard:** 150–200ms ease for hover, menus, drawers and toasts. Elements enter with fade + translateY(6px), 180ms.
+- **Standard:** 150 to 200ms ease for hover, menus, drawers and toasts. Elements enter with fade + translateY(6px), 180ms.
 - **Rich moments:** only the Verified seal and a successful Claim get the stamp animation: `scale(1.8) rotate(-14deg) → scale(.94) → 1`, 600ms, `cubic-bezier(.2,1.3,.4,1)`.
-- **Recording:** the mic pulses with a red ring (`scale .95→1.55`, opacity .55→0, 1.2s). A waveform of 18–26 bars animates scaleY .2↔1 with staggered delays. A red dot blinks at 1s.
+- **Recording:** the mic pulses with a red ring (`scale .95→1.55`, opacity .55→0, 1.2s). A waveform of 18 to 26 bars animates scaleY .2↔1 with staggered delays. A red dot blinks at 1s.
 - **Reduced motion:** honour `prefers-reduced-motion` by disabling all of the above.
 
 ---
@@ -208,7 +210,7 @@ background:
 - **Stages:** Weaving → Washing → Bleaching → Blocking → Finished.
   - A hat moves only one step forward: never backward, never skipping.
   - Selects show non-next stages as disabled, with "Stages can't be skipped."
-- **Grades by rows per inch:** Standard 8–14, Fino 15–24, Superfino 25+.
+- **Grades by rows per inch:** Standard 8 to 14, Fino 15 to 24, Superfino 25+.
   - A mismatch shows the inline warning "18 rows/inch usually means Fino." with a "Use Fino" fix.
 - **Ownership:** Workshop → Seller → Buyer.
   - Only the current owner can advance or transfer.
@@ -314,7 +316,7 @@ background:
 - **After the run:**
   - **Your note:** a right-aligned bubble labelled "You said:" with a mic icon (voice) or "You wrote:" (typed), plus the hat tag if any.
   - **Edit note:** opens the confirm "Discard these proposals and edit your note?" with **Cancel** / **Discard and edit**.
-  - **Assistant bubble:** left-aligned with the sparkle avatar and a 1–2 sentence summary.
+  - **Assistant bubble:** left-aligned with the sparkle avatar and a 1 to 2 sentence summary.
   - **Meta row:** members see "4 actions prepared · 2.1 s"; admins see "4 tool calls · 2.1 s · $0.004 · View trace".
 
 **Proposal review panel:**
@@ -330,9 +332,9 @@ background:
 - **The 8 states:**
   1. **Pending:** dashed accent border on tint.
   2. **Editing:** the card expands into a form:
-     - Quantity stepper (1–20).
+     - Quantity stepper (1 to 20).
      - Grade segmented control.
-     - Rows/inch (6–40, with the mismatch warning).
+     - Rows/inch (6 to 40, with the mismatch warning).
      - Weaver select with "+ Add new weaver".
      - Stage select where only the next stage is enabled.
      - **Save changes** / **Cancel**. Saving returns the card to Pending with "Edited by you".
@@ -372,9 +374,9 @@ background:
 - Fields:
   - Weaver (+ Add new weaver)
   - Grade (segmented)
-  - Rows per inch (required, 6–40)
+  - Rows per inch (required, 6 to 40)
   - Straw color (Natural / Bleached / Dyed)
-  - Size cm (52–64, optional)
+  - Size cm (52 to 64, optional)
   - Price USD (optional)
   - Notes
 - Live validation.
@@ -689,7 +691,7 @@ The concierge's "Claim this hat" button follows the same rule.
   | Entity | Fields |
   |---|---|
   | `Profile` | userId, name, workshopId, role (member/admin) |
-| `Hat` | code, grade, rows, straw, size, price, weaverId, stage(0–4), owner(workshop/seller/buyer), flags[], archived, version (used for optimistic locking; the "Row was updated by another user" error) |
+| `Hat` | code, grade, rows, straw, size, price, weaverId, stage(0 to 4), owner(workshop/seller/buyer), flags[], archived, version (used for optimistic locking; the "Row was updated by another user" error) |
   | `Weaver` | name, village, province, spec[], since, bio, showName |
   | `Run` | id, agent, user, input, status, steps[], tokens, latency, cost |
   | `LogRow` | ts, level, source, action, msg, user, requestId, hat, runId, durationMs, payload, error |
@@ -729,7 +731,7 @@ Assistant summary: "I understood: Rosa finished 3 Fino hats (18 rows per inch), 
 
 Spoken hat codes ("TQ-7F3K2") are marked low-confidence in the live transcript, because speech-to-text often mishears letter and digit codes. The backend should also fuzzy-match codes against open hats.
 
-Model shown in run details and logs: `claude-opus-5-5`.
+Model shown in run details and logs: `claude-opus-5-5` (as built: `gemini-2.5-flash-lite`, see the note at the top).
 
 ## Prototype notes (revision 2)
 - Every note returns the same 4 canned proposals. The real agent derives them from the note.

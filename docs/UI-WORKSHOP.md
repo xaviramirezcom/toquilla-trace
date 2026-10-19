@@ -1,5 +1,7 @@
 # Workshop UI and auth pages
 
+> **Build notes written during implementation; may be outdated.** Current design: [ARCHITECTURE.md](ARCHITECTURE.md). Current status: [HANDOFF.md](../HANDOFF.md).
+
 What the `/login`, `/signup`, `/forgot` and `/workshop` screens are made of, where their state lives, and what is wired to the real backend. Specs: `docs/specs/01`, `02`, `04` and the handoff README.
 
 ## Files
@@ -81,11 +83,11 @@ Accessibility: visible labels or `aria-label` on every control, `aria-live` on t
 | `apply-proposals` approve/reject | Real contract, results mapped per card |
 | `restore_proposal` | Real (`p_id`, `p_status`) |
 | `create_hat` (manual dialog) | Real (`p_weaver_id, p_grade, p_rows, p_straw, p_size, p_price, p_note`; the code is generated in SQL) |
-| Shell pending badge and logout confirm | Pending: `app/(app)/layout.tsx` does not pass `pendingCount` to `AppShell` yet |
+| Shell pending badge | Real: `app/(app)/layout.tsx` counts open proposals and passes `pendingCount` to `AppShell` |
 | Today tile filters | "Flags to check" links `/hats?flagged=1`; the other tiles open `/hats` (no stage filters in spec 08) |
 | "Add weaver" | Links to `/weavers` (the weavers page owns the dialog) |
 | Share a passport (first run) | Shown disabled, as in the handoff, until the first hat exists |
 
 ## Not built
 
-Edit-note confirm ("Discard these proposals and edit your note?"), Attach (disabled with "Photos are coming soon."), a password reset callback page, streamed agent steps (D13 cut).
+Edit-note confirm ("Discard these proposals and edit your note?"), Attach (disabled with "Photos are coming soon."), streamed agent steps (D13 cut).

@@ -12,6 +12,38 @@
 
 ---
 
+## For reviewers (start here)
+
+| | |
+|---|---|
+| **Live app** | https://toquilla-trace.vercel.app (public passport without login: [TQ-9A1M8](https://toquilla-trace.vercel.app/hat/TQ-9A1M8)) |
+| **Demo accounts** | `member@test.com` (workshop member, Taller Pillco: the AI agent), `admin@test.com` (admin: Agent runs and Logs), `buyer@test.com` (can claim `TQ-9A1M8`). **Password: in the submission note.** |
+| **Demo-only access** | These are **shared demo accounts with a weak, demo-only password, by design**, so reviewers can get in fast. Production would not work like this: a unique strong admin password, MFA, no shared accounts, admins provisioned out of band, and an 8+ character minimum enforced server-side. Details in [SECURITY.md](docs/SECURITY.md). |
+
+**3-minute tour**
+1. Log in as `member@test.com`, open **Workshop**, tap the mic (Chrome or Edge) or type: _"Doña Rosa terminó 3 finos de 18 hileras. El TQ-7F3K2 pasa a blanqueo."_ The agent looks things up and returns proposal cards (two weavers are named Rosa, so it asks which one).
+2. **Approve** a card (10 s undo), then open the hat in **Hats**: the stage and timeline changed, and the rules were re-checked in code on approval.
+3. Open a **passport** ([TQ-9A1M8](https://toquilla-trace.vercel.app/hat/TQ-9A1M8)) logged out: Verified certificate, weaver credit, timeline.
+4. **Ask the concierge** on that page "Is this hat real?" or "Who wove it?". Try "mark it as Finished" or an injection: it refuses.
+5. Log in as `admin@test.com`, open **Agent runs** (every model call, tool call and rule check of step 1) and **Logs** ("Copy as prompt for an AI assistant").
+
+**Code map: the 8 files to read first**
+
+| File | What it does |
+|---|---|
+| [workshop-agent/index.ts](supabase/functions/workshop-agent/index.ts) | Edge Function entry: auth, input checks, 20 runs/hour limit, runs the loop, saves the run and its proposals |
+| [_shared/agent.ts](supabase/functions/_shared/agent.ts) | System prompt and the manual Gemini tool loop: caps, finish reasons, summary checked in code |
+| [_shared/tools.ts](supabase/functions/_shared/tools.ts) and [_shared/tools/propose.ts](supabase/functions/_shared/tools/propose.ts) | Tool declarations; read tools query the workshop, propose tools check the quote, grounding and rules, then only buffer a proposal |
+| [_shared/domain.ts](supabase/functions/_shared/domain.ts) | Every business rule as pure functions with zero imports: stage machine, grade vs rows, codes, anomalies |
+| [_shared/apply.ts](supabase/functions/_shared/apply.ts) (called by [apply-proposals/index.ts](supabase/functions/apply-proposals/index.ts)) | Approval path: re-checks every rule on fresh rows, then writes through the `apply_proposal` SQL function |
+| [migrations/..._rls.sql](supabase/migrations/20261019000002_rls.sql) | Row-level security and column grants on all 9 tables (tightened later by `..._definer_hat_writes.sql` and `..._hat_grants_contact_email.sql`) |
+| [components/workshop/useProposals.ts](components/workshop/useProposals.ts) | Proposal cards in the browser: approve, edit, reject, 10 s undo queue, results per card |
+| [concierge/index.ts](supabase/functions/concierge/index.ts) | Public concierge: rate limits, loads the public record in code, one model call with no tools, answer checked in code |
+
+**Docs:** [SECURITY](docs/SECURITY.md) · [ARCHITECTURE](docs/ARCHITECTURE.md) · [AI](docs/AI.md) · [ENGINEERING](docs/ENGINEERING.md) · [EVALS](docs/EVALS.md) · [HANDOFF](HANDOFF.md) · reading guide in [docs/README.md](docs/README.md) · all of them in the app at [/docs](https://toquilla-trace.vercel.app/docs).
+
+---
+
 ## TL;DR
 
 - **Problem:** fake "Panama hats" (paper straw) are sold as Ecuadorian, and weavers get no credit. Tools fail because typing takes too long, so workshops just send quick voice notes in Spanish.
@@ -60,12 +92,12 @@ flowchart LR
 | 1 | **Writing takes too long.** Forms and typing cost minutes per update with busy hands, so updates get skipped | Every tool that depends on data entry fails |
 | 2 | Production data lives in **voice notes, chats and memory**, not in a system | Workshops lose track of hats and stages |
 | 3 | **Fakes look the same** to a buyer and are sold under the same name | Buyers overpay; honest sellers lose trust |
-| 4 | **Weavers are invisible.** Their name never reaches the buyer (in 2017 they earned $2.50 to $6 per hat) | Weavers get no credit or premium |
+| 4 | **Weavers are invisible.** Their name never reaches the buyer (in 2017 they earned $2.50 to $6 per hat, [The World](https://theworld.org/stories/2017/03/10/panama-hats-made-ecuador)) | Weavers get no credit or premium |
 | 5 | Grades (Fino, Superfino) are **claimed, not checked** | Buyers can't tell if the price is fair |
 
-**Why now:** in August 2026, Montecristi launched QR certificates for authentic hats, but only 2 hats had been certified. Demand for proof exists; the tooling doesn't.
+**Why now:** in August 2026, Montecristi launched QR certificates for authentic hats, but only 2 hats had been certified ([El Universo, 2026-09-09](https://www.eluniverso.com/noticias/ecuador/sombrero-montecristi-28-pasos-qr-y-tecnologia-para-evitar-falsificaciones-nota/)). Demand for proof exists; the tooling doesn't.
 
-**Why I care:** I live in Ecuador, and I researched this trade before the take-home (about 2,500 weavers, exporters in Cuenca, widespread fakes).
+**Why I care:** I live in Ecuador, and I researched this trade before the take-home: about 2,500 weavers ([Vistazo 2021, citing PRO ECUADOR](https://www.vistazo.com/enfoque/sombrero-de-paja-toquilla-ecuatoriano-busca-destacarse-en-nuevos-mercados-MGVI222196)), exporters in Cuenca, widespread fakes, and a craft on the [UNESCO intangible heritage list since 2012](https://ich.unesco.org/en/RL/weaving-of-traditional-toquilla-straw-hats-of-ecuador-00729).
 
 ---
 
@@ -140,10 +172,10 @@ flowchart LR
 |---|---|---|
 | 1 | **AI proposes, humans approve** | Write tools never execute during the agent run. They return proposals. Nothing is saved without a click. |
 | 2 | **Rules live in code, not prompts** | The stage machine and grade checks are plain TypeScript functions with tests. If the model is wrong, the tool rejects it and tells the model why. |
-| 3 | **Least privilege** | The public concierge only has read tools, so it can't change data even if a user (or injected text) asks. People too: workshop members never see logs, traces or costs; only admins do, enforced by the database. |
+| 3 | **Least privilege** | The public concierge has no tools at all: the hat's public record is loaded in code before the model call, so it can't change data even if a user (or injected text) asks. People too: workshop members never see logs, traces or costs; only admins do, enforced by the database. |
 | 4 | **Untrusted input is data** | Notes, chat messages and hat records are never treated as instructions. The same rule is in `CLAUDE.md` for the coding assistant. |
 | 5 | **Observe everything** | Every request, tool call, rule check and decision goes to the `app_logs` table with a request ID. |
-| 6 | **Measure, don't guess** | A small eval set (tricky notes with expected tool calls) runs with `npm run eval`. |
+| 6 | **Measure, don't guess** | A small eval set (tricky notes with expected tool calls) runs with `npm run eval`; results in [EVALS.md](docs/EVALS.md). |
 | 7 | **Don't use an LLM when code works** | Size conversion, grade ranges and stage order are code. The model handles language, not math. |
 | 8 | **Cost and latency are features** | Each run records tokens, latency and cost, shown in the UI. |
 | 9 | **Small, verified steps** | Tests ship with behavior, and hooks block skipped tests and silenced type errors. |
@@ -169,12 +201,12 @@ flowchart LR
 |---|---|
 | **Next.js (Vercel)** | UI, login, reading data through Supabase with row-level security. |
 | **Roles** | `profiles.role` is `member` (workshop staff, own workshop only) or `admin` (Toquilla Trace staff, everything including `app_logs`). Enforced with row-level security, not just hidden links. |
-| **`workshop-agent`** | Runs the tool-use loop. Read tools execute; write tools become proposals saved to `agent_runs`. |
+| **`workshop-agent`** | Runs the tool-use loop. Read tools execute; write tools become rows in the `proposals` table, linked to the run's trace in `agent_runs`. |
 | **`apply-proposals`** | Takes the approved proposals, re-validates every rule, and writes to the database. |
-| **`concierge`** | Read-only Q&A for one hat. |
+| **`concierge`** | Q&A for one hat from its public record. No tools, no writes. |
 | **Shared domain code** | `stage machine`, `grade rules`, `tool validation`. Pure TypeScript, used by the functions and tested with Vitest. |
 
-**Data model (main tables):** `profiles`, `weavers`, `hats`, `hat_events` (append-only history), `agent_runs` (trace + proposals), `app_logs`.
+**Data model (9 tables):** `workshops`, `profiles`, `weavers`, `hats`, `hat_events` (append-only history), `hat_flags` (anomalies), `agent_runs` (run traces), `proposals` (AI proposals and human decisions), `app_logs`. Diagram in [ARCHITECTURE.md](docs/ARCHITECTURE.md#3-data-model).
 
 ---
 
@@ -186,7 +218,7 @@ Every action writes one row to `app_logs`.
 |---|---|
 | `created_at` | `2026-10-18 10:42:13.512` |
 | `level` | `info` / `warn` / `error` |
-| `source` | `web`, `edge:workshop-agent`, `edge:concierge`, `db` |
+| `source` | `web`, `edge:workshop-agent`, `edge:apply-proposals`, `edge:concierge`, `db` |
 | `action` | `agent.tool.call`, `proposal.approve`, `hat.stage.advance` |
 | `request_id` | ties together every row from one user action |
 | `user_id`, `hat_code`, `run_id` | context |
@@ -229,22 +261,19 @@ Secrets and passwords are never logged. Only admins can read `app_logs` (row-lev
 5. **Guardrails for the coding assistant.** The repo starts from a hardened Claude Code setup ([docs/boilerplate.md](docs/boilerplate.md)):
    - `CLAUDE.md`: golden rules, tests as a contract, untrusted-content rule
    - hooks: block dangerous commands, block skipped tests and silenced type errors, auto-format
-   - pre-commit and CI: typecheck, lint, test and build
-6. **Build in vertical slices.** Each slice works end to end and is deployed before the next starts.
-7. **Review every line.** AI writes drafts; I read, run and understand everything before it is committed.
+   - pre-commit: typecheck, lint and unit tests; CI: the same plus `next build`, `deno check` and `deno lint`
+6. **Parallel agents, one coordinator.** During the build, Claude Code agents worked in parallel, each owning a set of files (foundation, database, Edge Functions, workshop UI, public UI, hats and admin, docs). I coordinated them, reviewed and integrated their work, and ran it against the real project. That is why the first commits are large: parallel work landed in a few integration commits, followed by small fix commits.
+7. **Review, then verify.** Independent review agents then audited compliance, security, AI, code, docs and UX, and their findings were fixed in follow-up commits. The core path (code map above) is the part to walk through line by line; walkthrough notes are in the docs.
 
 ---
 
-## 9. Two-hour build plan
+## 9. Build timeline (planned vs actual)
 
-| Time | Slice |
-|---|---|
-| 0:00 to 0:20 | Scaffold, Supabase login, deploy to Vercel |
-| 0:20 to 0:45 | Schema, stage machine, grade rules, tools (with tests) |
-| 0:45 to 1:15 | Workshop agent + proposal review (approve, edit, reject) |
-| 1:15 to 1:35 | Public passport + read-only concierge |
-| 1:35 to 1:50 | Logs screen, run trace, eval script |
-| 1:50 to 2:00 | Seed data, README and HANDOFF update |
+| | Plan ([spec 10](docs/specs/10-quality-evals-and-delivery.md)) | What actually happened (`git log`) |
+|---|---|---|
+| Before the timer | Research, problem choice, design prompt and prototypes, 10 specs with one decision log | Done as planned; not counted in the 2 hours |
+| Build | Vertical slices, each deployed before the next | Parallel agents per area. Commits: scaffold (20:01), database (20:18), all features in one integration commit (20:27), then about 30 small fix and docs commits until 21:12 |
+| After the build | (not planned) | Independent review agents (compliance, security, AI, code, docs, UX) and a fix pass: password reset, eval reset, a live security check script, stricter hat grants, docs cleanup |
 
 **Cut on purpose (next steps):** server-side speech-to-text for browsers without voice support, photos, QR images, ownership transfer emails, weaver management UI polish, payments, multiple workshops.
 
@@ -254,17 +283,17 @@ Secrets and passwords are never logged. Only admins can read `app_logs` (row-lev
 
 ```
 app/                    Next.js routes: workshop, hats, weavers, runs, logs, settings (signed in);
-                        /, /login, /signup, /forgot, /hat/[code], /docs (public)
+                        /, /login, /signup, /forgot, /reset, /auth/confirm, /hat/[code], /docs (public)
 components/             UI kit, shell, feature components
 lib/                    Supabase clients, logger, auth, docs registry, security headers
 supabase/
   migrations/           SQL schema, row-level security, functions, demo seed, fixes
   functions/
-    _shared/            domain rules, tools, agent loop, Gemini adapter, logger (pure TS, tested)
+    _shared/            domain rules, tools (+ tools/), agent loop, apply checks, Gemini adapter, logger (pure TS, tested)
     workshop-agent/     agent loop (proposals only)
     apply-proposals/    validates and writes approved actions
-    concierge/          read-only Q&A
-scripts/                seed-users.mjs (demo and eval accounts), logs.ts (npm run logs)
+    concierge/          public Q&A, no tools
+scripts/                seed-users.mjs, eval-reset.mjs, verify-security.mjs, logs.ts (npm run ...)
 evals/                  agent eval cases, runner and latest results
 tests/                  Vitest (domain rules, tools, loop, UI logic, docs, headers)
 docs/                   architecture, AI, security, engineering, evals, specs (also at /docs)
@@ -275,14 +304,16 @@ design_handoff_toquilla_trace/  clickable HTML prototypes + design spec (source 
 
 ## 11. Run it locally
 
+Runs the web app locally against the hosted Supabase project (no local database needed):
+
 ```bash
 npm install
-cp .env.example .env          # Supabase URL + anon key; service role key and demo/eval accounts for scripts only
-npm run dev                   # http://localhost:3000
-npm test                      # unit tests (domain rules, tools, agent loop, UI logic)
+cp .env.example .env          # the project URL is already filled in; paste the anon key from the submission note
+npm run dev                   # http://localhost:3000, log in with the demo accounts
+npm test                      # unit tests, no network
 ```
 
-Backend (only when you change it; needs the Supabase CLI via npx and the project's DB password in `.db-password`):
+Everything below is optional and needs project access (service role key in `.env`, the DB password in `.db-password`, the Supabase CLI via npx):
 
 ```bash
 npx --yes supabase@2.121.0 link --project-ref mflvsnpyckuwhicvgnsr -p "$(< .db-password)"
@@ -298,10 +329,12 @@ Debugging and evals:
 ```bash
 npm run logs -- --level error --since 1h     # app_logs from the terminal (service role, local only)
 npm run logs -- --request req_8f2a91c4e2b7   # everything for one request
-npm run eval                                 # 32 agent cases against the deployed functions (Gemini, about $0.02)
+npm run eval:reset                           # put the Eval Workshop back to its seeded state
+npm run eval                                 # agent eval cases against the deployed functions (results: docs/EVALS.md)
+npm run verify:security                      # live RLS, grant and claim-flow checks (scripts/verify-security.mjs)
 ```
 
-Demo accounts (emails only; the password is in the submission note): `admin@test.com` (admin), `member@test.com` (workshop member, Taller Pillco), `buyer@test.com` (can claim `TQ-9A1M8`).
+Demo accounts: see [For reviewers](#for-reviewers-start-here).
 
 ---
 
@@ -310,13 +343,13 @@ Demo accounts (emails only; the password is in the submission note): `admin@test
 | Area | Status |
 |---|---|
 | Research, problem choice, agentic redesign, design spec, prototype review (revision 2) | Done (before the build timer) |
-| Auth with email confirmation, two roles enforced by RLS | Done |
+| Auth with email confirmation and password reset, two roles enforced by RLS | Done |
 | Composer: typed and voice (Chrome/Edge, es-EC and en-US), editable transcript | Done |
 | Workshop agent (Gemini tool loop, rules in code) and proposal review with rule re-check | Done |
 | Hats list and detail (advance, flags, transfer, archive), weavers | Done |
 | Public passport, claim flow, read-only concierge | Done |
 | Logs (admin), agent runs and traces, `npm run logs` | Done |
-| Security hardening (definer write RPCs, security headers, log PII stripping) | Done, see [docs/SECURITY.md](docs/SECURITY.md) |
+| Security hardening (definer write RPCs, no direct hat updates, security headers, log PII stripping, `npm run verify:security`) | Done, see [docs/SECURITY.md](docs/SECURITY.md) |
 | In-app docs at `/docs` | Done |
 | Eval set and results | Done, see [docs/EVALS.md](docs/EVALS.md) |
 | Deploy | https://toquilla-trace.vercel.app |
@@ -326,7 +359,8 @@ Demo accounts (emails only; the password is in the submission note): `admin@test
 
 ## 13. Notes on AI use
 
-- **Claude Code:** research, planning, this README, the design prompt, and code drafts.
+- **The product uses Google Gemini** (`gemini-2.5-flash-lite`) for both agents, not the Claude API (decision D26, model choice in [AI.md](docs/AI.md)).
+- **Claude Code was used to build it:** research, planning, the design prompt, specs, and parallel coding agents that I coordinated, reviewed and integrated.
 - **Claude Design:** first version of the UI from the design prompt. Revision 2 was reviewed and edited by hand.
-- **Me:** problem choice, product decisions, reviewing and understanding every line, and the final call on what ships.
-- The planning and design work happened before the 2-hour build window; the build itself is timeboxed.
+- **Me:** problem choice, product decisions, scope, coordinating the agents, reviewing and running the result, and the final call on what ships.
+- Planning and design happened before the 2-hour build window. The full AI-use note, including the hidden instruction on the take-home page, is in [HANDOFF.md](HANDOFF.md#notes-on-ai-use).

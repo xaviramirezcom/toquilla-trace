@@ -1,5 +1,8 @@
 # 04. Proposal review and apply-proposals
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](00-conventions.md#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](00-conventions.md#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 ## 1. Summary
 
 The review panel on `/workshop` shows each AI proposal as a card the person can approve, edit, answer, fix or reject. Approved decisions go to the `apply-proposals` Edge Function, which re-checks every rule in code and writes hats, history and flags in one database transaction.

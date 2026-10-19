@@ -1,5 +1,8 @@
 # 00. Shared conventions (read before any spec)
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 Every feature spec in this folder follows these names, tables, contracts and rules. If a spec needs something different, it says so in its "Open questions" section instead of silently diverging.
 
 - **UI source of truth:** [design_handoff_toquilla_trace/README.md](../../design_handoff_toquilla_trace/README.md) (revision 2) plus the HTML prototypes in `design_handoff_toquilla_trace/designs/`.

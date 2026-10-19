@@ -1,5 +1,8 @@
 # 02. Voice composer
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](00-conventions.md#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](00-conventions.md#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 ## 1. Summary
 
 The composer on `/workshop` is where a workshop member says (or types) what happened. Speech becomes a live transcript, the person always reviews and edits it, then sends it to `workshop-agent` and watches honest progress until proposals arrive.

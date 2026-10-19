@@ -1,5 +1,7 @@
 # Public UI: landing, passport, claim, concierge
 
+> **Build notes written during implementation; may be outdated.** Current design: [ARCHITECTURE.md](ARCHITECTURE.md). Current status: [HANDOFF.md](../HANDOFF.md).
+
 What is built for the logged-out surfaces (specs 06 and 07, handoff "Public passport", "Who sees Claim", "Buyer concierge", "Landing").
 
 ## Files
@@ -45,9 +47,11 @@ What is built for the logged-out surfaces (specs 06 and 07, handoff "Public pass
 - `/hat/TQ-9A1M8`: Verified certificate "Recorded by Taller Pillco, Cuenca", "Finished Oct 2, 2026", 5 dated steps, weaver card, "Transferred to a buyer on Oct 10, 2026. Log in to claim it if it's yours.", Claim opens "Log in to claim this hat" with `/login?next=%2Fhat%2FTQ-9A1M8`.
 - `/hat/tq-9a1m8` and `/hat/TQ9A1M8` return 308 to `/hat/TQ-9A1M8`. `/hat/TQ-ZZZZZ` and `/hat/TQ-9A1M` render Not verified.
 - `log_passport_view` returns no error as anon. `claim_hat` is denied to anon (expected).
-- Not verified yet: the logged-in recipient claim (needs a browser sign-in) and real concierge answers (function not deployed when this was written; the error bubble path was exercised).
+- Not verified yet: the logged-in recipient claim (needs a browser sign-in) and real concierge answers (function not deployed when this was written; it is deployed now, see [EDGE.md](EDGE.md)).
 
-## Open items for other owners
+## Open items for other owners (at the time of writing)
+
+Three were fixed during integration: concierge CORS, Unicode dashes in `normalizeCode` (commit 8d07c91) and the dead footer links, replaced by Docs (commit 7050c78). The fourth is kept on purpose: TQ-9A1M8 still has a pending transfer so the demo buyer can claim it.
 
 - `concierge` Edge Function: must answer CORS preflight for `http://localhost:*` and the Vercel origin, and allow the `x-request-id`, `authorization`, `apikey`, `content-type` and `x-client-info` headers.
 - `domain.ts` `normalizeCode` does not map Unicode dashes (spec 06 step 2). The UI pre-replaces them; the domain owner may want to add it.

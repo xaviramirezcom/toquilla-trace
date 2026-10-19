@@ -1,9 +1,12 @@
 # Specs: Toquilla Trace
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](00-conventions.md#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](00-conventions.md#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 What we'll be judged on, and the detailed spec for every feature that answers it.
 
-- Start with [00-conventions.md](00-conventions.md): stack, schema, contracts, Claude API facts, logging and time budget. Every spec follows it.
-- **Section 8 of the conventions (decisions D1 to D25) overrides everything else.** The specs were written in parallel, and their conflicts were resolved there.
+- Start with [00-conventions.md](00-conventions.md): stack, schema, contracts, model API facts (section 5 describes the Claude API; replaced by Gemini in section 9, D26), logging and time budget. Every spec follows it.
+- **Sections 8 and 9 of the conventions (decisions D1 to D26) override everything else.** The specs were written in parallel, and their conflicts were resolved there.
 - **Build order and the 2-hour timeline:** [10-quality-evals-and-delivery.md](10-quality-evals-and-delivery.md).
 - UI source of truth: [design_handoff_toquilla_trace/README.md](../../design_handoff_toquilla_trace/README.md) (revision 2).
 
@@ -66,7 +69,7 @@ The take-home page gives requirements but no scoring rubric, so this list is our
 
 ### 10. Shipping and handoff, ready to extend
 - **What they check:** a public link, local run steps, a short note on what works and what's missing, and a base that's easy to extend live.
-- **How we answer it:** a filled HANDOFF.md, a README with diagrams and a decision log, seed data, one-command setup, `app_logs` so any bug can be traced, and clear extension points (WhatsApp intake, phone login, QR codes, more evals).
+- **How we answer it:** a filled HANDOFF.md, a README with diagrams and a decision log, seed data, short setup steps, `app_logs` so any bug can be traced, and clear extension points (WhatsApp intake, phone login, QR codes, more evals).
 - **Specs:** 09, 10.
 
 ---
@@ -75,7 +78,7 @@ The take-home page gives requirements but no scoring rubric, so this list is our
 
 | # | Spec | What it covers | Main criteria |
 |---|---|---|---|
-| 00 | [Conventions](00-conventions.md) | Stack, schema, contracts, Claude API facts, logging, time budget | All |
+| 00 | [Conventions](00-conventions.md) | Stack, schema, contracts, model API facts (Gemini since D26), logging, time budget | All |
 | 01 | [Auth and roles](01-auth-and-roles.md) | Sign up, login, member/admin, RLS on every table, route guards | 1, 4 |
 | 02 | [Voice composer](02-voice-composer.md) | "Just tell it": speech to text, review before send, typed fallback | 3, 6 |
 | 03 | [Workshop agent](03-workshop-agent.md) | System prompt, strict tools, loop, rule checks, eval set | 2, 8 |

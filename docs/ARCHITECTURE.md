@@ -51,10 +51,10 @@ flowchart LR
 | Piece | Job | Code |
 |---|---|---|
 | Next.js on Vercel | Pages, session refresh, reads through RLS with the anon key. No service role key in the web app (D6, D24) | [proxy.ts](../proxy.ts), [lib/supabase/server.ts](../lib/supabase/server.ts), [lib/env.ts](../lib/env.ts) |
-| Supabase Auth | Email and password; a trigger creates every profile as `member` | [schema.sql:295-319](../supabase/migrations/20261019000001_schema.sql#L295-L319) |
+| Supabase Auth | Email and password; a trigger creates every profile as `member` | [schema.sql:295-318](../supabase/migrations/20261019000001_schema.sql#L295-L318) |
 | Postgres + RLS | Members see their own workshop, admins read everything, anon reads nothing directly | [rls.sql](../supabase/migrations/20261019000002_rls.sql) |
 | `workshop-agent` | Tool-use loop. Read tools run; write tools only buffer proposals | [workshop-agent/index.ts](../supabase/functions/workshop-agent/index.ts), [_shared/agent.ts](../supabase/functions/_shared/agent.ts), [_shared/tools.ts](../supabase/functions/_shared/tools.ts) |
-| `apply-proposals` | Human decisions in, rule re-check, transactional write | [apply-proposals/index.ts](../supabase/functions/apply-proposals/index.ts), [_shared/apply.ts](../supabase/functions/_shared/apply.ts) |
+| `apply-proposals` | Human decisions in, rule re-check, transactional write. The HTTP shell is small; the decision loop (`decideOne`) and `validateApproval` live in `_shared/apply.ts` so they are unit tested | [apply-proposals/index.ts](../supabase/functions/apply-proposals/index.ts), [_shared/apply.ts](../supabase/functions/_shared/apply.ts) |
 | `concierge` | Public read-only Q&A, no tools, JSON output | [concierge/index.ts](../supabase/functions/concierge/index.ts), [_shared/concierge.ts](../supabase/functions/_shared/concierge.ts) |
 | Gemini adapter | The only file that imports the model SDK | [_shared/llm.ts](../supabase/functions/_shared/llm.ts) |
 | `app_logs` | One row per action, admin read only | [schema.sql:146-163](../supabase/migrations/20261019000001_schema.sql#L146-L163), [_shared/log.ts](../supabase/functions/_shared/log.ts), [lib/log.ts](../lib/log.ts) |
@@ -67,7 +67,7 @@ flowchart LR
 app/
   (app)/                 signed-in shell: workshop, hats, hats/[code], weavers, runs, runs/[id], logs, settings
   hat/[code]/            public passport (no shell)
-  login/ signup/ forgot/ auth pages
+  login/ signup/ forgot/ reset/ auth pages; auth/confirm/ handles email links (confirm, reset)
 components/
   workshop/              composer, proposal cards, undo queue hook (useProposals), agent steps
   concierge/             chat panel on the passport
@@ -81,20 +81,22 @@ lib/
   admin/                 run and log queries, eval scoring, logs CLI formatting
   log.ts                 browser logger (batched, redacted)
 supabase/
-  migrations/            0001 schema, 0002 RLS, 0003 RPCs, 0004 demo seed, 0005-0007 fixes (errcode, definer hat writes, log_public v2)
+  migrations/            0001 schema, 0002 RLS, 0003 RPCs, 0004 demo seed, then fixes: errcode, definer hat writes,
+                         log_public v2, eval flag, no hat updates + private contact email, log flood guard, eval reset
   functions/
-    _shared/             domain.ts, tools.ts, agent.ts, apply.ts, concierge.ts, llm.ts, http.ts, log.ts, ...
+    _shared/             domain.ts, tools.ts (+ tools/: context, schemas, read, propose), agent.ts, apply.ts,
+                         concierge.ts, llm.ts, http.ts, log.ts, ...
     workshop-agent/ apply-proposals/ concierge/
 tests/                   Vitest: domain, tools, agent loop, edge helpers, UI logic
 evals/                   cases.json + run.ts (calls the deployed functions)
-scripts/                 logs.ts (npm run logs), seed-users.mjs
+scripts/                 logs.ts, seed-users.mjs, eval-reset.mjs, verify-security.mjs (npm run logs / seed:users / eval:reset / verify:security)
 ```
 
 **The shared rules file.** [`supabase/functions/_shared/domain.ts`](../supabase/functions/_shared/domain.ts) has zero imports, so the same file runs in three places:
 
 | Runtime | How it imports `domain.ts` | Example |
 |---|---|---|
-| Deno (Edge Functions) | relative path with extension | [tools.ts:5-28](../supabase/functions/_shared/tools.ts#L5-L28), [apply.ts:3-18](../supabase/functions/_shared/apply.ts#L3-L18) |
+| Deno (Edge Functions) | relative path with extension | [tools.ts:12-35](../supabase/functions/_shared/tools.ts#L12-L35), [apply.ts:4-17](../supabase/functions/_shared/apply.ts#L4-L17) |
 | Node (Next.js) | `@domain/*` path alias | [workshop/page.tsx:3](<../app/(app)/workshop/page.tsx#L3>), [eval-score.ts:2](../lib/admin/eval-score.ts#L2) |
 | Vitest | same alias | [tests/domain.test.ts](../tests/domain.test.ts) |
 
@@ -146,7 +148,7 @@ erDiagram
 | `apply_proposal(...)` | definer, service role only | `apply-proposals` | Locks the proposal row, idempotent on `approved`, writes hats/events/flags. Latest body is in migration 5 | [0005:69-158](../supabase/migrations/20261019000005_fix_conflict_errcode.sql#L69-L158) (original [functions.sql:391-480](../supabase/migrations/20261019000003_functions.sql#L391-L480)) |
 | `restore_proposal(id)` | definer, own workshop | proposal undo of a reject | Moves a rejected/dismissed card back to open (D4) | [functions.sql:487-507](../supabase/migrations/20261019000003_functions.sql#L487-L507) |
 | `claim_hat(code)` | definer | claim dialog | Confirmed email must match `transfer_email`; one conditional update (D11) | [functions.sql:190-246](../supabase/migrations/20261019000003_functions.sql#L190-L246) |
-| `advance_hat`, `create_hat`, `transfer_hat`, `archive_hat`, `mark_flag_reviewed` | definer, each checks `my_workshop_id()` | manual hat actions | Same rules for non-AI edits. Members have no direct insert on `hats`/`hat_events` and no direct update of `stage`, `archived`, `owner_type`, `transfer_email`, so these RPCs are the only manual write path | [0006:21-23](../supabase/migrations/20261019000006_definer_hat_writes.sql#L21-L23), [0006:29-187](../supabase/migrations/20261019000006_definer_hat_writes.sql#L29-L187) |
+| `advance_hat`, `create_hat`, `transfer_hat`, `archive_hat`, `mark_flag_reviewed` | definer, each checks `my_workshop_id()` | manual hat actions | Same rules for non-AI edits. Members have no direct insert or update on `hats` and no insert on `hat_events`, so these RPCs are the only manual write path | [0006:21-23](../supabase/migrations/20261019000006_definer_hat_writes.sql#L21-L23), [0006:29-187](../supabase/migrations/20261019000006_definer_hat_writes.sql#L29-L187) |
 | `log_public(action, level, payload)` | definer, anon | logged-out logger | Allowlisted anonymous log rows (D6); identifying keys stripped at every depth | [0007:9-74](../supabase/migrations/20261019000007_log_public_v2.sql#L9-L74) (original [functions.sql:139-183](../supabase/migrations/20261019000003_functions.sql#L139-L183)) |
 | `my_workshop_id()`, `is_admin()` | definer | RLS policies | Role helpers without policy recursion | [schema.sql:281-289](../supabase/migrations/20261019000001_schema.sql#L281-L289) |
 
@@ -197,11 +199,11 @@ sequenceDiagram
 | Recording ends in a `review` phase, never auto-sends; Send only for 1 to 1000 chars | [reducer.ts:210-240](../lib/voice/reducer.ts#L210-L240), [reducer.ts:157-160](../lib/voice/reducer.ts#L157-L160) |
 | Generic timed progress steps, no invented specifics (D13) | [reducer.ts:16-23](../lib/voice/reducer.ts#L16-L23) |
 | Validate, rate limit, insert running run | [workshop-agent/index.ts:41-100](../supabase/functions/workshop-agent/index.ts#L41-L100) |
-| Loop | [agent.ts:131-312](../supabase/functions/_shared/agent.ts#L131-L312) |
+| Loop | [agent.ts:198-377](../supabase/functions/_shared/agent.ts#L198-L377) |
 | Save run and proposals atomically | [workshop-agent/index.ts:147-159](../supabase/functions/workshop-agent/index.ts#L147-L159) |
 | Cost and tokens only for admins (D8) | [workshop-agent/index.ts:238-249](../supabase/functions/workshop-agent/index.ts#L238-L249) |
-| 10 s undo queue, flush on hidden tab or page close | [queue.ts](../lib/workshop/queue.ts), [useProposals.ts:155-195](../components/workshop/useProposals.ts#L155-L195), [api.ts:116-138](../lib/workshop/api.ts#L116-L138) |
-| Re-check and write | [apply-proposals/index.ts:172-252](../supabase/functions/apply-proposals/index.ts#L172-L252) |
+| 10 s undo queue, flush on hidden tab or page close | [queue.ts](../lib/workshop/queue.ts), [useProposals.ts:179-222](../components/workshop/useProposals.ts#L179-L222), [api.ts:117-139](../lib/workshop/api.ts#L117-L139) |
+| Re-check and write | [apply.ts:274-441](../supabase/functions/_shared/apply.ts#L274-L441) |
 
 ### 4b. Buyer opens a passport and asks a question
 
@@ -220,16 +222,18 @@ sequenceDiagram
   P->>DB: log_passport_view (after response)
   P-->>V: certificate, weaver, timeline
   V->>CO: POST {code, messages} (no JWT needed)
-  CO->>DB: rate limits (counts app_logs by ip hash)
+  CO->>CO: off-topic gate (code, poems, trivia get fixed copy, no model call)
+  CO->>DB: rate limits (counts app_logs by ip hash, 503 if the count fails)
   CO->>DB: rpc public_hat_passport with the anon key
   CO->>CO: toConciergeRecord, escape, wrap in tags
   CO->>G: one call, no tools, JSON schema
   G-->>CO: {kind, lang, answer, sources}
-  CO->>CO: finalizeAnswer: fixed copy, leak guard, drop ungrounded sources
+  CO->>CO: finalizeAnswer: fixed copy, leak guard, topic and number checks, drop ungrounded sources
+  CO->>DB: one agent_runs row (answered, refused or failed) + app_logs
   CO-->>V: {answer, sources, refused?}
 ```
 
-Code: [lib/passport/server.ts:18](../lib/passport/server.ts#L18) (page read), [concierge/index.ts:96-128](../supabase/functions/concierge/index.ts#L96-L128) (limits, record, model call), [concierge.ts:399-424](../supabase/functions/_shared/concierge.ts#L399-L424) (grounding).
+Code: [lib/passport/server.ts:18](../lib/passport/server.ts#L18) (page read), [concierge/index.ts:99-158](../supabase/functions/concierge/index.ts#L99-L158) (limits, record, model call), [concierge.ts:475-507](../supabase/functions/_shared/concierge.ts#L475-L507) (grounding).
 
 ### 4c. Claim
 
@@ -240,7 +244,7 @@ sequenceDiagram
   actor Bu as Buyer
   participant DB as Postgres
   W->>DB: transfer_hat(code, version, 'buyer', email)
-  Note over DB: transfer_email set, so the workshop can no longer update the hat (RLS hat_update)
+  Note over DB: transfer_email set, so the workshop's advance, transfer and archive RPCs now refuse the hat
   Bu->>DB: sign in (email confirmed), open passport
   DB-->>Bu: viewer = 'recipient', Claim button shown
   Bu->>DB: claim_hat(code)
@@ -249,9 +253,14 @@ sequenceDiagram
   DB-->>Bu: {ok, result: claimed}
 ```
 
-Code: [functions.sql:190-246](../supabase/migrations/20261019000003_functions.sql#L190-L246) (`claim_hat`), [rls.sql:95-98](../supabase/migrations/20261019000002_rls.sql#L95-L98) (pending transfer locks workshop updates), [ClaimDialog.tsx:45](../components/passport/ClaimDialog.tsx#L45). A failed claim returns `not_recipient` for an unknown code too, so it can't be used to probe codes.
+Code: [functions.sql:190-246](../supabase/migrations/20261019000003_functions.sql#L190-L246) (`claim_hat`), [definer_hat_writes.sql:29-60](../supabase/migrations/20261019000006_definer_hat_writes.sql#L29-L60) (`advance_hat` refuses a hat with a pending transfer; `transfer_hat` and `archive_hat` do the same), [ClaimDialog.tsx:46](../components/passport/ClaimDialog.tsx#L46). A failed claim returns `not_recipient` for an unknown code too, so it can't be used to probe codes.
 
-### 4d. An error, from app_logs to a fix
+### 4d. Email links and the eval reset
+
+- **Sign-up confirmation and password reset** links land on [/auth/confirm](../app/auth/confirm/route.ts), which exchanges the one-time code (or verifies a token hash) for a session cookie and redirects with `safeNext`. A reset continues on [/reset](../app/reset/page.tsx), which calls `updateUser({ password })`. A bad or reused link goes to `/login` with a fixed notice.
+- **Eval reset:** `npm run eval:reset` ([scripts/eval-reset.mjs](../scripts/eval-reset.mjs)) calls `reset_eval_workshop()` (service role only, [eval_reset.sql](../supabase/migrations/20261019001003_eval_reset.sql)), which deletes the Eval Workshop's proposals, runs and extra rows and restores its 5 seeded hats. A transaction-local flag lets only this function move a stage backwards or delete history, and only for Eval Workshop rows.
+
+### 4e. An error, from app_logs to a fix
 
 ```mermaid
 sequenceDiagram
@@ -285,12 +294,12 @@ The model never enforces a rule. Each rule is checked in at least two places in 
 
 | Rule | UI | Tool handler (proposal time) | `apply-proposals` (write time) | Database |
 |---|---|---|---|---|
-| Stages move forward one step only | Card shows blocked reason and fix ([proposals.ts:149](../lib/workshop/proposals.ts#L149)) | `canAdvance`, blocked card with `fix` ([tools.ts:825-913](../supabase/functions/_shared/tools.ts#L825-L913)) | `canAdvance` on the fresh row ([apply.ts:125-144](../supabase/functions/_shared/apply.ts#L125-L144)) | no direct `stage` update grant for members ([0006:22](../supabase/migrations/20261019000006_definer_hat_writes.sql#L22)); `where to_stage = stage + 1` ([0005:127-128](../supabase/migrations/20261019000005_fix_conflict_errcode.sql#L127-L128)), `hats_guard` ([schema.sql:236-238](../supabase/migrations/20261019000001_schema.sql#L236-L238)), `hat_events_one_step` ([schema.sql:85](../supabase/migrations/20261019000001_schema.sql#L85)) |
-| Grade must match rows per inch (new writes) | Draft check in edit form ([proposals.ts:486](../lib/workshop/proposals.ts#L486)) | `gradeMismatch`, blocked with fix grade ([tools.ts:784-800](../supabase/functions/_shared/tools.ts#L784-L800)) | Re-checked ([apply.ts:100-108](../supabase/functions/_shared/apply.ts#L100-L108)) | Not enforced on purpose (D10); `create_hat` RPC blocks it for manual creates |
-| Only the owner changes a hat | Owner-only buttons | `canAdvance` -> `not_owner` ([domain.ts:131-148](../supabase/functions/_shared/domain.ts#L131-L148)) | Pending transfer treated as not owner ([apply-proposals/index.ts:201-204](../supabase/functions/apply-proposals/index.ts#L201-L204)) | RLS `hat_update` ([rls.sql:95-98](../supabase/migrations/20261019000002_rls.sql#L95-L98)); `apply_proposal` where clause |
+| Stages move forward one step only | Card shows blocked reason and fix ([proposals.ts:151](../lib/workshop/proposals.ts#L151)) | `canAdvance`, blocked card with `fix` ([propose.ts:209-297](../supabase/functions/_shared/tools/propose.ts#L209-L297)) | `canAdvance` on the fresh row ([apply.ts:166-185](../supabase/functions/_shared/apply.ts#L166-L185)) | no update grant on `hats` for members ([hat_grants_contact_email.sql:19](../supabase/migrations/20261019001001_hat_grants_contact_email.sql#L19)); `where to_stage = stage + 1` ([0005:127-128](../supabase/migrations/20261019000005_fix_conflict_errcode.sql#L127-L128)), `hats_guard` ([schema.sql:236-238](../supabase/migrations/20261019000001_schema.sql#L236-L238)), `hat_events_one_step` ([schema.sql:85](../supabase/migrations/20261019000001_schema.sql#L85)) |
+| Grade must match rows per inch (new writes) | Draft check in edit form ([proposals.ts:485](../lib/workshop/proposals.ts#L485)) | `gradeMismatch`, blocked with fix grade ([propose.ts:168-184](../supabase/functions/_shared/tools/propose.ts#L168-L184)) | Re-checked ([apply.ts:142-150](../supabase/functions/_shared/apply.ts#L142-L150)) | Not enforced on purpose (D10); `create_hat` RPC blocks it for manual creates |
+| Only the owner changes a hat | Owner-only buttons | `canAdvance` -> `not_owner` ([domain.ts:142-166](../supabase/functions/_shared/domain.ts#L142-L166)) | Pending transfer treated as not owner ([domain.ts:161-163](../supabase/functions/_shared/domain.ts#L161-L163), run on the fresh row by [apply.ts](../supabase/functions/_shared/apply.ts)) | No client update on `hats` ([hat_grants_contact_email.sql:19](../supabase/migrations/20261019001001_hat_grants_contact_email.sql#L19)); definer RPCs check the owner; `apply_proposal` where clause |
 | New hats start at Weaving (D15) | | Payload has no stage | | `hats_guard` insert branch ([schema.sql:211-225](../supabase/migrations/20261019000001_schema.sql#L211-L225)); `apply_proposal` inserts stage 0 |
-| Quantity 1 to 20, rows 6 to 40 | Edit form limits | [tools.ts:754-765](../supabase/functions/_shared/tools.ts#L754-L765) | [apply.ts:92-99](../supabase/functions/_shared/apply.ts#L92-L99) | `quantity_range` in `apply_proposal`; `hats_rows_range` check |
-| No concurrent overwrite | Failed card "Someone may have updated this hat" | Proposal stores `expected_version` | Version compare ([apply.ts:126-135](../supabase/functions/_shared/apply.ts#L126-L135)) | `where version = v_version` ([0005:127](../supabase/migrations/20261019000005_fix_conflict_errcode.sql#L127)) |
+| Quantity 1 to 20, rows 6 to 40 | Edit form limits | [propose.ts:138-149](../supabase/functions/_shared/tools/propose.ts#L138-L149) | [apply.ts:140-147](../supabase/functions/_shared/apply.ts#L140-L147) | `quantity_range` in `apply_proposal`; `hats_rows_range` check |
+| No concurrent overwrite | Failed card "Someone may have updated this hat" | Proposal stores `expected_version` | Version compare ([apply.ts:167-176](../supabase/functions/_shared/apply.ts#L167-L176)) | `where version = v_version` ([0005:127](../supabase/migrations/20261019000005_fix_conflict_errcode.sql#L127)) |
 | History is append-only | | | | Trigger ([schema.sql:256-275](../supabase/migrations/20261019000001_schema.sql#L256-L275)); no update/delete grant ([rls.sql:50](../supabase/migrations/20261019000002_rls.sql#L50)) |
 | Members never see logs, runs, cost | Admin pages show "for admins" card ([logs/page.tsx](<../app/(app)/logs/page.tsx>)) | | | RLS `is_admin()` ([rls.sql:129-130](../supabase/migrations/20261019000002_rls.sql#L129-L130), [rls.sql:143-144](../supabase/migrations/20261019000002_rls.sql#L143-L144)); `meta` omitted server-side (D8) |
 | Clients never write proposals or runs (D4, D5) | | | Service role only | No insert/update grant ([rls.sql:36-38](../supabase/migrations/20261019000002_rls.sql#L36-L38)) |
@@ -307,8 +316,8 @@ Full list: README [decision log](../README.md#7-decision-log) and [conventions s
 | **Supabase, not Firebase** | Auth, Postgres, RLS and Edge Functions in one free tier. Relational data fits hats, history and logs; `app_logs` is plain SQL to debug; roles are RLS, not custom claims | Deno for server code; a second runtime next to Node (solved by the zero-import shared files) |
 | **Edge Functions, not Next.js API routes** | The service role key and the Gemini key never reach Vercel (D6, D24). Agent writes use the service role inside Supabase only | Two deploy targets; local dev needs `supabase functions serve` |
 | **One JSON response, no streaming (D13)** | Simple and honest: the UI shows generic timed steps and never invents what the agent is doing ([reducer.ts:16-23](../lib/voice/reducer.ts#L16-L23)) | The user waits for the full run. Streaming real steps is a next step (section 7) |
-| **Client-side 10 s undo (D14)** | Undo must never mean a backward stage move or deleting append-only history. So nothing is sent until the window ends ([queue.ts:5](../lib/workshop/queue.ts#L5)) | Approvals are lost if the browser dies before the flush; mitigated with a `keepalive` fetch on hide/close ([api.ts:116-138](../lib/workshop/api.ts#L116-L138)) and an idempotent server |
-| **Rules in code, not prompts** | `domain.ts` is pure and unit tested ([tests/domain.test.ts](../tests/domain.test.ts)); the prompt says "Code checks every stage and grade rule" ([agent.ts:26](../supabase/functions/_shared/agent.ts#L26)) | Rules exist in TS and partly in SQL (the database mirrors the critical ones) |
+| **Client-side 10 s undo (D14)** | Undo must never mean a backward stage move or deleting append-only history. So nothing is sent until the window ends ([queue.ts:5](../lib/workshop/queue.ts#L5)) | Approvals are lost if the browser dies before the flush; mitigated with a `keepalive` fetch on hide/close ([api.ts:117-139](../lib/workshop/api.ts#L117-L139)) and an idempotent server |
+| **Rules in code, not prompts** | `domain.ts` is pure and unit tested ([tests/domain.test.ts](../tests/domain.test.ts)); the prompt says "Code checks every stage and grade rule" ([agent.ts:27](../supabase/functions/_shared/agent.ts#L27)) | Rules exist in TS and partly in SQL (the database mirrors the critical ones) |
 | **Voice in the browser (Web Speech API)** | Free, live transcript, no audio stored by us, fits the timebox | Chrome/Edge only; audio goes to the browser vendor (copy says so, D19); accuracy limited, so the transcript review step and fuzzy code matching exist |
 | **Gemini Flash-Lite (D26)** | Cheap and fast for a voice-first phone flow | Weaker multi-step tool use, so guardrails and evals matter more ([AI.md section 6](AI.md#6-model-choice)) |
 
@@ -319,9 +328,9 @@ Full list: README [decision log](../README.md#7-decision-log) and [conventions s
 | Follow-up ask | Concrete steps |
 |---|---|
 | **WhatsApp intake** | 1. New Edge Function `whatsapp-webhook` (verify the Meta signature). 2. Map the sender phone to a profile (new `profiles.phone` column, unique). 3. Transcribe voice notes server-side (WhatsApp sends audio files, no browser). 4. Reuse `createRunContext` + `runAgentLoop` + `save_agent_run` exactly as [workshop-agent/index.ts:102-159](../supabase/functions/workshop-agent/index.ts#L102-L159) with `input_mode: "voice"`. 5. Reply with a link to `/workshop` to approve. Proposals still need a human tap; never auto-approve from chat. |
-| **Phone login** | Turn on Supabase phone OTP; add `phone` to `profiles`; extend `handle_new_user` ([schema.sql:295-319](../supabase/migrations/20261019000001_schema.sql#L295-L319)). `claim_hat` matches on email today (D11), so a phone claim needs its own matching rule. |
+| **Phone login** | Turn on Supabase phone OTP; add `phone` to `profiles`; extend `handle_new_user` ([schema.sql:295-318](../supabase/migrations/20261019000001_schema.sql#L295-L318)). `claim_hat` matches on email today (D11), so a phone claim needs its own matching rule. |
 | **QR codes** | Generate on the hat detail page with a QR library pointing at `/hat/<code>?via=qr`. `via=qr` is already accepted and logged ([code.ts:41-48](../lib/passport/code.ts#L41-L48), [functions.sql:126](../supabase/migrations/20261019000003_functions.sql#L126)). |
-| **Streaming steps** | Return an SSE stream from `workshop-agent`: emit each `pushStep` ([tools.ts:219-221](../supabase/functions/_shared/tools.ts#L219-L221)) as it happens, keep `save_agent_run` at the end. On the client replace the timed steps in [reducer.ts:16-23](../lib/voice/reducer.ts#L16-L23) with the real ones. Watch the Edge Function wall clock. |
+| **Streaming steps** | Return an SSE stream from `workshop-agent`: emit each `pushStep` ([context.ts:210-212](../supabase/functions/_shared/tools/context.ts#L210-L212)) as it happens, keep `save_agent_run` at the end. On the client replace the timed steps in [reducer.ts:16-23](../lib/voice/reducer.ts#L16-L23) with the real ones. Watch the Edge Function wall clock. |
 | **Multiple workshops per user** | Today one `profiles.workshop_id` drives every policy through `my_workshop_id()` ([schema.sql:281-284](../supabase/migrations/20261019000001_schema.sql#L281-L284)). Add a `memberships(user_id, workshop_id, role)` table, a "current workshop" claim or header, and change `my_workshop_id()` to read it. Policies don't change shape. |
 | **Switch model provider** | Write a new `generate()` with the same `GenerateArgs` / `GenerateResult` shape ([llm-types.ts:38-66](../supabase/functions/_shared/llm-types.ts#L38-L66)) and swap the import in [llm.ts](../supabase/functions/_shared/llm.ts). Map the provider's finish reasons to `STOP` / `MAX_TOKENS` / refusal ([llm-types.ts:68-81](../supabase/functions/_shared/llm-types.ts#L68-L81)), update [pricing.ts](../supabase/functions/_shared/pricing.ts), then run `npm run eval`. The loop and tools don't change. |
 | **A new rule** | Add a pure function to `domain.ts` with tests, call it in the tool handler (blocked card) and in `validateApproval`, and mirror it in SQL only if bad data must never exist. |
@@ -334,8 +343,6 @@ Full list: README [decision log](../README.md#7-decision-log) and [conventions s
 |---|---|
 | Streaming agent progress | Not built (D13). Steps are generic and timed |
 | WhatsApp intake, phone login, QR images, transfer emails, multi-workshop | Not built (README "Cut on purpose") |
-| Concierge runs in `agent_runs` | The concierge logs to `app_logs` only and never inserts an `agent_runs` row, although D3 lists concierge statuses. The seed has one synthetic concierge run ([seed-notes.md](../supabase/seed-notes.md)) |
-| Dedicated `rate_limits` table | Limits count `app_logs` rows ([concierge/index.ts:36-47](../supabase/functions/concierge/index.ts#L36-L47)) and `agent_runs` rows ([workshop-agent/index.ts:65-76](../supabase/functions/workshop-agent/index.ts#L65-L76)) |
-| SQL tests for RLS | Not built ([SECURITY.md section 13](SECURITY.md#13-not-implemented-yet-planned)) |
-| Eval results | `evals/results/latest.json` does not exist yet; see [AI.md section 7](AI.md#7-evals) |
-| README stack and diagram | Still say "Claude API"; the code uses Gemini (D26) |
+| Dedicated `rate_limits` table | Limits count `app_logs` rows ([concierge/index.ts:39-50](../supabase/functions/concierge/index.ts#L39-L50)) and `agent_runs` rows ([workshop-agent/index.ts:65-76](../supabase/functions/workshop-agent/index.ts#L65-L76)) |
+| SQL tests for RLS | Not built; RLS is checked live by `npm run verify:security` ([SECURITY.md section 12](SECURITY.md#12-how-to-verify-yourself)) |
+| Component and end-to-end tests | Not built ([ENGINEERING.md section 11](ENGINEERING.md#11-known-gaps-and-next-steps)) |

@@ -1,5 +1,8 @@
 # Foundation guide (read before building a feature)
 
+> **Build notes written during implementation; may be outdated.** Current design: [ARCHITECTURE.md](ARCHITECTURE.md). Current status: [HANDOFF.md](../HANDOFF.md).
+> The file map is the scaffold state at commit `b1ee65c`.
+
 What the scaffold gives you, how to use it, and where it differs from the specs. Specs still rule; decisions D1 to D26 in `docs/specs/00-conventions.md` override everything.
 
 ## Versions (pinned exactly in `package.json`)
@@ -15,13 +18,13 @@ Next.js 16.4.2, React 19.3.0, TypeScript 5.9.3, Tailwind CSS 4.3.3 (`@tailwindcs
 | `app/layout.tsx` | Root: fonts, theme init script, icon font link, `<ToastProvider>` |
 | `app/globals.css` | Design tokens (light, dark, system), Tailwind theme, `woven` utility, animations |
 | `app/(app)/layout.tsx` | Signed-in shell: loads `getProfile()`, redirects to `/login` if null, wraps in `AppShell` |
-| `app/(app)/{workshop,hats,hats/[code],weavers,runs,runs/[id],logs,settings}/page.tsx` | Placeholders. Replace the page body |
-| `app/page.tsx`, `app/login`, `app/signup`, `app/hat/[code]` | Public placeholders (no shell) |
+| `app/(app)/{workshop,hats,hats/[code],weavers,runs,runs/[id],logs,settings}/page.tsx` | Placeholders at scaffold time (all built since) |
+| `app/page.tsx`, `app/login`, `app/signup`, `app/hat/[code]` | Public placeholders at scaffold time (all built since) |
 | `app/error.tsx`, `app/not-found.tsx` | Error boundary (logs `ui.error` once) and 404 |
 | `proxy.ts` | Refreshes the Supabase session; redirects signed-out users on protected routes to `/login?next=...` |
 | `components/ui/*` | Base components (barrel: `@/components/ui`) |
 | `components/shell/*` | `AppShell`, `UserMenu`, `Avatar`, `Logo`, nav config |
-| `components/feedback/ComingSoon.tsx` | Placeholder body (delete when unused) |
+| `components/feedback/ComingSoon.tsx` | Placeholder body (removed in commit 81e8f69) |
 | `lib/env.ts` | Lazy env reads (`getSupabaseEnv()` returns null when unset) |
 | `lib/supabase/client.ts` | Browser client: `getSupabaseBrowserClient()`, `tryGetSupabaseBrowserClient()` |
 | `lib/supabase/server.ts` | Server client: `await getSupabaseServerClient()` (server components, actions, route handlers) |
@@ -35,9 +38,9 @@ Next.js 16.4.2, React 19.3.0, TypeScript 5.9.3, Tailwind CSS 4.3.3 (`@tailwindcs
 | `supabase/functions/_shared/pricing.ts` | Gemini prices (D26), `costUsd`, `usageFromGemini`, `formatUsd`, `DEFAULT_MODEL` |
 | `supabase/config.toml` | From `supabase init` (offline). `[functions.concierge] verify_jwt = false` already set |
 | `tests/*.test.ts` | domain (all 87 spec cases), log-format, pricing, logger, safeNext, request id |
-| `evals/run.ts`, `scripts/logs.ts` | Placeholders that print "not implemented yet" |
+| `evals/run.ts`, `scripts/logs.ts` | Placeholders at scaffold time; both are real now (`npm run eval`, `npm run logs`) |
 
-Not created yet (owned by feature agents): `supabase/migrations/0001_init.sql`, `supabase/seed.sql`, `_shared/{http,log,llm,tools}.ts`, Edge Functions.
+At scaffold time the migrations, `_shared/{http,log,llm,tools}.ts` and the Edge Functions did not exist yet; they were added by the feature agents (see [supabase/seed-notes.md](../supabase/seed-notes.md) and [EDGE.md](EDGE.md)).
 
 ## Imports and aliases
 

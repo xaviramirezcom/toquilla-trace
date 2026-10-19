@@ -1,5 +1,7 @@
 # Hats, Weavers, Settings and admin pages
 
+> **Build notes written during implementation; may be outdated.** Current design: [ARCHITECTURE.md](ARCHITECTURE.md). Current status: [HANDOFF.md](../HANDOFF.md).
+
 What is built for `/hats`, `/hats/[code]`, `/weavers`, `/settings`, `/logs`, `/runs`, `/runs/[id]`, plus `npm run logs` and `npm run eval`. Specs: 08 (hats and weavers), 09 (logs and runs), 10 (evals), 01 (admin guard).
 
 ## File map
@@ -76,7 +78,7 @@ Reads `evals/cases.json` (written by the edge-functions work), calls `workshop-a
 
 ## Known gaps
 
-- Manual "Add a hat" dialog and Edit details are not built (the agent creates hats; `create_hat` exists in SQL).
+- Edit details is not built. The manual "Add a hat" dialog was built on the workshop screen (`components/workshop/NewHatDialog.tsx`, calls `create_hat`).
 - Weavers search, remove and "View their hats" are Cut.
 - The Logs page has no Live mode, export or user filter (Cut or Nice).
 - The pages were checked with build, curl (redirects to login when signed out) and service-role queries for every select; they were not clicked through in a signed-in browser.

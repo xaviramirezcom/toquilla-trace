@@ -1,5 +1,8 @@
 # 05. Domain rules (`supabase/functions/_shared/domain.ts`)
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](00-conventions.md#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](00-conventions.md#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 ## 1. Summary
 
 One pure TypeScript module with zero imports holds every business rule: the stage machine, grade ranges, ownership checks, hat code validation and matching, and anomaly detection. The agent's tool handlers, `apply-proposals`, the Next.js UI and Vitest all import the same functions, and SQL constraints mirror them as the last line of defense.

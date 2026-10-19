@@ -1,5 +1,8 @@
 # 09. Observability: logs and agent runs
 
+> **Pre-build plan (historical).** Decisions D1 to D26 in 00-conventions ([section 8](00-conventions.md#8-decisions-after-spec-review-these-override-sections-1-to-7-and-any-spec), [section 9](00-conventions.md#9-model-provider-change-d26-overrides-section-5-d8-cost-numbers-d16-and-d17)) override it; the app uses Gemini 2.5 Flash-Lite (D26), not the Claude API.
+> Current status: [HANDOFF.md](../../HANDOFF.md). Unchecked boxes below are the plan's acceptance list, not a status report.
+
 ## 1. Summary
 
 Every user action and every server step writes one row to `app_logs`, tied together by a `request_id`. Every agent run writes one row to `agent_runs` with its step timeline, tokens, latency and cost. Admins read both in the app (Logs, Agent runs), and Claude Code reads them from the terminal (`npm run logs`) to debug.
