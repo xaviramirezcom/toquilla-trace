@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
-import { Logo } from "@/components/shell/Logo";
-import { Card } from "@/components/ui/Card";
+import { redirect } from "next/navigation";
+import { AuthShell } from "@/components/auth/AuthShell";
+import { SignupForm } from "@/components/auth/SignupForm";
+import { tryGetSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Sign up" };
+export const dynamic = "force-dynamic";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const supabase = await tryGetSupabaseServerClient();
+  if (supabase) {
+    let signedIn = false;
+    try {
+      const { data } = await supabase.auth.getUser();
+      signedIn = data.user !== null;
+    } catch {
+      signedIn = false;
+    }
+    if (signedIn) redirect("/workshop");
+  }
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-4 py-10">
-      <Logo href="/" />
-      <Card padding="lg">
-        <h1 className="font-serif text-[28px] font-medium">Create your workshop account</h1>
-        <p className="mt-2 text-muted">Coming soon.</p>
-      </Card>
-    </main>
+    <AuthShell title="Create your workshop account" subtitle="One account for your workshop. You approve every change.">
+      <SignupForm />
+    </AuthShell>
   );
 }
