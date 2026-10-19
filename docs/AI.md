@@ -285,9 +285,9 @@ npm run eval -- --tag safety --min 1      # exit 1 unless every safety case pass
 
 Workshop cases run only as a user in the "Eval Workshop" (`EVAL_EMAIL`, `EVAL_PASSWORD`), otherwise they are skipped, so demo data stays clean ([run.ts:84-102](../evals/run.ts#L84-L102)). The runner never calls `apply-proposals` ([run.ts:4](../evals/run.ts#L4)). Results go to `evals/results/latest.json`, and a failure prints the `npm run logs -- --request` command to inspect it ([run.ts:149-155](../evals/run.ts#L149-L155)).
 
-**Latest results:** no `evals/results/latest.json` exists yet, and no Eval Workshop user is seeded ([seed-notes.md](../supabase/seed-notes.md), deviation 18), so workshop cases currently skip. What exists is a manual smoke test against the deployed functions on demo data ([EDGE.md](EDGE.md#smoke-test-results-2026-10-18-deployed-project)): the canonical note gave the expected question, pending and blocked cards (the flag card was correctly refused because the seed already has that open flag); misheard codes, grade mismatch, backward move, ambiguous weaver, English note, injection, future and chit-chat notes all behaved as the cases expect; concierge answers, change request, price, leak and buyer identity cases behaved as expected. To produce real numbers: create the eval user, set `EVAL_EMAIL` / `EVAL_PASSWORD` in `.env`, run `npm run eval`.
+**Latest results** ([EVALS.md](EVALS.md), 2026-10-19 01:55 UTC, `gemini-2.5-flash-lite`): **29 of 32 passed** (workshop 15 of 17, concierge 14 of 15), $0.0217 for the whole run, 2.1 s average. Every safety case passed. The three misses: `stage-skip` (the model proposed before looking the hat up and gave up after the nudge; nothing wrong was saved), `unknown-weaver` (the model claimed a question it never asked; the code now replaces a summary that overclaims), and `concierge-golf` (grounded answer, but it cited only the care guide).
 
-Deterministic coverage that runs on every commit: the handlers against an in-memory data layer and the loop with a scripted fake model ([tools.test.ts](../tests/tools.test.ts), 32 tests; [edge-helpers.test.ts](../tests/edge-helpers.test.ts), 31 tests).
+Deterministic coverage that runs on every commit: the handlers against an in-memory data layer and the loop with a scripted fake model ([tools.test.ts](../tests/tools.test.ts), 36 tests; [edge-helpers.test.ts](../tests/edge-helpers.test.ts), 39 tests).
 
 ---
 
@@ -331,7 +331,7 @@ Honest timeline: research, problem choice, specs and design happened **before** 
 
 | Limitation | Next step |
 |---|---|
-| No eval results recorded yet; no Eval Workshop user seeded | Create the user, run `npm run eval`, commit `evals/results/latest.json`, gate CI on `--tag safety --min 1` |
+| Evals run once per case, by hand, against the live functions; Flash-Lite sometimes skips the lookup step (`stage-skip`) | Run each case several times and report a rate; gate CI on `--tag safety --min 1`; try a second nudge or a larger model for multi-step notes |
 | Concierge grounding checks source labels, not each fact in the sentence | Check numbers, dates and names in the answer against the record (cheap string checks) |
 | No prompt caching configured (Gemini implicit caching may apply) | Measure `cachedContentTokenCount` in logs first |
 | Browser speech only (Chrome/Edge), audio processed by the browser vendor | Server-side speech-to-text, which WhatsApp intake needs anyway |

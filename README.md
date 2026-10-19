@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **Status** | Planning and design done. Build in progress. |
-| **Live link** | _added after deploy_ |
-| **Stack** | TypeScript · Next.js on Vercel · Supabase (Auth, Postgres, Edge Functions) · Claude API |
+| **Status** | Built and deployed. See [Status](#12-status) and [HANDOFF.md](HANDOFF.md) for what works and what is incomplete. |
+| **Live link** | https://toquilla-trace.vercel.app · try [a hat passport](https://toquilla-trace.vercel.app/hat/TQ-9A1M8) (no login) · [docs](https://toquilla-trace.vercel.app/docs) |
+| **Stack** | TypeScript · Next.js on Vercel · Supabase (Auth, Postgres, Edge Functions) · Google Gemini 2.5 Flash-Lite (`gemini-2.5-flash-lite`) |
 | **Platform** | Responsive web app: mobile-first for workshops and buyers, desktop-first for builder screens (Agent runs, Logs) |
 | **Timebox** | 2 hours of build time |
 
@@ -159,7 +159,7 @@ flowchart LR
   N -->|invoke| F1[Edge fn: workshop-agent]
   N -->|invoke| F2[Edge fn: apply-proposals]
   N -->|invoke| F3[Edge fn: concierge]
-  F1 --> C[Claude API]
+  F1 --> C[Gemini API<br/>gemini-2.5-flash-lite]
   F3 --> C
   F1 & F2 & F3 --> S
   N & F1 & F2 & F3 -->|every action| L[(app_logs)]
@@ -212,6 +212,7 @@ Secrets and passwords are never logged. Only admins can read `app_logs` (row-lev
 | Read-only public agent | Public input is untrusted; blocks prompt injection by design | One agent with all tools |
 | Supabase (Auth + Postgres + Edge Functions) | Login, database and server functions in one free service; relational data fits hats, history and logs; roles enforced with row-level security; plain SQL for debugging logs | Firebase (NoSQL makes log queries awkward, roles need custom claims, Cloud Functions need the paid plan) or custom auth (too slow for 2 hours) |
 | Two roles: member and admin | Logs and traces hold every workshop's data; staff on a phone don't need JSON or costs | Everyone sees everything (a privacy leak and a cluttered mobile app) |
+| Gemini 2.5 Flash-Lite for both agents (D26) | Fast and very cheap (about $0.001 per workshop run), good enough for short tool loops when the rules live in code; one adapter file (`_shared/llm.ts`) and an env var switch models | A larger model (better multi-step tool use, 10 to 50 times the cost per run); the guardrails and the eval set cover the gap |
 | Vercel for Next.js | Deploy in minutes, preview links | Self-hosting |
 | `app_logs` table | One place to debug, readable by humans and AI | Console logs only (lost after deploy) |
 | Design with Claude Design from a detailed prompt, then own it | Every screen and state is specified before coding. After reviewing the rendered prototypes, revisions are made by hand | Designing while coding, or trusting generated mockups without checking them |
@@ -249,20 +250,24 @@ Secrets and passwords are never logged. Only admins can read `app_logs` (row-lev
 
 ---
 
-## 10. Repository layout (target)
+## 10. Repository layout
 
 ```
-app/                    Next.js routes (workshop, hats, hat/[code], runs, logs)
-lib/                    Supabase client, logger, shared types
+app/                    Next.js routes: workshop, hats, weavers, runs, logs, settings (signed in);
+                        /, /login, /signup, /forgot, /hat/[code], /docs (public)
+components/             UI kit, shell, feature components
+lib/                    Supabase clients, logger, auth, docs registry, security headers
 supabase/
-  migrations/           SQL schema + row-level security
+  migrations/           SQL schema, row-level security, functions, demo seed, fixes
   functions/
-    _shared/            domain rules, tools, logger (pure TS, tested)
+    _shared/            domain rules, tools, agent loop, Gemini adapter, logger (pure TS, tested)
     workshop-agent/     agent loop (proposals only)
     apply-proposals/    validates and writes approved actions
     concierge/          read-only Q&A
-evals/                  agent test cases + runner
-docs/                   design prompt, boilerplate notes
+scripts/                seed-users.mjs (demo and eval accounts), logs.ts (npm run logs)
+evals/                  agent eval cases, runner and latest results
+tests/                  Vitest (domain rules, tools, loop, UI logic, docs, headers)
+docs/                   architecture, AI, security, engineering, evals, specs (also at /docs)
 design_handoff_toquilla_trace/  clickable HTML prototypes + design spec (source of truth for UI)
 ```
 
@@ -270,29 +275,52 @@ design_handoff_toquilla_trace/  clickable HTML prototypes + design spec (source 
 
 ## 11. Run it locally
 
-_Filled in once the build is done. Expected:_
-
 ```bash
 npm install
-cp .env.example .env    # Supabase URL/keys, Anthropic API key
-npm run dev
-npm test                # domain rules
-npm run eval            # agent eval set (uses the Claude API)
+cp .env.example .env          # Supabase URL + anon key; service role key and demo/eval accounts for scripts only
+npm run dev                   # http://localhost:3000
+npm test                      # unit tests (domain rules, tools, agent loop, UI logic)
 ```
+
+Backend (only when you change it; needs the Supabase CLI via npx and the project's DB password in `.db-password`):
+
+```bash
+npx --yes supabase@2.121.0 link --project-ref mflvsnpyckuwhicvgnsr -p "$(< .db-password)"
+npx --yes supabase@2.121.0 db push -p "$(< .db-password)"        # migrations
+npm run seed:users                                                # demo + eval accounts (confirmed)
+npx --yes supabase@2.121.0 functions deploy workshop-agent apply-proposals concierge \
+  --project-ref mflvsnpyckuwhicvgnsr --use-api                    # Edge Functions
+npx --yes supabase@2.121.0 secrets set GEMINI_API_KEY=...          # model key lives only here, never in .env or Vercel
+```
+
+Debugging and evals:
+
+```bash
+npm run logs -- --level error --since 1h     # app_logs from the terminal (service role, local only)
+npm run logs -- --request req_8f2a91c4e2b7   # everything for one request
+npm run eval                                 # 32 agent cases against the deployed functions (Gemini, about $0.02)
+```
+
+Demo accounts (emails only; the password is in the submission note): `admin@test.com` (admin), `member@test.com` (workshop member, Taller Pillco), `buyer@test.com` (can claim `TQ-9A1M8`).
 
 ---
 
 ## 12. Status
 
-- [x] Topic research and problem choice
-- [x] Agentic redesign
-- [x] Full design spec for Claude Design
-- [x] Prototype review and revision 2 (roles, data fixes)
-- [x] Architecture and logging plan
-- [ ] Build (see plan above)
-- [ ] Deploy and live link
-- [ ] Eval results
-- [ ] HANDOFF.md (what works, what's missing)
+| Area | Status |
+|---|---|
+| Research, problem choice, agentic redesign, design spec, prototype review (revision 2) | Done (before the build timer) |
+| Auth with email confirmation, two roles enforced by RLS | Done |
+| Composer: typed and voice (Chrome/Edge, es-EC and en-US), editable transcript | Done |
+| Workshop agent (Gemini tool loop, rules in code) and proposal review with rule re-check | Done |
+| Hats list and detail (advance, flags, transfer, archive), weavers | Done |
+| Public passport, claim flow, read-only concierge | Done |
+| Logs (admin), agent runs and traces, `npm run logs` | Done |
+| Security hardening (definer write RPCs, security headers, log PII stripping) | Done, see [docs/SECURITY.md](docs/SECURITY.md) |
+| In-app docs at `/docs` | Done |
+| Eval set and results | Done, see [docs/EVALS.md](docs/EVALS.md) |
+| Deploy | https://toquilla-trace.vercel.app |
+| Not built | See [HANDOFF.md](HANDOFF.md#what-is-incomplete) |
 
 ---
 
