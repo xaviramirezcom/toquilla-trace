@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  LOGIN_NOTICES,
+  authCallbackUrl,
   authErrorCopy,
   emailDomain,
+  loginNotice,
   mapAuthError,
   pendingSignupLogPayload,
   validateLogin,
+  validateNewPassword,
   validateSignup,
 } from "@/components/auth/rules";
 import { safeNext } from "@/lib/safe-next";
@@ -102,5 +106,36 @@ describe("pendingSignupLogPayload", () => {
       duration_ms: 12,
     });
     expect(JSON.stringify(p)).not.toContain("Rosa@");
+  });
+});
+
+describe("email links (confirm and reset)", () => {
+  it("builds the callback from the request origin", () => {
+    expect(authCallbackUrl("http://localhost:3000", "/reset")).toBe("http://localhost:3000/auth/confirm?next=%2Freset");
+    expect(authCallbackUrl("https://toquilla-trace.vercel.app", "/workshop?welcome=1")).toBe(
+      "https://toquilla-trace.vercel.app/auth/confirm?next=%2Fworkshop%3Fwelcome%3D1",
+    );
+  });
+  it("falls back to the live site for a missing or odd origin", () => {
+    const live = "https://toquilla-trace.vercel.app/auth/confirm?next=%2Freset";
+    expect(authCallbackUrl(null, "/reset")).toBe(live);
+    expect(authCallbackUrl("javascript:alert(1)", "/reset")).toBe(live);
+    expect(authCallbackUrl("https://a.example/path", "/reset")).toBe(live);
+    expect(authCallbackUrl("not a url", "/reset")).toBe(live);
+  });
+  it("login notices are fixed copy, never text from the URL", () => {
+    expect(loginNotice("link_invalid")).toBe(LOGIN_NOTICES.link_invalid);
+    expect(loginNotice("<script>")).toBeNull();
+    expect(loginNotice("toString")).toBeNull();
+    expect(loginNotice(null)).toBeNull();
+  });
+  it("new password follows the sign-up rule and must match", () => {
+    expect(validateNewPassword("12345678", "12345678")).toEqual({});
+    expect(validateNewPassword("1234567", "1234567").password).toBe("Use at least 8 characters.");
+    expect(validateNewPassword("12345678", "12345679").confirm).toBe("The passwords don't match.");
+  });
+  it("maps reusing the current password to its own message", () => {
+    expect(mapAuthError({ status: 422, code: "same_password", message: "x" })).toBe("same_password");
+    expect(authErrorCopy("same_password")).toBe("That is your current password. Choose a new one.");
   });
 });

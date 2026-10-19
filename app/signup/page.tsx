@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AuthShell } from "@/components/auth/AuthShell";
+import { ReviewerNote } from "@/components/auth/ReviewerNote";
 import { SignupForm } from "@/components/auth/SignupForm";
 import { tryGetSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -21,6 +22,7 @@ export default async function SignupPage() {
   }
   return (
     <AuthShell title="Create your workshop account" subtitle="One account for your workshop. You approve every change.">
+      <ReviewerNote />
       <SignupForm />
     </AuthShell>
   );

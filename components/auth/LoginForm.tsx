@@ -68,7 +68,7 @@ export function LoginForm({ next, notice }: { next: string | null; notice?: stri
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-4">
-      {notice && !banner && <AuthBanner tone="ok">{notice}</AuthBanner>}
+      {notice && !banner && <AuthBanner tone="info">{notice}</AuthBanner>}
       {banner && (
         <AuthBanner
           action={

@@ -16,7 +16,9 @@
     "format": "prettier --write .",
     "eval": "node --env-file=.env --import tsx evals/run.ts",
     "logs": "node --env-file=.env --import tsx scripts/logs.ts",
-    "seed:users": "node --env-file=.env scripts/seed-users.mjs"
+    "seed:users": "node --env-file=.env scripts/seed-users.mjs",
+    "eval:reset": "node --env-file=.env scripts/eval-reset.mjs",
+    "verify:security": "node --env-file=.env scripts/verify-security.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

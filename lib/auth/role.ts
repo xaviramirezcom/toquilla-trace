@@ -55,7 +55,3 @@ export const getProfile = cache(async (): Promise<Profile | null> => {
     return null;
   }
 });
-
-export async function isAdmin(): Promise<boolean> {
-  return (await getProfile())?.role === "admin";
-}

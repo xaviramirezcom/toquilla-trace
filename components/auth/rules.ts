@@ -2,7 +2,6 @@
 // Shared by the server actions and the client forms, unit tested in tests/auth.test.ts.
 
 export const CITIES = ["Cuenca", "Montecristi", "Sígsig", "Pile", "Other"] as const;
-export type City = (typeof CITIES)[number];
 
 export type AuthErrorCode =
   | "invalid_credentials"
@@ -10,6 +9,7 @@ export type AuthErrorCode =
   | "network"
   | "email_taken"
   | "weak_password"
+  | "same_password"
   | "invalid_input"
   | "unknown";
 
@@ -84,6 +84,7 @@ export function mapAuthError(err: unknown): AuthErrorCode {
     return "email_taken";
   }
   if (e.code === "weak_password") return "weak_password";
+  if (e.code === "same_password") return "same_password";
   if (e.status === 0 || msg.includes("fetch failed") || e.name === "AuthRetryableFetchError") return "network";
   return "unknown";
 }
@@ -98,6 +99,8 @@ export function authErrorCopy(code: AuthErrorCode): string {
       return "This email already has an account.";
     case "weak_password":
       return "That password is too weak. Try a longer one.";
+    case "same_password":
+      return "That is your current password. Choose a new one.";
     case "invalid_input":
       return "Check the highlighted fields.";
     case "network":
@@ -129,4 +132,44 @@ export function pendingSignupLogPayload(input: {
     request_id: input.requestId,
     duration_ms: input.durationMs,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Email links (sign-up confirmation and password reset), handled by app/auth/confirm/route.ts.
+// ---------------------------------------------------------------------------
+
+export const SITE_URL = "https://toquilla-trace.vercel.app";
+
+/**
+ * Where Supabase sends the user after they click an email link. Uses the origin of the request
+ * (so localhost works in dev); anything that is not a plain http(s) origin falls back to the live
+ * site. Supabase also checks it against its redirect allowlist (supabase/config.toml).
+ */
+export function authCallbackUrl(origin: string | null | undefined, next: string): string {
+  let base = SITE_URL;
+  try {
+    const u = new URL(origin ?? "");
+    if ((u.protocol === "https:" || u.protocol === "http:") && u.origin === origin) base = u.origin;
+  } catch {
+    // keep the live site
+  }
+  return `${base}/auth/confirm?next=${encodeURIComponent(next)}`;
+}
+
+/** Fixed banner copy for /login?notice=... (never reflects text from the URL). */
+export const LOGIN_NOTICES = {
+  link_invalid:
+    "That link has expired or was opened in a different browser. If you just confirmed your email, log in below. To reset your password, request a new link.",
+} as const;
+
+export function loginNotice(code: string | null | undefined): string | null {
+  return code && Object.hasOwn(LOGIN_NOTICES, code) ? LOGIN_NOTICES[code as keyof typeof LOGIN_NOTICES] : null;
+}
+
+/** New password on /reset: same minimum as sign-up, typed twice. */
+export function validateNewPassword(password: string, confirm: string): Partial<Record<"password" | "confirm", string>> {
+  const errors: Partial<Record<"password" | "confirm", string>> = {};
+  if (password.length < PASSWORD_MIN) errors.password = `Use at least ${PASSWORD_MIN} characters.`;
+  if (confirm !== password) errors.confirm = "The passwords don't match.";
+  return errors;
 }

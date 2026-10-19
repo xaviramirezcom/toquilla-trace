@@ -6,14 +6,16 @@
 // - signed out (failures, sign-up awaiting email confirmation): the log_public() RPC, with an email
 //   hash and domain only, never the address.
 import { createHash } from "node:crypto";
-import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { capPayload, redact, type LogAction, type LogLevel, type LogRow } from "@domain/log-format";
 import {
+  authCallbackUrl,
   emailDomain,
   mapAuthError,
   pendingSignupLogPayload,
   validateLogin,
+  validateNewPassword,
   validateSignup,
   type AuthErrorCode,
   type AuthResult,
@@ -64,6 +66,15 @@ async function logPublic(
     await supabase.rpc("log_public", { action, level, payload: capPayload(redact(payload)) });
   } catch {
     // ignore
+  }
+}
+
+/** Origin of the current request (the browser sends it with every server action). */
+async function requestOrigin(): Promise<string | null> {
+  try {
+    return (await headers()).get("origin");
+  } catch {
+    return null;
   }
 }
 
@@ -136,7 +147,11 @@ export async function signup(form: SignupForm): Promise<AuthResult> {
     const { data, error } = await supabase.auth.signUp({
       email,
       password: form.password,
-      options: { data: { name: form.name.trim(), workshop_name: form.workshopName.trim(), city } },
+      options: {
+        data: { name: form.name.trim(), workshop_name: form.workshopName.trim(), city },
+        // The confirmation link lands on /auth/confirm, which signs the user in.
+        emailRedirectTo: authCallbackUrl(await requestOrigin(), "/workshop?welcome=1"),
+      },
     });
     if (error) code = mapAuthError(error);
     // With email confirmation on, an existing address comes back as a user with no identities.
@@ -195,7 +210,10 @@ export async function requestPasswordReset(email: string): Promise<{ ok: true } 
   const supabase = await tryGetSupabaseServerClient();
   if (!supabase) return { ok: false, code: "network" };
   try {
-    const { error } = await supabase.auth.resetPasswordForEmail(clean);
+    // The link signs the user in through /auth/confirm, then /reset sets the new password.
+    const { error } = await supabase.auth.resetPasswordForEmail(clean, {
+      redirectTo: authCallbackUrl(await requestOrigin(), "/reset"),
+    });
     if (error) {
       const code = mapAuthError(error);
       if (code === "rate_limited" || code === "network") return { ok: false, code };
@@ -207,29 +225,18 @@ export async function requestPasswordReset(email: string): Promise<{ ok: true } 
   return { ok: true };
 }
 
-/**
- * Server-side logout: logs auth.logout while the session is still valid, signs out, goes to /login.
- * The shell (components/shell/AppShell.tsx) currently logs out in the browser instead; both work.
- */
-export async function logout(): Promise<void> {
+/** /reset: sets a new password for the signed-in user (the reset link signed them in). */
+export async function updatePassword(password: string, confirm: string): Promise<AuthResult> {
+  if (Object.keys(validateNewPassword(password, confirm)).length > 0) return { ok: false, code: "invalid_input" };
   const supabase = await tryGetSupabaseServerClient();
-  if (supabase) {
-    try {
-      const { data } = await supabase.auth.getUser();
-      if (data.user) {
-        await logSignedIn(supabase, {
-          level: "info",
-          action: "auth.logout",
-          userId: data.user.id,
-          workshopId: await workshopIdFor(supabase, data.user.id),
-          requestId: newRequestId(),
-          payload: {},
-        });
-      }
-      await supabase.auth.signOut();
-    } catch {
-      // Still leave the app; the proxy re-checks the session.
-    }
+  if (!supabase) return { ok: false, code: "network" };
+  try {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return { ok: false, code: "invalid_credentials" };
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return { ok: false, code: mapAuthError(error) };
+  } catch (err) {
+    return { ok: false, code: mapAuthError(err) };
   }
-  redirect("/login");
+  return { ok: true, redirectTo: "/workshop" };
 }
