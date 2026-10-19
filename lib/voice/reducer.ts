@@ -488,3 +488,19 @@ export function transition(s: ComposerState, e: ComposerEvent): Transition {
 export function composerReducer(s: ComposerState, e: ComposerEvent): ComposerState {
   return transition(s, e).state;
 }
+
+/**
+ * `/workshop?record=1` (from the mobile mic shortcut or a hat's "Record update"): start the mic
+ * once, after the permission query has settled. The normal MIC_CLICK path then runs the
+ * permission flow: explainer for "prompt"/"unknown", blocked hint for "denied", recording for
+ * "granted". Never fires while something else is happening or in a browser without voice.
+ */
+export function shouldAutoRecord(input: {
+  requested: boolean;
+  alreadyStarted: boolean;
+  permReady: boolean;
+  supported: boolean;
+  phase: string;
+}): boolean {
+  return input.requested && !input.alreadyStarted && input.permReady && input.supported && input.phase === "idle";
+}

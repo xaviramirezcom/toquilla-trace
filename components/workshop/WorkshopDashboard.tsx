@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import type { Profile } from "@/lib/auth/types";
 import { cn } from "@/lib/cn";
+import { shouldAutoRecord } from "@/lib/voice/reducer";
 import { greeting } from "@/lib/workshop/format";
 import type { WorkshopOverview } from "@/lib/workshop/overview";
 import { RunBubbles, type LastRun } from "./AgentRun";
@@ -77,17 +78,24 @@ export function WorkshopDashboard({ profile, overview, welcome, hatTag, autoReco
     router.replace(pathname);
   }, [welcome, toast, router, pathname]);
 
-  // ?hat=TQ-7F3K2 tags the note; &record=1 starts only when the mic is already allowed.
+  // ?hat=TQ-7F3K2 tags the note; ?record=1 presses the mic once the permission query settles,
+  // so the usual permission flow (explainer, blocked hint or recording) runs.
   useEffect(() => {
     if (hatTag) composerRef.current.setHat(hatTag);
   }, [hatTag]);
-  const permGranted = composer.state.perm === "granted";
   const autoStarted = useRef(false);
+  const autoRecordNow = shouldAutoRecord({
+    requested: autoRecord,
+    alreadyStarted: false, // the ref is checked in the effect (refs are not read during render)
+    permReady: composer.permReady,
+    supported: composer.state.supported,
+    phase: composer.state.phase.kind,
+  });
   useEffect(() => {
-    if (!autoRecord || autoStarted.current || !permGranted) return;
+    if (!autoRecordNow || autoStarted.current) return;
     autoStarted.current = true;
     composerRef.current.micClick();
-  }, [autoRecord, permGranted]);
+  }, [autoRecordNow]);
 
   // Keyboard: "/" focuses the composer, Esc cancels a recording.
   useEffect(() => {

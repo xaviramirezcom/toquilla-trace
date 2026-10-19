@@ -186,7 +186,7 @@ export function useComposer(onSuccess: (r: AgentSuccess) => void) {
     setState(next);
   }, []);
 
-  useMicPermission((perm, via) => {
+  const permReady = useMicPermission((perm, via) => {
     dispatch({ type: "PERM_CHANGE", perm });
     log.info("voice.permission", { payload: { state: perm, via } });
   });
@@ -231,7 +231,7 @@ export function useComposer(onSuccess: (r: AgentSuccess) => void) {
     focusTextarea,
   };
 
-  return { state, ...api };
+  return { state, permReady, ...api };
 }
 
 export type ComposerApi = ReturnType<typeof useComposer>;

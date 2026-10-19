@@ -7,6 +7,7 @@ import {
   counterTone,
   formatTimer,
   initialComposerState,
+  shouldAutoRecord,
   transition,
   type ComposerState,
   type Phase,
@@ -317,5 +318,24 @@ describe("helpers", () => {
   it("formats the timer", () => {
     expect(formatTimer(7_400)).toBe("0:07");
     expect(formatTimer(110_000)).toBe("1:50");
+  });
+});
+
+describe("shouldAutoRecord (?record=1)", () => {
+  const base = { requested: true, alreadyStarted: false, permReady: true, supported: true, phase: "idle" };
+  it("starts once the permission query has settled", () => {
+    expect(shouldAutoRecord(base)).toBe(true);
+    expect(shouldAutoRecord({ ...base, permReady: false })).toBe(false);
+  });
+  it("never starts twice, without the flag, without voice or while busy", () => {
+    expect(shouldAutoRecord({ ...base, alreadyStarted: true })).toBe(false);
+    expect(shouldAutoRecord({ ...base, requested: false })).toBe(false);
+    expect(shouldAutoRecord({ ...base, supported: false })).toBe(false);
+    expect(shouldAutoRecord({ ...base, phase: "sending" })).toBe(false);
+  });
+  it("a mic click with permission 'prompt' shows the explainer instead of recording", () => {
+    const s: ComposerState = { ...initialComposerState(), supported: true, perm: "prompt", explained: false };
+    const r = transition(s, { type: "MIC_CLICK", now: 0 });
+    expect(r.state.phase.kind).not.toBe("recording");
   });
 });
