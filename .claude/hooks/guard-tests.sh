@@ -11,7 +11,7 @@ block() { echo "BLOCKED by guard-tests.sh: $1. Fix the code, not the test or the
 
 # Banned shortcuts in anything we write.
 echo "$new" | grep -Eq '\b(it|test|describe)\.(skip|only|todo)\b|\bx(it|describe|test)\(|\bfit\(|\bfdescribe\(' && block "skipped or focused tests"
-echo "$new" | grep -Eq '@ts-ignore|@ts-nocheck|@ts-expect-error|eslint-disable' && block "type or lint suppression"
+echo "$new" | grep -Eq '@ts-ignore|@ts-nocheck|@ts-expect-error|eslint-disable|deno-lint-ignore' && block "type or lint suppression"
 echo "$new" | grep -Eq 'expect\.assertions\(0\)|expect\(true\)\.toBe\(true\)' && block "empty or tautological assertion"
 echo "$new" | grep -Eqi 'coverageThreshold|thresholds?:[[:space:]]*\{' && echo "$file" | grep -Eq '(vitest|jest)\.config|package\.json' && block "editing coverage thresholds"
 

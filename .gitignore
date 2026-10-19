@@ -22,3 +22,5 @@ evals/results/*
 supabase/.temp/
 supabase/.branches/
 .db-password
+.env*
+!.env.example
