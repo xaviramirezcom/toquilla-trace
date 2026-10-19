@@ -240,7 +240,7 @@ sequenceDiagram
   actor Bu as Buyer
   participant DB as Postgres
   W->>DB: transfer_hat(code, version, 'buyer', email)
-  Note over DB: transfer_email set; workshop can no longer update the hat (RLS hat_update)
+  Note over DB: transfer_email set, so the workshop can no longer update the hat (RLS hat_update)
   Bu->>DB: sign in (email confirmed), open passport
   DB-->>Bu: viewer = 'recipient', Claim button shown
   Bu->>DB: claim_hat(code)

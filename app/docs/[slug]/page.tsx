@@ -16,9 +16,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const entry = (await getRegistry()).find((d) => d.slug === slug);
-  if (!entry) return { title: "Docs" };
-  const doc = await loadDoc(entry);
-  return { title: `${doc.title} · Docs` };
+  // Registry titles ("Overview", "Security") so the page title never repeats the product name.
+  return { title: entry ? `${entry.title} · Docs` : "Docs" };
 }
 
 export default async function DocPage({ params }: { params: Promise<{ slug: string }> }) {
