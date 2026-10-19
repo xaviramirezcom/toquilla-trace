@@ -10,7 +10,15 @@ import {
   type PassportJson,
 } from "@domain/concierge";
 import { EditError, mergeEdits, validateApproval } from "@domain/apply";
-import { MAX_ITERATIONS, SYSTEM_PROMPT, buildUserMessage, isValidSummary, runAgentLoop, sentenceCount } from "@domain/agent";
+import {
+  MAX_ITERATIONS,
+  SYSTEM_PROMPT,
+  buildUserMessage,
+  claimedActionCount,
+  isValidSummary,
+  runAgentLoop,
+  sentenceCount,
+} from "@domain/agent";
 import type { GenerateArgs, GenerateResult } from "@domain/llm-types";
 import { MEMBER, SAMPLE_NOTE, WS, ctxFor } from "./tools-fixtures";
 
@@ -392,6 +400,40 @@ describe("agent loop", () => {
   it("the prompt tells the model a weaver name is not a hat and where timing issues come from", () => {
     expect(SYSTEM_PROMPT).toMatch(/A weaver name is not a hat/);
     expect(SYSTEM_PROMPT).toMatch(/call get_hat to see timing problems/);
+  });
+});
+
+describe("summary claims", () => {
+  it("reads the number of actions a summary claims", () => {
+    expect(claimedActionCount("I understood: x. I have prepared 1 action for review.")).toBe(1);
+    expect(claimedActionCount("I understood: I prepared two actions.")).toBe(2);
+    expect(claimedActionCount("I understood: I have prepared 0 actions for review.")).toBe(0);
+    expect(claimedActionCount("I understood: nothing to record.")).toBeNull();
+  });
+
+  it("a summary that claims an action that was never prepared gets a nudge, then the code summary", async () => {
+    const ctx = ctxFor("Doña Zoila trajo 2 finos de 18 hileras");
+    const claim = "I understood: I need to ask a question because Doña Zoila was not found. I have prepared 1 action for review.";
+    const { generate, seen } = scripted([
+      reply({ functionCalls: [{ name: "find_weaver", args: { name: "Doña Zoila" } }] }),
+      reply({ text: claim }),
+      reply({ text: claim }),
+    ]);
+    const out = await runAgentLoop(ctx, { ...loopOpts, generate });
+    expect(seen).toHaveLength(3);
+    expect(seen[2].contents.at(-1)?.parts[0].text).toMatch(/^If the note describes events/);
+    expect(out).toMatchObject({
+      status: "proposed",
+      usedFallback: true,
+      summary: "I understood: there was nothing I could prepare from this note.",
+    });
+  });
+
+  it("an honest summary is kept", async () => {
+    const ctx = ctxFor("x");
+    const { generate } = scripted([reply({ text: "I understood: I prepared 0 actions for review." })]);
+    const out = await runAgentLoop(ctx, { ...loopOpts, generate });
+    expect(out).toMatchObject({ usedFallback: false, summary: "I understood: I prepared 0 actions for review." });
   });
 });
 

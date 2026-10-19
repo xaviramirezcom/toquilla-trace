@@ -115,6 +115,19 @@ export function sentenceCount(text: string): number {
   return /[.!?]$/.test(t) ? ends : ends + 1;
 }
 
+const NUMBER_WORDS: Record<string, number> = {
+  no: 0, zero: 0, one: 1, a: 1, an: 1, two: 2, three: 3, four: 4, five: 5,
+  six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+};
+
+/** Number of actions a summary claims ("prepared 1 action", "two actions"); null when it names none. */
+export function claimedActionCount(text: string): number | null {
+  const m = /\b(\d+|no|zero|one|an?|two|three|four|five|six|seven|eight|nine|ten)\s+(?:\w+\s+)?actions?\b/i.exec(text);
+  if (!m) return null;
+  const w = m[1].toLowerCase();
+  return /^\d+$/.test(w) ? Number(w) : (NUMBER_WORDS[w] ?? null);
+}
+
 /** The summary contract from the system prompt, checked in code: "I understood: ..." in 1 or 2 sentences. */
 export function isValidSummary(text: string): boolean {
   return text.startsWith("I understood:") && sentenceCount(text) <= 2;
@@ -278,7 +291,10 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
     // One nudge per run: the model stopped with no text, or gave up after calls it could fix
     // (proposing before looking up). Never nudged after a clean finish.
     const empty = !cleanSummary(res.text);
-    if (!nudged && iteration < MAX_ITERATIONS && (empty || (fixableErrors && ctx.proposals.length === 0))) {
+    // Flash-Lite sometimes says "I need to ask a question ... 1 action" without calling ask_question.
+    const claimed = res.text ? claimedActionCount(res.text) : null;
+    const overclaims = claimed !== null && claimed > ctx.proposals.length;
+    if (!nudged && iteration < MAX_ITERATIONS && (empty || overclaims || (fixableErrors && ctx.proposals.length === 0))) {
       nudged = true;
       fixableErrors = false;
       if (res.content && res.content.parts.length > 0) contents.push(res.content);
@@ -286,7 +302,7 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
         role: "user",
         parts: [
           {
-            text: empty
+            text: empty || (overclaims && !fixableErrors)
               ? "If the note describes events, call the propose functions for each event; otherwise reply with a short summary."
               : "Some calls failed because the lookup was missing. Call find_hats or find_weaver first, then propose again with the codes and ids they return, then write the summary.",
           },
@@ -295,9 +311,10 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
       continue;
     }
     summary = cleanSummary(res.text);
-    if (!summary || !isValidSummary(summary)) {
-      // No summary, or one that breaks the format (not "I understood:", more than 2 sentences):
-      // describe the result in code instead.
+    const finalClaim = summary ? claimedActionCount(summary) : null;
+    if (!summary || !isValidSummary(summary) || (finalClaim !== null && finalClaim !== ctx.proposals.length)) {
+      // No summary, one that breaks the format (not "I understood:", more than 2 sentences), or one
+      // that claims a different number of actions than were prepared: describe the result in code.
       summary = plainSummary(ctx);
       usedFallback = true;
     }
