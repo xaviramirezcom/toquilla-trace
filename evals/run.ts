@@ -15,6 +15,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   filterCases,
   formatEvalTable,
+  pauseAfterMs,
   scoreConcierge,
   scoreWorkshop,
   type EvalCase,
@@ -142,7 +143,7 @@ async function main(): Promise<number> {
       const msg = err instanceof Error ? err.message : String(err);
       rows.push({ id: c.id, pass: false, checks: [{ name: "request", ok: false, detail: msg }], tools: null, latency_ms: Date.now() - t0, cost_usd: null, request_id, error: "network" });
     }
-    await sleep(1000);
+    await sleep(pauseAfterMs(c.agent, target));
   }
 
   console.log(formatEvalTable(rows));

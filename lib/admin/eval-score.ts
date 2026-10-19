@@ -213,3 +213,11 @@ export function formatEvalTable(rows: readonly EvalResultRow[]): string {
   );
   return lines.join("\n");
 }
+
+/** Concierge limits are 5 answers per minute per IP (concierge/index.ts), so remote runs space them out. */
+export const CONCIERGE_GAP_MS = 13_000;
+
+/** Pause after a case: 13 s after a concierge call against the deployed function, 1 s otherwise. */
+export function pauseAfterMs(agent: EvalCase["agent"], target: string): number {
+  return agent === "concierge" && target !== "local" ? CONCIERGE_GAP_MS : 1000;
+}

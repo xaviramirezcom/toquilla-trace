@@ -1,6 +1,8 @@
 // Eval scoring used by evals/run.ts (lib/admin/eval-score.ts), spec 10 section 6.2.
 import { describe, expect, it } from "vitest";
 import {
+  CONCIERGE_GAP_MS,
+  pauseAfterMs,
   filterCases,
   formatEvalTable,
   matchProposals,
@@ -95,3 +97,13 @@ describe("runner helpers", () => {
     expect(out).toContain("1 skipped");
   });
 });
+
+describe("eval pacing", () => {
+  it("spaces concierge calls under the 5 per minute limit on the deployed function", () => {
+    expect(pauseAfterMs("concierge", "remote")).toBe(CONCIERGE_GAP_MS);
+    expect(CONCIERGE_GAP_MS * 5).toBeGreaterThanOrEqual(60_000);
+    expect(pauseAfterMs("concierge", "local")).toBe(1000);
+    expect(pauseAfterMs("workshop", "remote")).toBe(1000);
+  });
+});
+
