@@ -15,8 +15,9 @@ if git diff --cached -U0 | grep -E '^\+' | grep -Eq '\b(it|test|describe)\.(only
   echo "pre-commit: focused or skipped tests found (.only / .skip)"; exit 1
 fi
 
-# 3. Type check and lint when the scripts exist.
+# 3. Type check, lint and unit tests (about a second) when the scripts exist.
 if [ -f package.json ]; then
   npm run --if-present typecheck
   npm run --if-present lint
+  npm run --if-present test
 fi
