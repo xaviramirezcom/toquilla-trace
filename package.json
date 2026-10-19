@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "eval": "node --env-file=.env --import tsx evals/run.ts",
-    "logs": "node --env-file=.env --import tsx scripts/logs.ts"
+    "logs": "node --env-file=.env --import tsx scripts/logs.ts",
+    "seed:users": "node --env-file=.env scripts/seed-users.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
@@ -26,8 +27,7 @@
     "react-dom": "19.3.0",
     "react-markdown": "10.1.0",
     "remark-gfm": "4.0.1",
-    "server-only": "0.0.1",
-    "zod": "4.6.7"
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",

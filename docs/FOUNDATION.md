@@ -4,7 +4,7 @@ What the scaffold gives you, how to use it, and where it differs from the specs.
 
 ## Versions (pinned exactly in `package.json`)
 
-Next.js 16.4.2, React 19.3.0, TypeScript 5.9.3, Tailwind CSS 4.3.3 (`@tailwindcss/turbopack`), ESLint 9.39.5 + `eslint-config-next` 16.4.2, `@supabase/supabase-js` 2.118.0, `@supabase/ssr` 0.12.7, `zod` 4.6.7, `server-only` 0.0.1, Vitest 4.1.12, tsx 4.23.15, Prettier 3.9.10, `@types/node` 20.19.43. Node 20.9+ (CI uses Node 20, which is why Vitest is 4.x and not 5.x).
+Next.js 16.4.2, React 19.3.0, TypeScript 5.9.3, Tailwind CSS 4.3.3 (`@tailwindcss/turbopack`), ESLint 9.39.5 + `eslint-config-next` 16.4.2, `@supabase/supabase-js` 2.118.0, `@supabase/ssr` 0.12.7, `server-only` 0.0.1, Vitest 4.1.12, tsx 4.23.15, Prettier 3.9.10, `@types/node` 20.19.43. Node 20.9+ (CI uses Node 20, which is why Vitest is 4.x and not 5.x).
 
 **Next.js 16 notes:** `middleware.ts` is now `proxy.ts` (export `proxy`). Route `params` and `searchParams` are Promises (`const { code } = await params`). `error.tsx` receives `{ error: unknown, retry }`. Cache Components is **off**, so the classic model applies: use `export const dynamic = "force-dynamic"` on anything that reads cookies. Read `node_modules/next/dist/docs/` before using an unfamiliar API.
 
