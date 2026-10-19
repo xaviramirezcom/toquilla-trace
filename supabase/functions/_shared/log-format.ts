@@ -41,6 +41,7 @@ export const LOG_ACTIONS = [
   "concierge.message",
   "concierge.refused",
   "concierge.error",
+  "concierge.feedback",
   "ui.error",
   "ui.page_view",
 ] as const;
@@ -53,6 +54,7 @@ export const PUBLIC_LOG_ACTIONS: readonly LogAction[] = [
   "passport.view",
   "passport.verify_failed",
   "ui.error",
+  "concierge.feedback",
 ];
 
 export interface SerializedError {
@@ -79,7 +81,15 @@ export interface LogRow {
   created_at: string;
 }
 
-const SECRET_KEY_RE = /pass(word)?|token|secret|authorization|api[-_]?key|jwt|cookie|session/i;
+// Whole secret-like keys only (an optional prefix such as "db_" or "gemini_" is allowed), so
+// counters like tokens_in / tokens_out / token_count stay readable. Keys are lower-cased and
+// "-" becomes "_" before the test.
+const SECRET_KEY_RE =
+  /^(?:[a-z0-9]+_)*(?:password|passwd|secret|api_?key|authorization|access_token|refresh_token|id_token|token|jwt|service_role(?:_key)?|cookie)$/;
+
+function isSecretKey(key: string): boolean {
+  return SECRET_KEY_RE.test(key.toLowerCase().replace(/-/g, "_"));
+}
 const JWT_RE = /eyJ[\w-]{10,}\.[\w-]+\.[\w-]+/;
 const API_KEY_RE = /sk-ant-[\w-]+|AIza[\w-]{30,}/;
 const MAX_STRING = 2000;
@@ -99,7 +109,7 @@ function redactValue(value: unknown, depth: number): unknown {
   if (Array.isArray(value)) return value.map((v) => redactValue(v, depth + 1));
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-    out[k] = SECRET_KEY_RE.test(k) ? REDACTED : redactValue(v, depth + 1);
+    out[k] = isSecretKey(k) ? REDACTED : redactValue(v, depth + 1);
   }
   return out;
 }

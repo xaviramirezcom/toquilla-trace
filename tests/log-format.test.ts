@@ -36,6 +36,43 @@ describe("redact", () => {
     });
   });
 
+  it("keeps token counters and other non-secret keys that merely contain a secret word", () => {
+    const out = redact({
+      tokens_in: 2716,
+      tokens_out: 22,
+      token_count: 9,
+      cached_tokens: 0,
+      meta: { tokens_in: 1, prompt_token_count: 2 },
+      passport: "TQ-9A1M8",
+      session_length: 3,
+    });
+    expect(out).toEqual({
+      tokens_in: 2716,
+      tokens_out: 22,
+      token_count: 9,
+      cached_tokens: 0,
+      meta: { tokens_in: 1, prompt_token_count: 2 },
+      passport: "TQ-9A1M8",
+      session_length: 3,
+    });
+  });
+
+  it("redacts whole secret keys in any case, with prefixes and dashes", () => {
+    const out = redact({
+      apikey: "a",
+      "api-key": "b",
+      gemini_api_key: "c",
+      refresh_token: "d",
+      jwt: "e",
+      service_role: "f",
+      SUPABASE_SERVICE_ROLE_KEY: "g",
+      client_secret: "h",
+      token: "i",
+      value: "AIzaSyA1234567890abcdefghijklmnopqrstu",
+    });
+    expect(Object.values(out).every((v) => v === REDACTED)).toBe(true);
+  });
+
   it("truncates long strings", () => {
     const out = redact({ s: "a".repeat(5000) });
     expect(out.s.length).toBeLessThan(2100);

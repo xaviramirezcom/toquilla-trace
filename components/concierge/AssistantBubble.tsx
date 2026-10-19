@@ -44,8 +44,8 @@ export function AssistantBubble({ msg, code, contactHref, showClaim, onClaim, on
   }
 
   function feedback(helpful: boolean, reason: string | null) {
-    // Signed-in viewers get an app_logs row; anonymous feedback is dropped by the logger (log_public allowlist, D6).
-    log.info("concierge.message", { hat_code: code, payload: { event: "feedback", helpful, reason } });
+    // Signed-in viewers write an app_logs row; anonymous buyers go through log_public (allowlisted).
+    log.info("concierge.feedback", { hat_code: code, payload: { event: "feedback", helpful, reason } });
   }
 
   function toggle(v: "up" | "down") {

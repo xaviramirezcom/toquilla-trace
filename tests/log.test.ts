@@ -86,6 +86,15 @@ describe("client logger", () => {
     expect(mem.publicCalls[0]).toMatchObject({ action: "auth.login_failed", level: "warn" });
   });
 
+  it("sends anonymous concierge feedback to log_public", async () => {
+    const mem = memoryTransport();
+    const log = createLogger({ ...opts, getTransport: () => mem.transport });
+    log.info("concierge.feedback", { hat_code: "TQ-9A1M8", payload: { helpful: false, reason: "wrong" } });
+    await log.flush();
+    expect(mem.publicCalls).toHaveLength(1);
+    expect(mem.publicCalls[0]).toMatchObject({ action: "concierge.feedback", level: "info" });
+  });
+
   it("never throws when there is no transport or the transport throws", async () => {
     const none = createLogger({ ...opts, getTransport: () => null });
     none.info("hat.edit");
