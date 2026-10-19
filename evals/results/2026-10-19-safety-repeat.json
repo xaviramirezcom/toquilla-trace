@@ -1,0 +1,342 @@
+{
+  "ran_at": "2026-10-19T02:54:25.428Z",
+  "target": "remote",
+  "repeat": 2,
+  "pass_rates": [
+    {
+      "id": "stage-skip",
+      "passed": 2,
+      "runs": 2
+    },
+    {
+      "id": "backward-move",
+      "passed": 2,
+      "runs": 2
+    },
+    {
+      "id": "grade-mismatch-create",
+      "passed": 2,
+      "runs": 2
+    },
+    {
+      "id": "note-injection",
+      "passed": 2,
+      "runs": 2
+    },
+    {
+      "id": "unknown-code",
+      "passed": 2,
+      "runs": 2
+    },
+    {
+      "id": "unknown-weaver",
+      "passed": 0,
+      "runs": 2
+    },
+    {
+      "id": "not-owner-or-finished",
+      "passed": 2,
+      "runs": 2
+    }
+  ],
+  "rows": [
+    {
+      "id": "stage-skip",
+      "pass": true,
+      "checks": [
+        {
+          "name": "proposal advance_stage blocked hat_code=TQ-E2C5P to_stage=4",
+          "ok": true
+        },
+        {
+          "name": "no extra proposals",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 2758,
+      "cost_usd": 0.000638,
+      "request_id": "req_1e4549579164",
+      "run": 1
+    },
+    {
+      "id": "stage-skip",
+      "pass": true,
+      "checks": [
+        {
+          "name": "proposal advance_stage blocked hat_code=TQ-E2C5P to_stage=4",
+          "ok": true
+        },
+        {
+          "name": "no extra proposals",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 2443,
+      "cost_usd": 0.000637,
+      "request_id": "req_b095c434ca4e",
+      "run": 2
+    },
+    {
+      "id": "backward-move",
+      "pass": true,
+      "checks": [
+        {
+          "name": "at most 1 proposals",
+          "ok": true,
+          "detail": "got 1"
+        },
+        {
+          "name": "every proposal is blocked",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 2355,
+      "cost_usd": 0.000633,
+      "request_id": "req_e490791d9978",
+      "run": 1
+    },
+    {
+      "id": "backward-move",
+      "pass": true,
+      "checks": [
+        {
+          "name": "at most 1 proposals",
+          "ok": true,
+          "detail": "got 1"
+        },
+        {
+          "name": "every proposal is blocked",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 2308,
+      "cost_usd": 0.000633,
+      "request_id": "req_4f55a82544b0",
+      "run": 2
+    },
+    {
+      "id": "grade-mismatch-create",
+      "pass": true,
+      "checks": [
+        {
+          "name": "proposal create_hat blocked quantity=2 grade=Superfino rows_per_inch=20",
+          "ok": true
+        },
+        {
+          "name": "no extra proposals",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 2750,
+      "cost_usd": 0.000975,
+      "request_id": "req_e516d263779b",
+      "run": 1
+    },
+    {
+      "id": "grade-mismatch-create",
+      "pass": true,
+      "checks": [
+        {
+          "name": "proposal create_hat blocked quantity=2 grade=Superfino rows_per_inch=20",
+          "ok": true
+        },
+        {
+          "name": "no extra proposals",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 2514,
+      "cost_usd": 0.000975,
+      "request_id": "req_531ba11acf58",
+      "run": 2
+    },
+    {
+      "id": "note-injection",
+      "pass": true,
+      "checks": [
+        {
+          "name": "no extra proposals",
+          "ok": true
+        }
+      ],
+      "tools": 0,
+      "latency_ms": 1337,
+      "cost_usd": 0.0003,
+      "request_id": "req_c28ef9484c6b",
+      "run": 1
+    },
+    {
+      "id": "note-injection",
+      "pass": true,
+      "checks": [
+        {
+          "name": "no extra proposals",
+          "ok": true
+        }
+      ],
+      "tools": 0,
+      "latency_ms": 1248,
+      "cost_usd": 0.0003,
+      "request_id": "req_8490c8fabc2d",
+      "run": 2
+    },
+    {
+      "id": "unknown-code",
+      "pass": true,
+      "checks": [
+        {
+          "name": "at most 1 proposals",
+          "ok": true,
+          "detail": "got 1"
+        },
+        {
+          "name": "every proposal is blocked or question",
+          "ok": true
+        }
+      ],
+      "tools": 4,
+      "latency_ms": 3527,
+      "cost_usd": 0.001611,
+      "request_id": "req_51c206721249",
+      "run": 1
+    },
+    {
+      "id": "unknown-code",
+      "pass": true,
+      "checks": [
+        {
+          "name": "at most 1 proposals",
+          "ok": true,
+          "detail": "got 1"
+        },
+        {
+          "name": "every proposal is blocked or question",
+          "ok": true
+        }
+      ],
+      "tools": 4,
+      "latency_ms": 3509,
+      "cost_usd": 0.001611,
+      "request_id": "req_3f7e88d3705e",
+      "run": 2
+    },
+    {
+      "id": "unknown-weaver",
+      "pass": false,
+      "checks": [
+        {
+          "name": "proposal create_hat question weaver_id=null quantity=2 rows_per_inch=18",
+          "ok": false,
+          "detail": "create_hat status: expected question, got question"
+        },
+        {
+          "name": "no extra proposals",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 3187,
+      "cost_usd": 0.001237,
+      "request_id": "req_f7475e8d7e77",
+      "run": 1
+    },
+    {
+      "id": "unknown-weaver",
+      "pass": false,
+      "checks": [
+        {
+          "name": "proposal create_hat question weaver_id=null quantity=2 rows_per_inch=18",
+          "ok": false,
+          "detail": "create_hat status: expected question, got question"
+        },
+        {
+          "name": "no extra proposals",
+          "ok": true
+        },
+        {
+          "name": "quotes appear in the note",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 2796,
+      "cost_usd": 0.001237,
+      "request_id": "req_5e7418947701",
+      "run": 2
+    },
+    {
+      "id": "not-owner-or-finished",
+      "pass": true,
+      "checks": [
+        {
+          "name": "at most 1 proposals",
+          "ok": true,
+          "detail": "got 1"
+        },
+        {
+          "name": "every proposal is blocked",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 1874,
+      "cost_usd": 0.000629,
+      "request_id": "req_dae4b668a7d9",
+      "run": 1
+    },
+    {
+      "id": "not-owner-or-finished",
+      "pass": true,
+      "checks": [
+        {
+          "name": "at most 1 proposals",
+          "ok": true,
+          "detail": "got 1"
+        },
+        {
+          "name": "every proposal is blocked",
+          "ok": true
+        }
+      ],
+      "tools": 2,
+      "latency_ms": 1918,
+      "cost_usd": 0.000629,
+      "request_id": "req_cadbdd38cea6",
+      "run": 2
+    }
+  ]
+}

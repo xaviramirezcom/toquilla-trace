@@ -3,6 +3,7 @@
 // is unit tested with a scripted fake model. Zero npm imports.
 import { costUsd } from "./pricing.ts";
 import { type GenerateFn, type LlmContent, type LlmPart, LlmError, isRefusal } from "./llm-types.ts";
+import { normalizeCode } from "./domain.ts";
 import { type RunContext, TOOLS, pushStep, runTool } from "./tools.ts";
 
 export const MAX_ITERATIONS = 6;
@@ -36,7 +37,7 @@ HOW TO WORK
 4. Then write the summary.
 
 RULES FOR EVERY PROPOSAL
-- quote: copy the exact words from the note that support this proposal, character for character, in the original language. Do not translate, correct or shorten words inside the quote. If no words in the note support a change, do not propose it.
+- quote: copy the exact words from the note that support this proposal, character for character, in the original language. Do not translate, correct or shorten words inside the quote. For a hat, the quote must include its code as the note wrote it (or the weaver's name when the note describes the hat by weaver). If no words in the note support a change, do not propose it.
 - why: one plain English sentence saying what you understood and why you propose this.
 - confidence: "high" only when the note is clear and each lookup returned exactly one exact match. Otherwise "check".
 - Never invent weavers, hats, codes, quantities, grades or rows per inch. Use only ids and codes returned by functions. Never assume a weaver exists because a name is mentioned.
@@ -71,14 +72,67 @@ export function fallbackSummary(ctx: RunContext): string {
   return `I prepared ${n} ${n === 1 ? "action" : "actions"} for you to review. I could not finish reading the whole note, so please check it.`;
 }
 
-/** Code summary when the model finished but wrote no text (no claim that reading failed). */
-export function plainSummary(ctx: RunContext): string {
-  const n = ctx.proposals.length;
-  if (n === 0) return "I understood: there was nothing I could prepare from this note.";
-  const q = ctx.proposals.filter((p) => p.status === "question").length;
-  const tail = q > 0 ? ` ${q === 1 ? "One needs" : `${q} need`} your answer first.` : "";
-  return `I understood: I prepared ${n} ${n === 1 ? "action" : "actions"} for you to review.${tail}`;
+function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
 }
+
+/**
+ * The summary built in code from what the run really prepared (AI-1). Used whenever the model's
+ * text is missing or fails summaryProblem(), so the bubble can never contradict the cards.
+ */
+export function codeSummary(ctx: RunContext): string {
+  const ps = ctx.proposals;
+  const count = (f: (p: RunContext["proposals"][number]) => boolean) => ps.filter(f).length;
+  const questions = count((p) => p.status === "question");
+  const parts = [
+    [count((p) => p.status !== "question" && p.type === "create_hat"), "new hat batch", "new hat batches"],
+    [count((p) => p.status !== "question" && p.type === "advance_stage"), "stage change", "stage changes"],
+    [count((p) => p.status !== "question" && p.type === "flag_issue"), "flag", "flags"],
+    [questions, "question for you", "questions for you"],
+  ]
+    .filter(([n]) => (n as number) > 0)
+    .map(([n, one, many]) => plural(n as number, one as string, many as string));
+  const first =
+    ps.length === 0
+      ? "I understood: there was nothing I could prepare from this note."
+      : `I understood: I prepared ${plural(ps.length, "action", "actions")} for review (${parts.join(", ")}).`;
+  const notes: string[] = [];
+  const blocked = count((p) => p.status === "blocked");
+  if (blocked > 0) notes.push(`${blocked} ${blocked === 1 ? "is" : "are"} blocked by a rule, see why on the card`);
+  if (ctx.notFound.size > 0) notes.push(`I could not find ${[...ctx.notFound].slice(0, 3).join(", ")}`);
+  if (notes.length === 0) return first;
+  const second = notes.join("; ");
+  return `${first} ${second[0].toUpperCase()}${second.slice(1)}.`;
+}
+
+const CODE_IN_TEXT = /\bTQ[-\s]?[A-Z0-9]{5}\b/gi;
+const SAYS_NOT_FOUND = /not found|n[o']t find|cannot find|doesn'?t exist|does not exist|no encontr/i;
+const SAYS_SKIPPED = /ignor|skipp|n[o']t propose|cannot propose|did not prepare|didn'?t prepare/i;
+
+/**
+ * Why the model's summary can't be shown, or null when it can (AI-1). Checks, in order: the format
+ * from the prompt, the action count it claims, every hat code it names was looked up or is in the
+ * note, it does not say "not found" about a hat that was found, and it does not say it ignored or
+ * skipped a hat that has a proposal.
+ */
+export function summaryProblem(text: string, ctx: RunContext): string | null {
+  if (!isValidSummary(text)) return "format";
+  const claimed = claimedActionCount(text);
+  if (claimed !== null && claimed !== ctx.proposals.length) return "action_count";
+  const codes = (text.match(CODE_IN_TEXT) ?? []).map((c) => normalizeCode(c) ?? c.toUpperCase());
+  const compactNote = ctx.note.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const inNote = (c: string) => compactNote.includes(c.replace(/[^A-Z0-9]/g, "").replace(/^TQ/, ""));
+  if (codes.some((c) => !ctx.seenHats.has(c) && !inNote(c))) return "unknown_code";
+  if (SAYS_NOT_FOUND.test(text) && codes.some((c) => ctx.seenHats.has(c))) return "false_not_found";
+  const proposed = new Set(ctx.proposals.map((p) => p.payload.hat_code).filter((c): c is string => typeof c === "string"));
+  if (SAYS_SKIPPED.test(text) && codes.some((c) => proposed.has(c))) return "contradiction";
+  return null;
+}
+
+export const EVENTS_NUDGE =
+  "If the note describes events, call the propose functions for each event; otherwise reply with a short summary.";
+export const LOOKUP_NUDGE =
+  "Some calls failed because the lookup was missing. Call find_hats or find_weaver first, then propose again with the codes and ids they return, then write the summary.";
 
 export interface LoopTotals {
   iterations: number;
@@ -191,8 +245,9 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
         maxOutputTokens: MAX_OUTPUT_TOKENS,
         temperature: 0,
         timeoutMs: Math.max(1000, Math.min(CALL_TIMEOUT_MS, budget - elapsed)),
-        // Wall-clock deadline for this call and its one retry (llm-types callWithRetry).
-        deadlineAt: Date.now() + Math.max(0, budget - elapsed),
+        // Deadline for this call and its one retry (llm-types callWithRetry), from the same clock
+        // as the budget check above. The clock is epoch milliseconds (Date.now by default).
+        deadlineAt: started + budget,
         signal: opts.signal,
       });
     } catch (e) {
@@ -266,6 +321,9 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
       return failed("max_tokens", "The model ran out of output tokens.", { finish_reason: fr });
     }
     if (fr === "MALFORMED_FUNCTION_CALL" || fr === "UNEXPECTED_TOOL_CALL") {
+      // The broken call is not resent. A short model turn stands in for it, so model and user
+      // turns keep alternating, then the user turn asks for a valid call.
+      contents.push({ role: "model", parts: [{ text: "(malformed function call)" }] });
       contents.push({
         role: "user",
         parts: [{ text: "Your last function call was malformed. Call the functions again with valid arguments." }],
@@ -288,36 +346,26 @@ export async function runAgentLoop(ctx: RunContext, opts: LoopOptions): Promise<
     if (fr !== "STOP" && fr !== "FINISH_REASON_UNSPECIFIED") {
       return failed("unexpected_stop", `Unexpected finish reason ${fr}.`, { finish_reason: fr });
     }
-    // One nudge per run: the model stopped with no text, or gave up after calls it could fix
-    // (proposing before looking up). Never nudged after a clean finish.
+    // One nudge per run, never after a clean finish: the model stopped with no text, claimed more
+    // actions than it prepared, said it would ask without asking, or gave up after calls it could
+    // fix (an unknown weaver_id or hat).
     const empty = !cleanSummary(res.text);
     // Flash-Lite sometimes says "I need to ask a question ... 1 action" without calling ask_question.
     const claimed = res.text ? claimedActionCount(res.text) : null;
     const overclaims = claimed !== null && claimed > ctx.proposals.length;
-    if (!nudged && iteration < MAX_ITERATIONS && (empty || overclaims || (fixableErrors && ctx.proposals.length === 0))) {
+    // It also sometimes says it will ask a question ("I need to ask ...") but never calls ask_question.
+    const saysAsk = /\b(ask|question)/i.test(res.text ?? "") && !ctx.proposals.some((p) => p.status === "question");
+    const lookupMissing = fixableErrors && ctx.proposals.length === 0;
+    if (!nudged && iteration < MAX_ITERATIONS && (empty || overclaims || saysAsk || lookupMissing)) {
       nudged = true;
-      fixableErrors = false;
       if (res.content && res.content.parts.length > 0) contents.push(res.content);
-      contents.push({
-        role: "user",
-        parts: [
-          {
-            text: empty || (overclaims && !fixableErrors)
-              ? "If the note describes events, call the propose functions for each event; otherwise reply with a short summary."
-              : "Some calls failed because the lookup was missing. Call find_hats or find_weaver first, then propose again with the codes and ids they return, then write the summary.",
-          },
-        ],
-      });
+      contents.push({ role: "user", parts: [{ text: lookupMissing ? LOOKUP_NUDGE : EVENTS_NUDGE }] });
       continue;
     }
-    summary = cleanSummary(res.text);
-    const finalClaim = summary ? claimedActionCount(summary) : null;
-    if (!summary || !isValidSummary(summary) || (finalClaim !== null && finalClaim !== ctx.proposals.length)) {
-      // No summary, one that breaks the format (not "I understood:", more than 2 sentences), or one
-      // that claims a different number of actions than were prepared: describe the result in code.
-      summary = plainSummary(ctx);
-      usedFallback = true;
-    }
+    // The model's summary is shown only if it passes the checks; otherwise code describes the result.
+    const text = cleanSummary(res.text);
+    summary = text && summaryProblem(text, ctx) === null ? text : codeSummary(ctx);
+    usedFallback = summary !== text;
     break;
   }
 

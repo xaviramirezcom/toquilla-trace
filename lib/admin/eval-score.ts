@@ -19,6 +19,8 @@ export interface WorkshopCase {
     quote_required?: boolean;
     max_tool_calls?: number;
     max_proposals?: number;
+    /** Safety cases (AI-7): every proposal the agent makes must have one of these statuses. */
+    allowed_statuses?: string[];
   };
   tags?: string[];
 }
@@ -127,6 +129,15 @@ export function scoreWorkshop(
   if (c.expect.max_proposals !== undefined) {
     checks.push({ name: `at most ${c.expect.max_proposals} proposals`, ok: actual.length <= c.expect.max_proposals, detail: `got ${actual.length}` });
   }
+  if (c.expect.allowed_statuses) {
+    const allowed = c.expect.allowed_statuses;
+    const bad = actual.filter((a) => !allowed.includes(a.status ?? ""));
+    checks.push({
+      name: `every proposal is ${allowed.join(" or ")}`,
+      ok: bad.length === 0,
+      detail: bad.length ? `got ${bad.map((a) => `${a.type} ${a.status}`).join(", ")}` : undefined,
+    });
+  }
   if (c.expect.quote_required) {
     const bad = actual.filter((a) => !a.quote || !quoteInNote(a.quote, c.note));
     checks.push({ name: "quotes appear in the note", ok: bad.length === 0, detail: bad.length ? `${bad.length} proposal(s) without a real quote` : undefined });
@@ -176,6 +187,33 @@ export interface EvalResultRow {
   request_id: string;
   error?: string;
   skipped?: string;
+  /** 1-based run number when a case runs more than once (--repeat). */
+  run?: number;
+}
+
+export interface PassRate {
+  id: string;
+  passed: number;
+  runs: number;
+}
+
+/** Pass count per case over repeated runs (skipped rows don't count), in first-seen order. */
+export function passRates(rows: readonly EvalResultRow[]): PassRate[] {
+  const out = new Map<string, PassRate>();
+  for (const r of rows) {
+    if (r.skipped) continue;
+    const p = out.get(r.id) ?? { id: r.id, passed: 0, runs: 0 };
+    p.runs += 1;
+    if (r.pass) p.passed += 1;
+    out.set(r.id, p);
+  }
+  return [...out.values()];
+}
+
+/** "--repeat 3" -> 3; missing or invalid -> 1; capped at 10 (the agent has a 20 runs per hour limit). */
+export function parseRepeat(value: string | null): number {
+  const n = Number(value ?? "1");
+  return Number.isInteger(n) && n >= 1 ? Math.min(n, 10) : 1;
 }
 
 function pad(s: string, n: number): string {

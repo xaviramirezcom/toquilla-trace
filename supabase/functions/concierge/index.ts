@@ -6,9 +6,11 @@ import {
   type PassportJson,
   SYSTEM_PROMPT,
   buildUserContent,
+  clientIp,
   conciergeRunRow,
   finalizeAnswer,
   guessLang,
+  isObviousOffTopic,
   parseModelOut,
   toConciergeRecord,
   validateRequest,
@@ -24,7 +26,7 @@ const PER_DAY = 60;
 const DAILY_MAX = Number(Deno.env.get("CONCIERGE_DAILY_MAX") ?? "500") || 500;
 
 async function ipHash(req: Request): Promise<string> {
-  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+  const ip = clientIp(req.headers);
   // RATE_SALT if set; otherwise a server secret that is never logged, so hashes can't be reversed.
   const salt = Deno.env.get("RATE_SALT") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${ip}|${salt}`));
@@ -33,7 +35,8 @@ async function ipHash(req: Request): Promise<string> {
     .slice(0, 16);
 }
 
-async function countAnswers(sinceIso: string, hash?: string): Promise<number> {
+/** Answers logged since a time (optionally for one IP hash). null when the query fails. */
+async function countAnswers(sinceIso: string, hash?: string): Promise<number | null> {
   let q = serviceClient()
     .from("app_logs")
     .select("id", { count: "exact", head: true })
@@ -42,7 +45,7 @@ async function countAnswers(sinceIso: string, hash?: string): Promise<number> {
     .gte("created_at", sinceIso);
   if (hash) q = q.eq("payload->>ip_hash", hash);
   const { count, error } = await q;
-  if (error) return 0; // fail open: limits depend on logs (spec 07 open question 7)
+  if (error) return null;
   return count ?? 0;
 }
 
@@ -99,11 +102,38 @@ Deno.serve(async (req) => {
       countAnswers(new Date(now - 86_400_000).toISOString(), hash),
       countAnswers(new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString()),
     ]);
+    // Fail closed: without the counts the limits can't be enforced, so no model call is made.
+    if (perMinute === null || perDay === null || global === null) {
+      return fail(503, "concierge_busy", "Busy, try again shortly.", "error");
+    }
     if (perMinute >= PER_MINUTE || perDay >= PER_DAY) {
       return fail(429, "rate_limited", "You've asked a lot of questions. Try again in a minute.");
     }
     if (global >= DAILY_MAX) {
       return fail(503, "concierge_paused", "The concierge is resting for today. Try again tomorrow.");
+    }
+
+    // Obvious off-topic requests (code, poems, homework, trivia) get the fixed copy without a model call.
+    if (isObviousOffTopic(v.question)) {
+      const lang = guessLang(v.question);
+      runHat = v.code;
+      await saveRun({
+        request_id,
+        hat_code: v.code,
+        status: "answered",
+        model: modelName(),
+        tokens_in: 0,
+        tokens_out: 0,
+        cost_usd: 0,
+        latency_ms: Date.now() - started,
+        summary: "answered (off_topic, keyword gate)",
+      });
+      log.info("concierge.message", {
+        message: "Answered (off_topic, keyword gate)",
+        duration_ms: Date.now() - started,
+        payload: { question: v.question, turn, ip_hash: hash, answer_kind: "off_topic", reason: "keyword_gate", sources: [], lang },
+      });
+      return json(req, { answer: COPY.offTopic[lang], sources: [] }, 200, request_id);
     }
 
     const { data: passport, error: rpcErr } = await anonClient().rpc("public_hat_passport", { p_code: v.code });
@@ -171,7 +201,7 @@ Deno.serve(async (req) => {
     const out = parseModelOut(res.text);
     if (!out) return fail(502, "model_error", "I couldn't answer that. Try again.", "error", new Error("unparseable model output"));
 
-    const final = finalizeAnswer(out, record);
+    const final = finalizeAnswer(out, record, v.question);
     const sourcesLog = final.sources.map((s) => (s.kind === "general" ? "care_guide" : s.field));
     const payload = {
       ...base,

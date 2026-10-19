@@ -19,6 +19,8 @@ next-env.d.ts
 npm-debug.log*
 evals/results/*
 !evals/results/latest.json
+!evals/results/2026-10-19-safety-repeat.json
+!evals/results/2026-10-19-full-run.txt
 supabase/.temp/
 supabase/.branches/
 .db-password

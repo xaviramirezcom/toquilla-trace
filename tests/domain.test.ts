@@ -154,6 +154,19 @@ describe("canAdvance", () => {
       allowed: true,
     });
   });
+
+  it("a pending transfer blocks stage changes (C02, same rule as advance_hat in SQL)", () => {
+    expect(canAdvance({ ...base, transfer_email: "b@x.com" }, 1, member)).toEqual({
+      allowed: false,
+      code: "transfer_pending",
+      message: "TQ-2C5P0 has a pending transfer. Stages are locked until it is claimed.",
+    });
+  });
+
+  it("ownership is checked before the pending transfer", () => {
+    const r = canAdvance({ ...base, workshop_id: "w2", transfer_email: "b@x.com" }, 1, member);
+    expect(r).toMatchObject({ allowed: false, code: "not_owner" });
+  });
 });
 
 describe("grades", () => {

@@ -10,6 +10,12 @@ export const STAGES = ["Weaving", "Washing", "Bleaching", "Blocking", "Finished"
 export type Stage = (typeof STAGES)[number];
 export type StageIndex = 0 | 1 | 2 | 3 | 4;
 
+/** The last stage. Finished hats can't change stage. */
+export const FINISHED_STAGE: StageIndex = 4;
+
+/** Longest workshop note (voice or typed) the agent accepts. */
+export const NOTE_MAX = 1000;
+
 /** D15: every new hat starts at Weaving, whatever the note says. */
 export const NEW_HAT_STAGE: StageIndex = 0;
 
@@ -29,6 +35,10 @@ export const SIZE_MIN_CM = 52;
 export const SIZE_MAX_CM = 64;
 export const QUANTITY_MIN = 1;
 export const QUANTITY_MAX = 20;
+
+/** The three things the workshop agent can propose. One list for tools.ts, apply.ts and the UI. */
+export const PROPOSAL_TYPES = ["create_hat", "advance_stage", "flag_issue"] as const;
+export type ProposalType = (typeof PROPOSAL_TYPES)[number];
 
 /** D1: the regex validates every code, including seed codes with 0 and 1. */
 export const HAT_CODE_RE = /^TQ-[A-Z0-9]{5}$/;
@@ -77,6 +87,7 @@ export type RuleCode =
   | "same_stage"
   | "backward"
   | "stage_skip"
+  | "transfer_pending"
   | "end_of_chain"
   | "invalid_email"
   | "no_transfer"
@@ -109,7 +120,7 @@ function deny(code: RuleCode, message: string, fix?: { to_stage: StageIndex }): 
 // ---------------------------------------------------------------------------
 
 function isStageIndex(i: number): i is StageIndex {
-  return Number.isInteger(i) && i >= 0 && i <= 4;
+  return Number.isInteger(i) && i >= 0 && i <= FINISHED_STAGE;
 }
 
 export function stageName(i: number): Stage | null {
@@ -124,7 +135,7 @@ export function stageIndex(name: string): StageIndex | null {
 }
 
 export function nextStage(i: StageIndex): StageIndex | null {
-  return i >= 4 ? null : ((i + 1) as StageIndex);
+  return i >= FINISHED_STAGE ? null : ((i + 1) as StageIndex);
 }
 
 /** No admin bypass: admin is a read role, not a write role. */
@@ -135,16 +146,23 @@ export function isOwner(hat: OwnerFields, actor: Actor): boolean {
   return hat.owner_user_id !== null && actor.userId === hat.owner_user_id;
 }
 
-/** Checks run in a fixed order and the first failure wins. Ownership comes before stage details. */
+/**
+ * Checks run in a fixed order and the first failure wins. Ownership comes before stage details.
+ * A pending transfer locks the stage until the recipient claims the hat (same rule as advance_hat
+ * and apply_proposal in SQL).
+ */
 export function canAdvance(
-  hat: Pick<HatLike, "code" | "stage" | "archived"> & OwnerFields,
+  hat: Pick<HatLike, "code" | "stage" | "archived" | "transfer_email"> & OwnerFields,
   to: number,
   actor: Actor,
 ): RuleResult {
   if (!isStageIndex(to)) return deny("invalid_stage", "That stage doesn't exist.");
   if (hat.archived) return deny("archived", "Archived hats can't change stage.");
   if (!isOwner(hat, actor)) return deny("not_owner", "Only the current owner can change the stage.");
-  if (hat.stage === 4) return deny("already_finished", `${hat.code} is already Finished.`);
+  if (hat.transfer_email) {
+    return deny("transfer_pending", `${hat.code} has a pending transfer. Stages are locked until it is claimed.`);
+  }
+  if (hat.stage === FINISHED_STAGE) return deny("already_finished", `${hat.code} is already Finished.`);
   const current = stageName(hat.stage) ?? `stage ${hat.stage}`;
   if (to === hat.stage) return deny("same_stage", `${hat.code} is already at ${current}.`);
   if (to < hat.stage) {

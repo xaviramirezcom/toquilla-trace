@@ -1,7 +1,7 @@
 // workshop-agent: one workshop note in, reviewed proposals out (spec 03, D8, D26).
 // Nothing here writes hats, weavers, hat_events or hat_flags. Only agent_runs (service role),
 // proposals (through save_agent_run) and app_logs.
-import { isValidCode, normalizeCode } from "../_shared/domain.ts";
+import { NOTE_MAX, isValidCode, normalizeCode } from "../_shared/domain.ts";
 import {
   authenticate,
   errorResponse,
@@ -47,8 +47,8 @@ Deno.serve(async (req) => {
 
     const body = (await readJson(req)) as Record<string, unknown> | null;
     const note = typeof body?.note === "string" ? body.note.trim() : "";
-    if (note.length < 1 || note.length > 1000) {
-      return validationError(400, "invalid_input", "The note must be 1 to 1000 characters.", "validate");
+    if (note.length < 1 || note.length > NOTE_MAX) {
+      return validationError(400, "invalid_input", `The note must be 1 to ${NOTE_MAX} characters.`, "validate");
     }
     const inputMode = body?.input_mode;
     if (inputMode !== "voice" && inputMode !== "typed") {

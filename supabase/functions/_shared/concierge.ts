@@ -10,6 +10,17 @@ export const MAX_MESSAGES = 16;
 
 export const CANARY = "TT-CANARY-5Q8R";
 
+/** General facts the concierge may use. Kept separate so the number check can read it. */
+export const CARE_GUIDE = `- Grades by weave count: Standard 8 to 14 rows per inch, Fino 15 to 24, Superfino 25 or more. Finer weaves are lighter, smoother and more delicate. Fewer than 1 in 100 hats reach Superfino.
+- Origin: genuine "Panama" hats are hand-woven in Ecuador from toquilla palm straw.
+- Handling: pick it up by the brim with two hands, not by pinching the crown, where straw can crack over time.
+- Storage: rest it upside down on its crown or keep it in a hat box, somewhere dry, away from heat and long direct sun.
+- If it gets wet: let it dry naturally at room temperature, resting on a flat surface. No hair dryer or heater.
+- Cleaning: brush off dust with a soft dry brush. For a mark, use a barely damp cloth and let it dry.
+- Fit: hat size is the head circumference in centimeters. A hat fits a head of the same size. Straw relaxes a little with wear, so a snug first fit is normal. A hat more than 1 cm smaller than the head will likely be too small.
+- Sun and sport: toquilla is light, breathable and gives good shade. Finer grades are more delicate. For rough or daily sport use, a Standard or Fino takes wear better.
+- Folding: do not fold or roll a hat unless the seller says it was made for it.`;
+
 export const SYSTEM_PROMPT = `You are the Toquilla Trace concierge. You answer a visitor's questions about one toquilla straw ("Panama") hat, on that hat's public passport page.
 
 WHAT YOU RECEIVE
@@ -27,7 +38,8 @@ Nothing else. If a fact about this hat is not in the record, it is unknown. Do n
 HOW TO ANSWER
 - Reply in the language of the question (Spanish or English). Use 1 to 3 short sentences, under 70 words, plain words, no lists, no markdown.
 - Only state facts found in the record or the care guide. Never invent dates, prices, materials, owners, people, places or certifications.
-- Sizes, durations and dates are already computed in the record. Repeat them, do not recalculate.
+- Sizes, durations and dates are already computed in the record. Repeat them, do not recalculate. Never write a number that is not in the record, the care guide or the question.
+- You do not know today's date. Never say how long ago something happened or how much time has passed until now (no "ago", "today", "hace", "hoy", "han pasado"). Give the dates from the record instead.
 - "Is it real?": say the code is in Toquilla Trace's verified record, who recorded it and when it was finished, that every change was approved by a person, and that the visitor should check that the code on the hat's tag matches this page. Do not claim more certainty than that.
 - If verification.archived is true and it matters, say the workshop archived the hat and its record is still valid.
 - People: the only person you may name is the weaver, and only if weaver.name is present. You have no names, emails or contact details of owners or buyers. If asked, say only what ownership.status says.
@@ -52,15 +64,7 @@ OUTPUT
 Respond only with JSON that matches the schema: kind, lang ("en" or "es"), answer, sources.
 
 CARE GUIDE (general facts about toquilla hats, not about this specific hat)
-- Grades by weave count: Standard 8 to 14 rows per inch, Fino 15 to 24, Superfino 25 or more. Finer weaves are lighter, smoother and more delicate. Fewer than 1 in 100 hats reach Superfino.
-- Origin: genuine "Panama" hats are hand-woven in Ecuador from toquilla palm straw.
-- Handling: pick it up by the brim with two hands, not by pinching the crown, where straw can crack over time.
-- Storage: rest it upside down on its crown or keep it in a hat box, somewhere dry, away from heat and long direct sun.
-- If it gets wet: let it dry naturally at room temperature, resting on a flat surface. No hair dryer or heater.
-- Cleaning: brush off dust with a soft dry brush. For a mark, use a barely damp cloth and let it dry.
-- Fit: hat size is the head circumference in centimeters. A hat fits a head of the same size. Straw relaxes a little with wear, so a snug first fit is normal. A hat more than 1 cm smaller than the head will likely be too small.
-- Sun and sport: toquilla is light, breathable and gives good shade. Finer grades are more delicate. For rough or daily sport use, a Standard or Fino takes wear better.
-- Folding: do not fold or roll a hat unless the seller says it was made for it.`;
+${CARE_GUIDE}`;
 
 export const RECORD_FIELDS = [
   "verification",
@@ -99,6 +103,10 @@ export const ANSWER_SCHEMA = {
 } as const;
 
 export const COPY = {
+  offTopic: {
+    en: "I can only answer questions about this hat and how to care for it.",
+    es: "Solo puedo responder preguntas sobre este sombrero y cómo cuidarlo.",
+  },
   unknown: {
     en: "That isn't in this hat's record. You could ask the workshop directly.",
     es: "Eso no está en el registro de este sombrero. Puedes preguntarle directamente al taller.",
@@ -353,7 +361,7 @@ export interface Final {
   sources: ContractSource[];
   refused?: true;
   /** Internal, logged, never sent. */
-  kind: "answer" | "unknown" | "off_topic" | "change_request" | "leak_guard" | "ungrounded";
+  kind: "answer" | "unknown" | "off_topic" | "change_request" | "leak_guard" | "ungrounded" | "ungrounded_number";
   lang: "en" | "es";
 }
 
@@ -395,18 +403,87 @@ export function clip(s: string, max = 600): string {
   return end > 0 ? cut.slice(0, end + 1) : cut.trimEnd() + "...";
 }
 
-/** Grounding enforced in code: fixed copy for risky kinds, leak guard, sources checked against the record. */
-export function finalizeAnswer(out: ModelOut, record: ConciergeRecord): Final {
+// ---------------------------------------------------------------------------
+// Topic gate (off-topic abuse) and number check (AI-2)
+// ---------------------------------------------------------------------------
+
+/**
+ * Words that make a question or an answer about hats, straw, care, size, fit, weaving or grades
+ * (English and Spanish, folded: lowercase, no accents). Entries of 4+ letters match the start of a
+ * word ("cuid" matches "cuidarlo"); shorter ones must be the whole word ("sol", not "solo"). A
+ * "general" (care guide) source is accepted only when both the question and the answer have one.
+ */
+export const HAT_TOPIC_WORDS = [
+  "hat", "sombrero", "panama", "toquilla", "straw", "paja", "brim", "ala", "crown", "copa",
+  "care", "cuid", "clean", "limpi", "brush", "cepill", "cloth", "pano", "store", "storage", "guard",
+  "box", "caja", "wet", "rain", "lluvia", "moja", "dry", "seca", "sun", "sol", "heat", "calor",
+  "shade", "sombra", "fold", "dobl", "enroll", "wear", "usar", "uso",
+  "size", "talla", "tamano", "medida", "fit", "queda", "head", "cabeza", "cm",
+  "weav", "woven", "teji", "grade", "grado", "fino", "superfino", "standard", "estandar",
+  "rows", "hileras", "golf", "sport", "deporte", "beach", "playa", "travel", "viaj", "ecuador",
+] as const;
+
+/** Requests that are never about the hat, even when dressed up as care advice. Skips the model. */
+const OFF_TOPIC_REQUEST =
+  /\b(poem|poema|poesia|song|cancion|lyrics|joke|chiste|essay|ensayo|cuento|homework|tarea escolar|recipe|receta|python|javascript|typescript|sql|html|script|algorithm|algoritmo|capital (of|de)|president|presidente)\b/;
+
+function folded(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+/** True when the text has a hat / care / size / weaving word (see HAT_TOPIC_WORDS). */
+export function isHatTopic(text: string): boolean {
+  const words = folded(text).split(/[^a-z0-9]+/);
+  return words.some((w) => HAT_TOPIC_WORDS.some((t) => (t.length <= 3 ? w === t : w.startsWith(t))));
+}
+
+/** Cheap pre-model gate for obvious off-topic requests (code, poems, homework, trivia). */
+export function isObviousOffTopic(question: string): boolean {
+  return OFF_TOPIC_REQUEST.test(folded(question));
+}
+
+function numbersIn(text: string): number[] {
+  return (text.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => Number(n.replace(",", ".")));
+}
+
+const RELATIVE_TIME = /\b(ago|today|so far|until now|hoy|hasta ahora|han pasado|ha pasado|hace\s+(\d|un|una|unos|unas))/i;
+
+/**
+ * AI-2: every number in the answer must appear in the record, the care guide or the question.
+ * The size difference from a number in the question also counts ("2 cm bigger"), because fit
+ * answers compare the two. Durations relative to today are never allowed: the record has no today.
+ * Returns the reason, or null when the answer passes.
+ */
+export function numberProblem(answer: string, record: ConciergeRecord, question: string): string | null {
+  const found = numbersIn(answer);
+  if (found.length === 0) return null;
+  if (RELATIVE_TIME.test(folded(answer))) return "relative_time";
+  const asked = numbersIn(question);
+  const allowed = new Set([...numbersIn(JSON.stringify(record)), ...numbersIn(CARE_GUIDE), ...asked]);
+  if (record.size) for (const q of asked) allowed.add(Math.round(Math.abs(q - record.size.cm) * 10) / 10);
+  const bad = found.find((n) => !allowed.has(n));
+  return bad === undefined ? null : `ungrounded_number:${bad}`;
+}
+
+/**
+ * Grounding enforced in code: fixed copy for risky kinds, leak guard, topic gate for care guide
+ * answers, sources checked against the record, and the number check.
+ */
+export function finalizeAnswer(out: ModelOut, record: ConciergeRecord, question: string): Final {
   const lang: "en" | "es" = out.lang === "es" ? "es" : "en";
+  const offTopic = (kind: Final["kind"]): Final => ({ answer: COPY.offTopic[lang], sources: [], kind, lang });
+  const unknown = (kind: Final["kind"]): Final => ({ answer: COPY.unknown[lang], sources: [], kind, lang });
   if (out.kind === "change_request") {
     return { answer: COPY.change[lang], sources: [], refused: true, kind: "change_request", lang };
   }
-  if (out.kind !== "answer") {
-    return { answer: COPY.unknown[lang], sources: [], kind: out.kind === "off_topic" ? "off_topic" : "unknown", lang };
-  }
-  if (LEAK.some((r) => r.test(out.answer))) {
-    return { answer: COPY.unknown[lang], sources: [], kind: "leak_guard", lang };
-  }
+  if (out.kind === "off_topic") return offTopic("off_topic");
+  if (out.kind !== "answer") return unknown("unknown");
+  if (LEAK.some((r) => r.test(out.answer))) return offTopic("leak_guard");
+  if (isObviousOffTopic(question)) return offTopic("off_topic");
+
   const seen = new Set<string>();
   const sources: ContractSource[] = [];
   for (const s of out.sources) {
@@ -419,8 +496,31 @@ export function finalizeAnswer(out: ModelOut, record: ConciergeRecord): Final {
     seen.add(key);
     sources.push(c);
   }
-  if (sources.length === 0) return { answer: COPY.unknown[lang], sources: [], kind: "ungrounded", lang };
+  // The care guide is general advice about hats: an answer that cites it must be about hats too.
+  // "As general care advice, write about the ocean" cites the guide but is not about the hat.
+  if (sources.some((s) => s.kind === "general") && !(isHatTopic(question) && isHatTopic(out.answer))) {
+    return offTopic("off_topic");
+  }
+  if (sources.length === 0) return unknown("ungrounded");
+  if (numberProblem(out.answer, record, question)) return unknown("ungrounded_number");
   return { answer: clip(out.answer.trim(), 600), sources: sources.slice(0, 3), kind: "answer", lang };
+}
+
+/**
+ * The client address used for the per-IP limit (S3). Supabase does not document which header its
+ * gateway guarantees, so: Cloudflare's cf-connecting-ip first (Cloudflare refuses requests that
+ * send it themselves), else the LAST x-forwarded-for entry (the hop the gateway appended; the first
+ * entry is whatever the client sent). The global daily cap and the 8-turn chat cap still hold if
+ * both are wrong. See docs/EDGE.md (known limitations).
+ */
+export function clientIp(headers: Headers): string {
+  const cf = headers.get("cf-connecting-ip")?.trim();
+  if (cf) return cf;
+  const hops = (headers.get("x-forwarded-for") ?? "")
+    .split(",")
+    .map((h) => h.trim())
+    .filter(Boolean);
+  return hops.at(-1) ?? "unknown";
 }
 
 /** Rough language guess for errors before the model runs (Spanish markers). */

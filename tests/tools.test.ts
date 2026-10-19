@@ -1,7 +1,7 @@
 // Workshop agent tool handlers (spec 03 section 10.1) against an in-memory data layer.
 import { describe, expect, it } from "vitest";
 import { MAX_PROPOSALS, TOOLS, proposalsForSave, runTool } from "@domain/tools";
-import { SAMPLE_NOTE, ctxFor, fakeData } from "./tools-fixtures";
+import { SAMPLE_NOTE, ctxFor, fakeData, sampleHats } from "./tools-fixtures";
 
 type R = Record<string, unknown>;
 
@@ -217,15 +217,15 @@ describe("propose tools", () => {
     const { out } = await call(ctx, "propose_advance_stage", {
       hat_code: "TQ-7F3K2",
       to_stage: "Bleaching",
-      quote: "ya pasó a blanqueo",
+      quote: "tq 7f3k2 ya pasó a blanqueo",
       why: "Moved to bleaching.",
       confidence: "high",
     });
     expect(out.status).toBe("pending");
   });
 
-  it("10. advance without a lookup is an error", async () => {
-    const { out } = await call(ctxFor(SAMPLE_NOTE), "propose_advance_stage", {
+  it("10. advance for a code the note does not contain needs a lookup first", async () => {
+    const { out } = await call(ctxFor("El de Rosa pasa a blanqueo"), "propose_advance_stage", {
       hat_code: "TQ-7F3K2",
       to_stage: "Bleaching",
       quote: "pasa a blanqueo",
@@ -233,6 +233,43 @@ describe("propose tools", () => {
       confidence: "high",
     });
     expect(out.error).toMatch(/^Look this hat up with find_hats first/);
+  });
+
+  it("AI-5: a code written in the note is looked up in code when the model skips find_hats", async () => {
+    const ctx = ctxFor("El TQ-2C5P0 ya está terminado");
+    const { out } = await call(ctx, "propose_advance_stage", {
+      hat_code: "TQ-2C5P0",
+      to_stage: "Finished",
+      quote: "El TQ-2C5P0 ya está terminado",
+      why: "x",
+      confidence: "high",
+    });
+    expect(out.status).toBe("blocked");
+    expect(out.rule_result).toMatchObject({ code: "stage_skip" });
+    const auto = ctx.steps.find((st) => st.kind === "tool_call" && st.name === "find_hats");
+    expect(auto).toMatchObject({ input: { codes: ["TQ-2C5P0"], auto_lookup: true } });
+    // The automatic lookup counts as a tool call (runTool counted the propose call too).
+    expect(ctx.toolCalls).toBe(2);
+  });
+
+  it("AI-9: the quote must contain the hat code the note wrote", async () => {
+    const ctx = await seen("El TQ-7F3K2 ya está lavado, pasa a blanqueo. El TQ-2C5P0 ya está listo.", ["TQ-7F3K2"]);
+    const bad = await call(ctx, "propose_advance_stage", {
+      hat_code: "TQ-7F3K2",
+      to_stage: "Bleaching",
+      quote: "ya está listo",
+      why: "x",
+      confidence: "high",
+    });
+    expect(bad.out.error).toMatch(/^The quote must include the hat code as written in the note \(TQ-7F3K2\)/);
+    const good = await call(ctx, "propose_advance_stage", {
+      hat_code: "TQ-7F3K2",
+      to_stage: "Bleaching",
+      quote: "TQ-7F3K2 ya está lavado, pasa a blanqueo",
+      why: "x",
+      confidence: "high",
+    });
+    expect(good.out.status).toBe("pending");
   });
 
   it("11. a quote that is not in the note is rejected", async () => {
@@ -254,7 +291,7 @@ describe("propose tools", () => {
     const { out } = await call(ctx, "propose_advance_stage", {
       hat_code: "TQ-7F3K2",
       to_stage: "Washing",
-      quote: "está en lavado",
+      quote: "TQ-7F3K2 está en lavado",
       why: "x",
       confidence: "high",
     });
@@ -266,7 +303,7 @@ describe("propose tools", () => {
     const { out } = await call(ctx, "propose_advance_stage", {
       hat_code: "TQ-9A1M8",
       to_stage: "Washing",
-      quote: "vuelve a lavado",
+      quote: "TQ-9A1M8 vuelve a lavado",
       why: "x",
       confidence: "high",
     });
@@ -279,7 +316,7 @@ describe("propose tools", () => {
     const { out } = await call(ctx, "propose_advance_stage", {
       hat_code: "TQ-8B2N4",
       to_stage: "Weaving",
-      quote: "regresa a tejido",
+      quote: "TQ-8B2N4 regresa a tejido",
       why: "x",
       confidence: "high",
     });
@@ -292,7 +329,7 @@ describe("propose tools", () => {
     await call(ctx, "propose_advance_stage", {
       hat_code: "TQ-7F3K2",
       to_stage: "Bleaching",
-      quote: "pasa a blanqueo",
+      quote: "TQ-7F3KZ pasa a blanqueo",
       why: "Code heard differently.",
       confidence: "high",
     });
@@ -305,7 +342,7 @@ describe("propose tools", () => {
 
   it("23. a second advance for the same hat is a duplicate", async () => {
     const ctx = await seen("El TQ-7F3K2 pasa a blanqueo", ["TQ-7F3K2"]);
-    const args = { hat_code: "TQ-7F3K2", to_stage: "Bleaching", quote: "pasa a blanqueo", why: "x", confidence: "high" };
+    const args = { hat_code: "TQ-7F3K2", to_stage: "Bleaching", quote: "TQ-7F3K2 pasa a blanqueo", why: "x", confidence: "high" };
     await call(ctx, "propose_advance_stage", args);
     const { out } = await call(ctx, "propose_advance_stage", args);
     expect(out.error).toBe("You already proposed a stage change for TQ-7F3K2 in this note.");
@@ -348,7 +385,7 @@ describe("propose tools", () => {
     await call(ctx, "find_weaver", { name: "Manuel" });
     const base = { weaver_id: "w3", quote: "terminó 21 superfinos", why: "x", confidence: "high" };
     const q = await call(ctx, "propose_create_hats", { ...base, quantity: 21, rows_per_inch: 30 });
-    expect(q.out.error).toBe("quantity must be between 1 and 20.");
+    expect(q.out.error).toBe("Quantity must be between 1 and 20.");
     const r = await call(ctx, "propose_create_hats", { ...base, quantity: 2 });
     expect(r.out.error).toMatch(/ask_question/);
   });
@@ -372,7 +409,7 @@ describe("propose tools", () => {
     const ctx = ctxFor("el TQ-4K9D1 dice superfino pero tiene 18 hileras y el TQ-7F3K2 también");
     await call(ctx, "find_hats", { codes: ["TQ-4K9D1", "TQ-7F3K2"] });
     const base = { kind: "grade_mismatch", message: "Grade looks wrong.", why: "x", confidence: "high" };
-    await call(ctx, "propose_flag", { ...base, hat_code: "TQ-4K9D1", quote: "dice superfino pero tiene 18 hileras" });
+    await call(ctx, "propose_flag", { ...base, hat_code: "TQ-4K9D1", quote: "TQ-4K9D1 dice superfino pero tiene 18 hileras" });
     await call(ctx, "propose_flag", { ...base, hat_code: "TQ-7F3K2", quote: "el TQ-7F3K2 también" });
     expect(ctx.proposals[0]).toMatchObject({ status: "pending", rule_result: { confirmed_by_record: true } });
     expect(ctx.proposals[1]).toMatchObject({
@@ -390,7 +427,7 @@ describe("propose tools", () => {
       hat_code: "TQ-4K9D1",
       kind: "grade_mismatch",
       message: "x",
-      quote: "dice superfino",
+      quote: "TQ-4K9D1 dice superfino",
       why: "x",
       confidence: "high",
     });
@@ -443,7 +480,7 @@ describe("propose tools", () => {
     const { out } = await call(ctx, "propose_advance_stage", {
       hat_code: "TQ-7F3K2",
       to_stage: "Bleaching",
-      quote: "pasa a blanqueo",
+      quote: "TQ-7F3K2 pasa a blanqueo",
       why: "x",
       confidence: "high",
     });
@@ -570,6 +607,68 @@ describe("hats described only by weaver", () => {
       confidence: "high",
     });
     expect(right.out.status).toBe("pending");
+  });
+
+  it("AI-9: a hat found by weaver needs the weaver's name in the quote", async () => {
+    const ctx = ctxFor("el de Rosa Pillco pasa a blanqueo, ya mismo");
+    await call(ctx, "find_hats", { weaver_name: "Rosa Pillco" });
+    const bad = await call(ctx, "propose_advance_stage", {
+      hat_code: "TQ-7F3K2",
+      to_stage: "Bleaching",
+      quote: "pasa a blanqueo, ya mismo",
+      why: "x",
+      confidence: "high",
+    });
+    expect(bad.out.error).toMatch(/^The quote must include the weaver's name/);
+    expect(ctx.proposals).toHaveLength(0);
+  });
+
+  it("a weaver found through find_hats weaver_name counts as looked up (2026-10-19 long-note trace)", async () => {
+    const ctx = ctxFor("Y Carmen trajo 2 finos de 17 hileras esta mañana");
+    await call(ctx, "find_hats", { weaver_name: "Carmen" });
+    const { out } = await call(ctx, "propose_create_hats", {
+      weaver_id: "w4",
+      quantity: 2,
+      rows_per_inch: 17,
+      grade: "Fino",
+      quote: "Carmen trajo 2 finos de 17 hileras",
+      why: "x",
+      confidence: "high",
+    });
+    expect(out.status).toBe("pending");
+  });
+
+  it("AI-13: Spanish stop words in a weaver name don't count as a mention", async () => {
+    const weavers = [{ id: "w9", name: "María de la Cruz", village: null, province: null, specialty: null }];
+    const { data } = fakeData();
+    const ctx = ctxFor("Rosa terminó 2 finos de 18 hileras de la feria", {
+      data: { ...data, listWeavers: async () => weavers },
+    });
+    await call(ctx, "find_weaver", { name: "María" });
+    const { out } = await call(ctx, "propose_create_hats", {
+      weaver_id: "w9",
+      quantity: 2,
+      rows_per_inch: 18,
+      quote: "terminó 2 finos de 18 hileras",
+      why: "x",
+      confidence: "high",
+    });
+    expect(out.error).toBe("The note does not mention María de la Cruz. Only propose hats for weavers the note names.");
+  });
+
+  it("C02: a hat with a pending transfer is blocked with transfer_pending", async () => {
+    const hats = sampleHats().map((h) => (h.code === "TQ-7F3K2" ? { ...h, transfer_email: "b@x.com" } : h));
+    const ctx = ctxFor("El TQ-7F3K2 pasa a blanqueo", { data: fakeData({ hats }).data });
+    await call(ctx, "find_hats", { codes: ["TQ-7F3K2"] });
+    const { out } = await call(ctx, "propose_advance_stage", {
+      hat_code: "TQ-7F3K2",
+      to_stage: "Bleaching",
+      quote: "TQ-7F3K2 pasa a blanqueo",
+      why: "x",
+      confidence: "high",
+    });
+    expect(out.status).toBe("blocked");
+    expect(out.rule_result).toMatchObject({ code: "transfer_pending" });
   });
 
   it("find_hats record_issues never claims too_fast (it has no events to check)", async () => {
