@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GITHUB_REPO } from "@/lib/docs/registry";
 import { LandingBottomBar, VERIFY_INPUT_ID, VerifyHatButton } from "@/components/landing/LandingClient";
 import { CodeInput } from "@/components/passport/CodeInput";
 import { Logo } from "@/components/shell/Logo";
@@ -135,11 +136,11 @@ export default async function LandingPage() {
 
       <footer className="flex flex-wrap items-center gap-4 border-t border-line px-4 pt-[22px] pb-24 text-sm text-muted md:px-10 md:pb-[22px]">
         <span className="mr-auto">Made in Cuenca, Ecuador</span>
-        <a href="#about" className="hover:text-ink hover:underline">
-          About
-        </a>
-        <a href="#privacy" className="hover:text-ink hover:underline">
-          Privacy
+        <Link href="/docs" className="hover:text-ink hover:underline">
+          Docs
+        </Link>
+        <a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer" className="hover:text-ink hover:underline">
+          GitHub
         </a>
       </footer>
 

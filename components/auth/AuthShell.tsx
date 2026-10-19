@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/shell/Logo";
 
@@ -13,6 +14,14 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
           {subtitle && <p className="mt-1.5 text-[15px] text-muted">{subtitle}</p>}
           <div className="mt-6">{children}</div>
         </section>
+        <footer className="flex flex-wrap items-center justify-center gap-4 text-[13px] text-muted">
+          <Link href="/docs" className="hover:text-ink hover:underline">
+            Docs
+          </Link>
+          <Link href="/" className="hover:text-ink hover:underline">
+            Home
+          </Link>
+        </footer>
       </main>
     </div>
   );

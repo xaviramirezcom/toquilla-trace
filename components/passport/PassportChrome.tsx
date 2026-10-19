@@ -41,7 +41,12 @@ export function PassportFooter({ reportHref, padBottom }: { reportHref: string; 
         padBottom ? "pb-[96px] md:pb-5" : ""
       }`}
     >
-      <span>Powered by Toquilla Trace</span>
+      <span className="flex items-center gap-3">
+        <span>Powered by Toquilla Trace</span>
+        <Link href="/docs" className="underline-offset-4 hover:text-ink hover:underline">
+          Docs
+        </Link>
+      </span>
       <a href={reportHref} className="font-semibold text-ink underline-offset-4 hover:underline">
         Report a problem
       </a>

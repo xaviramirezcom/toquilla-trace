@@ -126,6 +126,10 @@ export function UserMenu({ profile, placement, hasRecentErrors = false, onLogout
               <Icon name="person" size={20} className="text-muted" />
               Profile &amp; workshop
             </Link>
+            <Link href="/docs" role="menuitem" className={item} onClick={() => setOpen(false)}>
+              <Icon name="menu_book" size={20} className="text-muted" />
+              Docs
+            </Link>
             <div className="px-3 py-2">
               <p className="mb-1.5 text-[12px] font-semibold text-muted">Theme</p>
               <div
