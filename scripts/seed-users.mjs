@@ -1,13 +1,16 @@
 #!/usr/bin/env node
-// Creates or updates the 3 demo users and links them to the seeded workshops.
+// Creates or updates the 3 demo users plus the eval user and links them to the seeded workshops.
 // Run after `supabase db push`:  node --env-file=.env scripts/seed-users.mjs
 // Plain Node (>= 20), no dependencies. Never prints the password or keys.
 //
 // Env: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
 //      DEMO_ADMIN_EMAIL, DEMO_MEMBER_EMAIL, DEMO_BUYER_EMAIL, DEMO_PASSWORD
+// Optional: EVAL_EMAIL (default eval@test.com), EVAL_PASSWORD (default DEMO_PASSWORD) for the
+//      Eval Workshop member that `npm run eval` signs in as.
 
 const WS_PILLCO = "11111111-1111-4111-8111-111111111111";
 const WS_HQ = "22222222-2222-4222-8222-222222222222";
+const WS_EVAL = "33333333-3333-4333-8333-333333333333";
 const CLAIM_DEMO_CODE = "TQ-9A1M8";
 
 const env = (name) => {
@@ -22,10 +25,13 @@ const env = (name) => {
 const url = env("NEXT_PUBLIC_SUPABASE_URL").replace(/\/+$/, "");
 const key = env("SUPABASE_SERVICE_ROLE_KEY");
 const password = env("DEMO_PASSWORD");
+const evalEmail = (process.env.EVAL_EMAIL?.trim() || "eval@test.com").toLowerCase();
+const evalPassword = process.env.EVAL_PASSWORD?.trim() || password;
 const users = [
   { label: "admin", email: env("DEMO_ADMIN_EMAIL").toLowerCase(), name: "Toquilla Trace Admin", role: "admin", workshop_id: WS_HQ },
   { label: "member", email: env("DEMO_MEMBER_EMAIL").toLowerCase(), name: "Xavier", role: "member", workshop_id: WS_PILLCO },
   { label: "buyer", email: env("DEMO_BUYER_EMAIL").toLowerCase(), name: "Demo Buyer", role: "member", workshop_id: null },
+  { label: "eval", email: evalEmail, name: "Eval Runner", role: "member", workshop_id: WS_EVAL, password: evalPassword },
 ];
 
 const headers = { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
@@ -64,7 +70,7 @@ async function findUserByEmail(email) {
 
 async function upsertAuthUser(u) {
   const existing = await findUserByEmail(u.email);
-  const attrs = { password, email_confirm: true, user_metadata: { name: u.name } };
+  const attrs = { password: u.password ?? password, email_confirm: true, user_metadata: { name: u.name } };
   if (existing) {
     await call("PUT", `/auth/v1/admin/users/${existing.id}`, attrs);
     return { id: existing.id, created: false };
@@ -87,7 +93,7 @@ async function main() {
       { id, name: u.name, role: u.role, workshop_id: u.workshop_id },
       { Prefer: "resolution=merge-duplicates,return=minimal" },
     );
-    summary.push(`${u.label.padEnd(6)} ${u.email}  ${created ? "created" : "updated"}  role=${u.role}  workshop=${u.workshop_id === WS_HQ ? "Toquilla Trace HQ" : u.workshop_id === WS_PILLCO ? "Taller Pillco" : "none"}`);
+    summary.push(`${u.label.padEnd(6)} ${u.email}  ${created ? "created" : "updated"}  role=${u.role}  workshop=${u.workshop_id === WS_HQ ? "Toquilla Trace HQ" : u.workshop_id === WS_PILLCO ? "Taller Pillco" : u.workshop_id === WS_EVAL ? "Eval Workshop" : "none"}`);
   }
 
   // Claim demo (D22): the seeded transfer points at buyer@test.com; align it with the real
@@ -110,13 +116,15 @@ async function main() {
   // Fill NULL actor ids on seeded history.
   const memberFill = await call("POST", "/rest/v1/rpc/seed_backfill_actors", { p_workshop_id: WS_PILLCO, p_actor: ids.member });
   const adminFill = await call("POST", "/rest/v1/rpc/seed_backfill_actors", { p_workshop_id: WS_HQ, p_actor: ids.admin });
+  const evalFill = await call("POST", "/rest/v1/rpc/seed_backfill_actors", { p_workshop_id: WS_EVAL, p_actor: ids.eval });
 
   console.log("Demo users:");
   for (const line of summary) console.log(`  ${line}`);
   console.log(`Claim demo: ${claimNote}`);
   console.log(`Backfilled Taller Pillco -> member: ${JSON.stringify(memberFill)}`);
   console.log(`Backfilled Toquilla Trace HQ -> admin: ${JSON.stringify(adminFill)}`);
-  console.log("Done. The password is the DEMO_PASSWORD value in your .env (not printed).");
+  console.log(`Backfilled Eval Workshop -> eval: ${JSON.stringify(evalFill)}`);
+  console.log("Done. Passwords are DEMO_PASSWORD (and EVAL_PASSWORD if set) from your .env (not printed).");
 }
 
 main().catch((err) => {

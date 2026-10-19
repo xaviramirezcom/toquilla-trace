@@ -82,10 +82,13 @@ async function main(): Promise<number> {
 
   // Sign in as the Eval Workshop member. Workshop cases are skipped without it.
   let jwt: string | null = null;
-  let skipReason = "set EVAL_EMAIL and EVAL_PASSWORD (Eval Workshop user)";
-  if (process.env.EVAL_EMAIL && process.env.EVAL_PASSWORD && selected.some((c) => c.agent === "workshop")) {
+  // Same defaults as scripts/seed-users.mjs: eval@test.com, password EVAL_PASSWORD or DEMO_PASSWORD.
+  const evalEmail = process.env.EVAL_EMAIL?.trim() || "eval@test.com";
+  const evalPassword = process.env.EVAL_PASSWORD?.trim() || process.env.DEMO_PASSWORD?.trim() || "";
+  let skipReason = "set EVAL_PASSWORD or DEMO_PASSWORD and run scripts/seed-users.mjs (Eval Workshop user)";
+  if (evalPassword && selected.some((c) => c.agent === "workshop")) {
     const sb = createClient(target === "local" ? restBase : url, anon, { auth: { persistSession: false } });
-    const { data, error } = await sb.auth.signInWithPassword({ email: process.env.EVAL_EMAIL, password: process.env.EVAL_PASSWORD });
+    const { data, error } = await sb.auth.signInWithPassword({ email: evalEmail, password: evalPassword });
     if (error || !data.session) {
       skipReason = "eval user sign-in failed";
     } else {
