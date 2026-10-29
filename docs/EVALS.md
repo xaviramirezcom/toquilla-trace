@@ -6,7 +6,7 @@ Raw results: [latest.json](../evals/results/latest.json) (final workshop run), [
 
 ## Runs of 2026-10-19 (UTC)
 
-Model `gemini-2.5-flash-lite`, temperature 0 for the workshop agent and 0.2 for the concierge, project `mflvsnpyckuwhicvgnsr`.
+Model `gemini-2.5-flash-lite`, temperature 0 for the workshop agent and 0.2 for the concierge, project `xzimmdrjvcswlxievxhr`.
 
 | Run | What ran | Result | Cost |
 |---|---|---|---|

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { contentSecurityPolicy, securityHeaders } from "@/lib/security-headers";
 
-const URL_ = "https://mflvsnpyckuwhicvgnsr.supabase.co";
+const URL_ = "https://xzimmdrjvcswlxievxhr.supabase.co";
 
 describe("security headers", () => {
   it("production CSP allows Supabase https and wss, Google Fonts, and no eval", () => {
     const csp = contentSecurityPolicy({ supabaseUrl: URL_, dev: false });
-    expect(csp).toContain(`connect-src 'self' ${URL_} wss://mflvsnpyckuwhicvgnsr.supabase.co`);
+    expect(csp).toContain(`connect-src 'self' ${URL_} wss://xzimmdrjvcswlxievxhr.supabase.co`);
     expect(csp).toContain("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com");
     expect(csp).toContain("font-src 'self' data: https://fonts.gstatic.com");
     expect(csp).toContain("frame-ancestors 'none'");

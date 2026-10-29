@@ -131,7 +131,7 @@ Errors: 400 `invalid_request`, 404 `hat_not_found`, 429 `rate_limited` (9th user
 
 ```bash
 npx --yes supabase@2.121.0 functions deploy workshop-agent apply-proposals concierge \
-  --project-ref mflvsnpyckuwhicvgnsr --use-api
+  --project-ref xzimmdrjvcswlxievxhr --use-api
 ```
 
 `--use-api` bundles on the server, so Docker is not needed. Type check locally with `npx --yes deno@2.5.4 check --no-config supabase/functions/*/index.ts`.

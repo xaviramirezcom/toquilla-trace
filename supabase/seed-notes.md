@@ -1,6 +1,6 @@
 # Database notes (schema, RLS, functions, demo seed)
 
-Supabase project ref `mflvsnpyckuwhicvgnsr`. Specs: `docs/specs/00-conventions.md` sections 3, 8 and 9 win over the feature specs. This file lists what was built and every place it differs from a spec.
+Supabase project ref `xzimmdrjvcswlxievxhr`. Specs: `docs/specs/00-conventions.md` sections 3, 8 and 9 win over the feature specs. This file lists what was built and every place it differs from a spec.
 
 ## Migrations
 
@@ -110,7 +110,7 @@ The shared password is never in git. It is in the submitter's `.env` and goes in
 ## How to (re)seed
 
 ```bash
-npx --yes supabase@2.121.0 link --project-ref mflvsnpyckuwhicvgnsr -p "$(< .db-password)"
+npx --yes supabase@2.121.0 link --project-ref xzimmdrjvcswlxievxhr -p "$(< .db-password)"
 npx --yes supabase@2.121.0 db push -p "$(< .db-password)"
 npm run seed:users          # node --env-file=.env scripts/seed-users.mjs
 npm run eval:reset          # Eval Workshop back to its seeded state (run before npm run eval)

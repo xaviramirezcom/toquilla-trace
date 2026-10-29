@@ -316,11 +316,11 @@ npm test                      # unit tests, no network
 Everything below is optional and needs project access (service role key in `.env`, the DB password in `.db-password`, the Supabase CLI via npx):
 
 ```bash
-npx --yes supabase@2.121.0 link --project-ref mflvsnpyckuwhicvgnsr -p "$(< .db-password)"
+npx --yes supabase@2.121.0 link --project-ref xzimmdrjvcswlxievxhr -p "$(< .db-password)"
 npx --yes supabase@2.121.0 db push -p "$(< .db-password)"        # migrations
 npm run seed:users                                                # demo + eval accounts (confirmed)
 npx --yes supabase@2.121.0 functions deploy workshop-agent apply-proposals concierge \
-  --project-ref mflvsnpyckuwhicvgnsr --use-api                    # Edge Functions
+  --project-ref xzimmdrjvcswlxievxhr --use-api                    # Edge Functions
 npx --yes supabase@2.121.0 secrets set GEMINI_API_KEY=...          # model key lives only here, never in .env or Vercel
 ```
 
