@@ -28,7 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: { default: "Toquilla Trace", template: "%s · Toquilla Trace" },
-  description: "Just tell it. Track every toquilla straw hat from weaver to buyer.",
+  description: "Just tell it. Track every toquilla straw hat, from weaver to buyer.",
 };
 
 export const viewport: Viewport = {
